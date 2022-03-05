@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Article } from './article.entity'
 import { Removable } from './shared/removable.entity'
 
-@Entity()
+@Entity({ name: 'article_category' })
 export class ArticleCategory extends Removable {
   @PrimaryGeneratedColumn('increment', { type: 'tinyint' })
   id: number
@@ -14,4 +15,8 @@ export class ArticleCategory extends Removable {
 
   @Column({ type: 'tinyint' })
   index: number
+
+  // relations
+  @OneToMany(() => Article, (article) => article.category)
+  articles: Array<Article>
 }

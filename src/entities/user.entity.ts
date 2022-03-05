@@ -1,7 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { ArticleComment } from './article-comment.entity'
+import { ArticleLike } from './article-like.entity'
+import { Article } from './article.entity'
 import { Updatable } from './shared/updatable.entity'
+import { UserBrowseHistory } from './user-browse-history.entity'
 
-@Entity()
+@Entity({ name: 'user' })
 export class User extends Updatable {
   @PrimaryGeneratedColumn()
   id: number
@@ -15,6 +19,19 @@ export class User extends Updatable {
   @Column({ type: 'nvarchar', length: 50, nullable: true })
   name?: string
 
-  @Column({ type: 'varchar', length: 2000, nullable: true })
+  @Column({ type: 'varchar', length: 2000, name: 'avatar_url', nullable: true })
   avatarUrl?: string
+
+  // relations
+  @OneToMany(() => Article, (article) => article.author)
+  articles: Array<Article>
+
+  @OneToMany(() => ArticleLike, (like) => like.user)
+  articleLikes: Array<ArticleLike>
+
+  @OneToMany(() => ArticleComment, (comment) => comment.author)
+  articleComments: Array<ArticleComment>
+
+  @OneToMany(() => UserBrowseHistory, (browseHistory) => browseHistory.user)
+  browseHistories: Array<UserBrowseHistory>
 }

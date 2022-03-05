@@ -1,15 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
+import { ArticleCategory } from './article-category.entity'
+import { ArticleComment } from './article-comment.entity'
+import { ArticleLike } from './article-like.entity'
 import { Updatable } from './shared/updatable.entity'
+import { UserBrowseHistory } from './user-browse-history.entity'
+import { User } from './user.entity'
 
-@Entity()
+@Entity({ name: 'article' })
 export class Article extends Updatable {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'tinyint' })
+  @Column({ type: 'tinyint', name: 'category_id' })
   categoryId: number
 
-  @Column({ type: 'varchar', length: 2000 })
+  @Column({ type: 'varchar', name: 'cover_image_url', length: 2000 })
   coverImageUrl: string
 
   @Column({ type: 'nvarchar', length: 100 })
@@ -21,6 +32,22 @@ export class Article extends Updatable {
   @Column({ type: 'int', default: 0 })
   views: number
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', name: 'author_id' })
   authorId: number
+
+  // relations
+  @ManyToOne(() => ArticleCategory, (category) => category.articles)
+  category: ArticleCategory
+
+  @ManyToOne(() => User, (user) => user.articles)
+  author: User
+
+  @OneToMany(() => ArticleLike, (like) => like.article)
+  likes: Array<ArticleLike>
+
+  @OneToMany(() => ArticleComment, (comment) => comment.article)
+  comments: Array<ArticleComment>
+
+  @OneToMany(() => UserBrowseHistory, (browseHistory) => browseHistory.article)
+  browseHistories: Array<UserBrowseHistory>
 }

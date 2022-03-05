@@ -7,24 +7,24 @@ CREATE TABLE `user`
     `password` CHAR(60) NOT NULL,
     `name` NVARCHAR(50),
     `avatar` VARCHAR(2000),
-    `createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
-    `lastModifiedAt` TIMESTAMP,
-    `removedAt` TIMESTAMP,
-    `isRemoved` BIT DEFAULT 0 NOT NULL,
+    `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+    `last_modified_at` TIMESTAMP,
+    `removed_at` TIMESTAMP,
+    `is_removed` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
     UNIQUE(`username`)
 );
 
-CREATE TABLE `articleCategory`
+CREATE TABLE `article_category`
 (
     `id` TINYINT AUTO_INCREMENT NOT NULL,
 	`code` VARCHAR(20) NOT NULL,
 	`icon` VARCHAR(20) NOT NULL,
 	`index` TINYINT NOT NULL,
-	`createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
-	`removedAt`TIMESTAMP,
-	`isRemoved` BIT DEFAULT 0 NOT NULL,
+	`created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+	`removed_at`TIMESTAMP,
+	`is_removed` BIT DEFAULT 0 NOT NULL,
 	
 	PRIMARY KEY(`id`),
 	UNIQUE(`code`),
@@ -35,44 +35,44 @@ CREATE TABLE `articleCategory`
 CREATE TABLE `article`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
-    `categoryId` TINYINT NOT NULL,
-    `coverImageUrl` VARCHAR(2000) NOT NULL,
+    `category_id` TINYINT NOT NULL,
+    `cover_image_url` VARCHAR(2000) NOT NULL,
     `title` NVARCHAR(100) NOT NULL,
     `body` TEXT NOT NULL,
     `views` INT DEFAULT 0 NOT NULL,
-    `authorId` INT NOT NULL,
-    `createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
-    `lastModifiedAt` TIMESTAMP,
-    `removedAt` TIMESTAMP,
-    `isRemoved` BIT DEFAULT 0 NOT NULL,
+    `author_id` INT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+    `last_modified_at` TIMESTAMP,
+    `removed_at` TIMESTAMP,
+    `is_removed` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
-    FOREIGN KEY(`categoryId`) REFERENCES `articleCategory`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY(`authorId`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY(`category_id`) REFERENCES `article_category`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE `articleLike`
+CREATE TABLE `article_like`
 (
-    `articleId` INT NOT NULL,
-    `userId` INT NOT NULL,
-    `createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+    `article_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 
-    PRIMARY KEY(`articleId`, `userId`),
-    FOREIGN KEY(`articleId`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY(`userId`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    PRIMARY KEY(`article_id`, `user_id`),
+    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE `articleComment`
+CREATE TABLE `article_comment`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
-    `articleId` INT NOT NULL,
-    `authorId` INT NOT NULL,
+    `article_id` INT NOT NULL,
+    `author_id` INT NOT NULL,
     `body` NVARCHAR(500) NOT NULL,
-    `createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
-    `removedAt` TIMESTAMP,
-    `isRemoved` BIT DEFAULT 0 NOT NULL,
+    `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+    `removed_at` TIMESTAMP,
+    `is_removed` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
-    FOREIGN KEY(`articleId`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY(`authorId`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
