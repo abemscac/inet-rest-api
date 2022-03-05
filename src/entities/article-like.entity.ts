@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryColumn } from 'typeorm'
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import { Article } from './article.entity'
 import { Creatable } from './shared/creatable.entity'
 import { User } from './user.entity'
@@ -12,9 +12,15 @@ export class ArticleLike extends Creatable {
   userId: number
 
   // relations
-  @ManyToOne(() => Article, (article) => article.likes)
+  @ManyToOne(() => Article, (article) => article.likes, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'article_id' })
   article: Article
 
-  @ManyToOne(() => User, (user) => user.articleLikes)
+  @ManyToOne(() => User, (user) => user.articleLikes, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
   user: User
 }

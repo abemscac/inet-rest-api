@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import { Article } from './article.entity'
 import { Removable } from './shared/removable.entity'
 import { User } from './user.entity'
@@ -18,9 +24,15 @@ export class ArticleComment extends Removable {
   body: string
 
   // relations
-  @ManyToOne(() => Article, (article) => article.comments)
+  @ManyToOne(() => Article, (article) => article.comments, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'article_id' })
   article: Article
 
-  @ManyToOne(() => User, (user) => user.articleComments)
+  @ManyToOne(() => User, (user) => user.articleComments, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'author_id' })
   author: User
 }

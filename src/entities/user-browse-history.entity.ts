@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import { Article } from './article.entity'
 import { Creatable } from './shared/creatable.entity'
 import { User } from './user.entity'
@@ -15,9 +21,15 @@ export class UserBrowseHistory extends Creatable {
   articleId: number
 
   // relations
-  @ManyToOne(() => User, (user) => user.browseHistories)
+  @ManyToOne(() => User, (user) => user.browseHistories, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
   user: User
 
-  @ManyToOne(() => Article, (article) => article.browseHistories)
+  @ManyToOne(() => Article, (article) => article.browseHistories, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'article_id' })
   article: Article
 }

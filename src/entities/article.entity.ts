@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -17,8 +18,8 @@ export class Article extends Updatable {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'tinyint', name: 'category_id' })
-  categoryId: number
+  @Column({ type: 'tinyint', name: 'category_id', nullable: true })
+  categoryId?: number
 
   @Column({ type: 'varchar', name: 'cover_image_url', length: 2000 })
   coverImageUrl: string
@@ -36,10 +37,16 @@ export class Article extends Updatable {
   authorId: number
 
   // relations
-  @ManyToOne(() => ArticleCategory, (category) => category.articles)
-  category: ArticleCategory
+  @ManyToOne(() => ArticleCategory, (category) => category.articles, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'category_id' })
+  category?: ArticleCategory
 
-  @ManyToOne(() => User, (user) => user.articles)
+  @ManyToOne(() => User, (user) => user.articles, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'author_id' })
   author: User
 
   @OneToMany(() => ArticleLike, (like) => like.article)

@@ -35,7 +35,7 @@ CREATE TABLE `article_category`
 CREATE TABLE `article`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
-    `category_id` TINYINT NOT NULL,
+    `category_id` TINYINT,
     `cover_image_url` VARCHAR(2000) NOT NULL,
     `title` NVARCHAR(100) NOT NULL,
     `body` TEXT NOT NULL,
@@ -47,8 +47,8 @@ CREATE TABLE `article`
     `is_removed` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
-    FOREIGN KEY(`category_id`) REFERENCES `article_category`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY(`category_id`) REFERENCES `article_category`(`id`) ON DELETE SET NULL,
+    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `article_like`
@@ -58,8 +58,8 @@ CREATE TABLE `article_like`
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 
     PRIMARY KEY(`article_id`, `user_id`),
-    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE `article_comment`
@@ -73,6 +73,6 @@ CREATE TABLE `article_comment`
     `is_removed` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
-    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
