@@ -1,7 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Updatable } from './shared/updatable.entity'
 
 @Entity()
-export class User {
+export class User extends Updatable {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -11,21 +12,9 @@ export class User {
   @Column({ type: 'char', length: 60 })
   password: string
 
-  @Column({ type: 'nvarchar', length: 50 })
-  name: string
+  @Column({ type: 'nvarchar', length: 50, nullable: true })
+  name?: string
 
-  @Column({ type: 'varchar', length: 2000 })
-  avatar: string
-
-  @Column({ type: 'timestamp', default: '(UTC_TIMESTAMP)' })
-  createdAt: Date
-
-  @Column({ type: 'timestamp' })
-  lastModifiedAt?: Date
-
-  @Column({ type: 'timestamp' })
-  removedAt?: Date
-
-  @Column({ type: 'bit', default: 0 })
-  isRemoved: boolean
+  @Column({ type: 'varchar', length: 2000, nullable: true })
+  avatarUrl?: string
 }

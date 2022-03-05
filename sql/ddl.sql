@@ -18,10 +18,10 @@ CREATE TABLE `user`
 
 CREATE TABLE `articleCategory`
 (
-    `id` SMALLINT AUTO_INCREMENT NOT NULL,
+    `id` TINYINT AUTO_INCREMENT NOT NULL,
 	`code` VARCHAR(20) NOT NULL,
 	`icon` VARCHAR(20) NOT NULL,
-	`index` SMALLINT NOT NULL,
+	`index` TINYINT NOT NULL,
 	`createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 	`removedAt`TIMESTAMP,
 	`isRemoved` BIT DEFAULT 0 NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE `articleCategory`
 CREATE TABLE `article`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
-    `categoryId` SMALLINT NOT NULL,
-    `coverImage` VARCHAR(2000) NOT NULL,
+    `categoryId` TINYINT NOT NULL,
+    `coverImageUrl` VARCHAR(2000) NOT NULL,
     `title` NVARCHAR(100) NOT NULL,
     `body` TEXT NOT NULL,
     `views` INT DEFAULT 0 NOT NULL,
@@ -47,8 +47,8 @@ CREATE TABLE `article`
     `isRemoved` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
-    FOREIGN KEY(`categoryId`) REFERENCES `articleCategory`(`id`),
-    FOREIGN KEY(`authorId`) REFERENCES `user`(`id`)
+    FOREIGN KEY(`categoryId`) REFERENCES `articleCategory`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(`authorId`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE `articleLike`
@@ -58,8 +58,8 @@ CREATE TABLE `articleLike`
     `createdAt` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 
     PRIMARY KEY(`articleId`, `userId`),
-    FOREIGN KEY(`articleId`) REFERENCES `article`(`id`),
-    FOREIGN KEY(`userId`) REFERENCES `user`(`id`)
+    FOREIGN KEY(`articleId`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(`userId`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE `articleComment`
@@ -73,6 +73,6 @@ CREATE TABLE `articleComment`
     `isRemoved` BIT DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
-    FOREIGN KEY(`articleId`) REFERENCES `article`(`id`),
-    FOREIGN KEY(`authorId`) REFERENCES `user`(`id`)
+    FOREIGN KEY(`articleId`) REFERENCES `article`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(`authorId`) REFERENCES `user`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 );

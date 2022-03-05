@@ -1,8 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Removable } from './shared/removable.entity'
 
 @Entity()
-export class ArticleCategory {
-  @PrimaryGeneratedColumn()
+export class ArticleCategory extends Removable {
+  @PrimaryGeneratedColumn('increment', { type: 'tinyint' })
   id: number
 
   @Column({ type: 'varchar', length: 20 })
@@ -11,15 +12,6 @@ export class ArticleCategory {
   @Column({ type: 'varchar', length: 20 })
   icon: string
 
-  @Column({ type: 'smallint' })
+  @Column({ type: 'tinyint' })
   index: number
-
-  @Column({ type: 'timestamp', default: '(UTC_TIMESTAMP)' })
-  createdAt: Date
-
-  @Column({ type: 'timestamp' })
-  removedAt?: Date
-
-  @Column({ type: 'bit', default: 0 })
-  isRemoved: boolean
 }
