@@ -1,14 +1,20 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
-import { Article } from './article.entity'
-import { Creatable } from './shared/creatable.entity'
-import { User } from './user.entity'
+import { Article } from '../article/article.entity'
+import { Creatable } from '../base-entities/creatable.entity'
+import { User } from '../user/user.entity'
 
 @Entity({ name: 'article_like' })
 export class ArticleLike extends Creatable {
-  @PrimaryColumn({ type: 'int', name: 'article_id' })
+  @PrimaryColumn({
+    name: 'article_id',
+    type: 'int',
+  })
   articleId: number
 
-  @PrimaryColumn({ type: 'int', name: 'user_id' })
+  @PrimaryColumn({
+    name: 'user_id',
+    type: 'int',
+  })
   userId: number
 
   // relations

@@ -6,34 +6,53 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { ArticleCategory } from './article-category.entity'
-import { ArticleComment } from './article-comment.entity'
-import { ArticleLike } from './article-like.entity'
-import { Updatable } from './shared/updatable.entity'
-import { UserBrowseHistory } from './user-browse-history.entity'
-import { User } from './user.entity'
+import { ArticleCategory } from '../article-category/article-category.entity'
+import { ArticleComment } from '../article-comment/article-comment.entity'
+import { ArticleLike } from '../article-like/article-like.entity'
+import { Updatable } from '../base-entities/updatable.entity'
+import { UserBrowseHistory } from '../user-browse-history/user-browse-history.entity'
+import { User } from '../user/user.entity'
 
 @Entity({ name: 'article' })
 export class Article extends Updatable {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'tinyint', name: 'category_id', nullable: true })
+  @Column({
+    name: 'category_id',
+    type: 'tinyint',
+    nullable: true,
+  })
   categoryId?: number
 
-  @Column({ type: 'varchar', name: 'cover_image_url', length: 2000 })
+  @Column({
+    name: 'cover_image_url',
+    type: 'varchar',
+    length: 2000,
+  })
   coverImageUrl: string
 
-  @Column({ type: 'nvarchar', length: 100 })
+  @Column({
+    type: 'nvarchar',
+    length: 100,
+  })
   title: string
 
-  @Column({ type: 'text' })
+  @Column({
+    type: 'text',
+  })
   body: string
 
-  @Column({ type: 'int', default: 0 })
+  @Column({
+    type: 'int',
+    default: () => 0,
+  })
   views: number
 
-  @Column({ type: 'int', name: 'author_id' })
+  @Column({
+    name: 'author_id',
+    type: 'int',
+  })
   authorId: number
 
   // relations

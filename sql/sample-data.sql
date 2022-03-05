@@ -16,7 +16,7 @@ INSERT INTO `user`
 VALUES
     ('user2', '$2a$10$nBjgHeAa4HWAzgoqL8EWN.1ZatbQIcsvyZQIiz5cX/sVNiVakPhU2', NULL, NULL);
 
--- articleCategories
+-- article_categories
 INSERT INTO `article_category`
     (`code`, `icon`, `index`)
 VALUES
@@ -50,7 +50,7 @@ VALUES
 INSERT INTO `article_category`
     (`code`, `icon`, `index`)
 VALUES
-    ('shit', '💩', 7);
+    ('poo', '💩', 7);
 
 -- articles
 INSERT INTO `article`

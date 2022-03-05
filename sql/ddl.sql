@@ -6,11 +6,11 @@ CREATE TABLE `user`
     `username` VARCHAR(50) NOT NULL,
     `password` CHAR(60) NOT NULL,
     `name` NVARCHAR(50),
-    `avatar` VARCHAR(2000),
+    `avatar_url` VARCHAR(2000),
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `last_modified_at` TIMESTAMP,
     `removed_at` TIMESTAMP,
-    `is_removed` BIT DEFAULT 0 NOT NULL,
+    `is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
     UNIQUE(`username`)
@@ -24,7 +24,7 @@ CREATE TABLE `article_category`
 	`index` TINYINT NOT NULL,
 	`created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 	`removed_at`TIMESTAMP,
-	`is_removed` BIT DEFAULT 0 NOT NULL,
+	`is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 	
 	PRIMARY KEY(`id`),
 	UNIQUE(`code`),
@@ -44,7 +44,7 @@ CREATE TABLE `article`
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `last_modified_at` TIMESTAMP,
     `removed_at` TIMESTAMP,
-    `is_removed` BIT DEFAULT 0 NOT NULL,
+    `is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
     FOREIGN KEY(`category_id`) REFERENCES `article_category`(`id`) ON DELETE SET NULL,
@@ -70,7 +70,7 @@ CREATE TABLE `article_comment`
     `body` NVARCHAR(500) NOT NULL,
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `removed_at` TIMESTAMP,
-    `is_removed` BIT DEFAULT 0 NOT NULL,
+    `is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
     FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE,

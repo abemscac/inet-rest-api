@@ -5,22 +5,31 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { Article } from './article.entity'
-import { Removable } from './shared/removable.entity'
-import { User } from './user.entity'
+import { Article } from '../article/article.entity'
+import { Removable } from '../base-entities/removable.entity'
+import { User } from '../user/user.entity'
 
 @Entity({ name: 'article_comment' })
 export class ArticleComment extends Removable {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'int', name: 'article_id' })
+  @Column({
+    name: 'article_id',
+    type: 'int',
+  })
   articleId: number
 
-  @Column({ type: 'int', name: 'author_id' })
+  @Column({
+    name: 'author_id',
+    type: 'int',
+  })
   authorId: number
 
-  @Column({ type: 'nvarchar', length: 500 })
+  @Column({
+    type: 'nvarchar',
+    length: 500,
+  })
   body: string
 
   // relations

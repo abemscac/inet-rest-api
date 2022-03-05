@@ -1,25 +1,40 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { ArticleComment } from './article-comment.entity'
-import { ArticleLike } from './article-like.entity'
-import { Article } from './article.entity'
-import { Updatable } from './shared/updatable.entity'
-import { UserBrowseHistory } from './user-browse-history.entity'
+import { ArticleComment } from '../article-comment/article-comment.entity'
+import { ArticleLike } from '../article-like/article-like.entity'
+import { Article } from '../article/article.entity'
+import { Updatable } from '../base-entities/updatable.entity'
+import { UserBrowseHistory } from '../user-browse-history/user-browse-history.entity'
 
 @Entity({ name: 'user' })
 export class User extends Updatable {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
   username: string
 
-  @Column({ type: 'char', length: 60 })
+  @Column({
+    type: 'char',
+    length: 60,
+  })
   password: string
 
-  @Column({ type: 'nvarchar', length: 50, nullable: true })
+  @Column({
+    type: 'nvarchar',
+    length: 50,
+    nullable: true,
+  })
   name?: string
 
-  @Column({ type: 'varchar', length: 2000, name: 'avatar_url', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 2000,
+    name: 'avatar_url',
+    nullable: true,
+  })
   avatarUrl?: string
 
   // relations

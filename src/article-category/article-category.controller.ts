@@ -8,7 +8,7 @@ export class ArticleCategoryController {
   ) {}
 
   @Get()
-  findAll(): string {
-    return this.articleCategoryService.getHello()
+  async findAll() {
+    return await this.articleCategoryService.findAll()
   }
 }
