@@ -6,7 +6,6 @@ import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { IArticleLikeService } from './i-article-like.service'
 import { ArticleLikeDeleteByQueryParams } from './params/article-like-delete-by-query.params'
 import { ArticleLikeFindByQueryParams } from './params/article-like-find-by-query.params'
-import { IArticleLikeViewModel } from './view-models/i-article-like.view-model'
 
 @Injectable()
 export class ArticleLikeService implements IArticleLikeService {
@@ -18,7 +17,7 @@ export class ArticleLikeService implements IArticleLikeService {
   findByQuery({
     articleId,
     userId,
-  }: ArticleLikeFindByQueryParams): Promise<IArticleLikeViewModel> {
+  }: ArticleLikeFindByQueryParams): Promise<ArticleLike> {
     return this.articleLikeRepository.findOne({
       where: {
         articleId: articleId,
@@ -31,7 +30,7 @@ export class ArticleLikeService implements IArticleLikeService {
   async create({
     articleId,
     userId,
-  }: ArticleLikeCreateForm): Promise<IArticleLikeViewModel> {
+  }: ArticleLikeCreateForm): Promise<ArticleLike> {
     const prevEntity = await this.findByQuery({ articleId, userId })
     if (prevEntity) {
       return prevEntity

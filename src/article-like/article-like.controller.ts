@@ -8,11 +8,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common'
+import { ArticleLike } from './article-like.entity'
 import { ArticleLikeService } from './article-like.service'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { ArticleLikeDeleteByQueryParams } from './params/article-like-delete-by-query.params'
 import { ArticleLikeFindByQueryParams } from './params/article-like-find-by-query.params'
-import { IArticleLikeViewModel } from './view-models/i-article-like.view-model'
 
 @Controller('article-likes')
 export class ArticleLikeController {
@@ -21,14 +21,12 @@ export class ArticleLikeController {
   @Get()
   async findByQuery(
     @Query() params: ArticleLikeFindByQueryParams,
-  ): Promise<IArticleLikeViewModel> {
+  ): Promise<ArticleLike> {
     return await this.articleLikeService.findByQuery(params)
   }
 
   @Post()
-  async create(
-    @Body() form: ArticleLikeCreateForm,
-  ): Promise<IArticleLikeViewModel> {
+  async create(@Body() form: ArticleLikeCreateForm): Promise<ArticleLike> {
     return await this.articleLikeService.create(form)
   }
 
