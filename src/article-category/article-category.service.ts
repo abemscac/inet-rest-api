@@ -7,7 +7,7 @@ import { ArticleCategory } from './article-category.entity'
 export class ArticleCategoryService {
   constructor(
     @InjectRepository(ArticleCategory)
-    private articleCategoryRepository: Repository<ArticleCategory>,
+    private readonly articleCategoryRepository: Repository<ArticleCategory>,
   ) {}
 
   findAll(): Promise<Array<ArticleCategory>> {
