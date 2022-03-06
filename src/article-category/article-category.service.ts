@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ArticleCategory } from './article-category.entity'
-import { ArticleCategoryServiceInterface } from './article-category.service.interface'
+import { IArticleCategoryService } from './i-article-category.service'
 
 @Injectable()
-export class ArticleCategoryService implements ArticleCategoryServiceInterface {
+export class ArticleCategoryService implements IArticleCategoryService {
   constructor(
     @InjectRepository(ArticleCategory)
     private readonly articleCategoryRepository: Repository<ArticleCategory>,

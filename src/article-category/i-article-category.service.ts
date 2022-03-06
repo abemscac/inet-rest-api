@@ -1,5 +1,5 @@
 import { ArticleCategory } from './article-category.entity'
 
-export interface ArticleCategoryServiceInterface {
+export interface IArticleCategoryService {
   findAll(): Promise<Array<ArticleCategory>>
 }

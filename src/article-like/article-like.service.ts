@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { NotFoundError } from 'rxjs'
-import { DeleteResult, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { ArticleLike } from './article-like.entity'
-import { ArticleLikeServiceInterface } from './article-like.service.interface'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
+import { IArticleLikeService } from './i-article-like.service'
 import { ArticleLikeDeleteByQueryParams } from './params/article-like-delete-by-query.params'
 import { ArticleLikeFindByQueryParams } from './params/article-like-find-by-query.params'
+import { IArticleLikeViewModel } from './view-models/i-article-like.view-model'
 
 @Injectable()
-export class ArticleLikeService implements ArticleLikeServiceInterface {
+export class ArticleLikeService implements IArticleLikeService {
   constructor(
     @InjectRepository(ArticleLike)
     private readonly articleLikeRepository: Repository<ArticleLike>,
@@ -18,7 +18,7 @@ export class ArticleLikeService implements ArticleLikeServiceInterface {
   findByQuery({
     articleId,
     userId,
-  }: ArticleLikeFindByQueryParams): Promise<ArticleLike> {
+  }: ArticleLikeFindByQueryParams): Promise<IArticleLikeViewModel> {
     return this.articleLikeRepository.findOne({
       where: {
         articleId: articleId,
@@ -31,7 +31,7 @@ export class ArticleLikeService implements ArticleLikeServiceInterface {
   async create({
     articleId,
     userId,
-  }: ArticleLikeCreateForm): Promise<ArticleLike> {
+  }: ArticleLikeCreateForm): Promise<IArticleLikeViewModel> {
     const prevEntity = await this.findByQuery({ articleId, userId })
     if (prevEntity) {
       return prevEntity
