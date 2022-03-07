@@ -3,4 +3,5 @@ export interface IUserViewModel {
   username: string
   name: string
   avatarUrl?: string
+  createdAt: Date
 }
