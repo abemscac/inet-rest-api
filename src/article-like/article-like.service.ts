@@ -14,11 +14,11 @@ export class ArticleLikeService implements IArticleLikeService {
     private readonly articleLikeRepository: Repository<ArticleLike>,
   ) {}
 
-  findByQuery({
+  findOneByQuery({
     articleId,
     userId,
   }: ArticleLikeFindByQueryParams): Promise<ArticleLike> {
-    return this.articleLikeRepository.findOne({
+    return this.articleLikeRepository.findOneOrFail({
       where: {
         articleId: articleId,
         userId: userId,
@@ -31,7 +31,10 @@ export class ArticleLikeService implements IArticleLikeService {
     articleId,
     userId,
   }: ArticleLikeCreateForm): Promise<ArticleLike> {
-    const prevEntity = await this.findByQuery({ articleId, userId })
+    const prevEntity = await this.articleLikeRepository.findOne({
+      articleId,
+      userId,
+    })
     if (prevEntity) {
       return prevEntity
     }
@@ -44,7 +47,9 @@ export class ArticleLikeService implements IArticleLikeService {
     return newEntity
   }
 
-  async deleteByQuery(params: ArticleLikeDeleteByQueryParams): Promise<void> {
+  async deleteOneByQuery(
+    params: ArticleLikeDeleteByQueryParams,
+  ): Promise<void> {
     const result = await this.articleLikeRepository.delete(params)
     if (!result.affected) {
       throw new NotFoundException()

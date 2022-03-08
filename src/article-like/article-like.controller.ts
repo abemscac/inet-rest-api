@@ -19,10 +19,10 @@ export class ArticleLikeController {
   constructor(private readonly articleLikeService: ArticleLikeService) {}
 
   @Get()
-  async findByQuery(
+  async findOneByQuery(
     @Query() params: ArticleLikeFindByQueryParams,
   ): Promise<ArticleLike> {
-    return await this.articleLikeService.findByQuery(params)
+    return await this.articleLikeService.findOneByQuery(params)
   }
 
   @Post()
@@ -32,9 +32,9 @@ export class ArticleLikeController {
 
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteByQuery(
+  async deleteOneByQuery(
     @Query() params: ArticleLikeDeleteByQueryParams,
   ): Promise<void> {
-    await this.articleLikeService.deleteByQuery(params)
+    await this.articleLikeService.deleteOneByQuery(params)
   }
 }

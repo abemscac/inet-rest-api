@@ -4,7 +4,7 @@ import { ArticleLikeDeleteByQueryParams } from './params/article-like-delete-by-
 import { ArticleLikeFindByQueryParams } from './params/article-like-find-by-query.params'
 
 export interface IArticleLikeService {
-  findByQuery(params: ArticleLikeFindByQueryParams): Promise<ArticleLike>
+  findOneByQuery(params: ArticleLikeFindByQueryParams): Promise<ArticleLike>
   create(form: ArticleLikeCreateForm): Promise<ArticleLike>
-  deleteByQuery(params: ArticleLikeDeleteByQueryParams): Promise<void>
+  deleteOneByQuery(params: ArticleLikeDeleteByQueryParams): Promise<void>
 }

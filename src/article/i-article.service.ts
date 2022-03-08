@@ -6,7 +6,7 @@ import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export interface IArticleService {
   findById(id: number): Promise<IArticleViewModel>
-  findMostPopularByQuery(
+  findMostPopularByQueryPagination(
     params: ArticleFindMostPopularByQueryParams,
   ): Promise<IPaginationViewModel<IArticleViewModel>>
   create(form: ArticleCreateForm): Promise<IArticleViewModel>

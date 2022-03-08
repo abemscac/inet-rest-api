@@ -4,7 +4,7 @@ import { ArticleCommentFindByQueryParams } from './params/article-comment-find-b
 import { IArticleCommentViewModel } from './view-models/i-article-comment.view-model'
 
 export interface IArticleCommentService {
-  findByQuery(
+  findByQueryPagination(
     params: ArticleCommentFindByQueryParams,
   ): Promise<IPaginationViewModel<IArticleCommentViewModel>>
   create(form: ArticleCommentCreateForm): Promise<IArticleCommentViewModel>
