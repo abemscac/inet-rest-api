@@ -1,7 +1,7 @@
 import { IsDecimal, IsNotEmpty } from 'class-validator'
-import { PaginationParams } from 'src/shared-params/pagination.params'
+import { CursorPagableParams } from 'src/shared-params/cursor-pagable.params'
 
-export class ArticleCommentFindByQueryParams extends PaginationParams {
+export class ArticleCommentFindByQueryParams extends CursorPagableParams {
   @IsNotEmpty()
   @IsDecimal()
   articleId: number

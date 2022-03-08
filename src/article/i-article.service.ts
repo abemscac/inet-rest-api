@@ -1,14 +1,14 @@
-import { IPaginationViewModel } from 'src/shared-view-models/i-pagination.view-model'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import { ArticleFindMostPopularByQueryParams } from './params/article-find-most-popular-by-query.params'
 import { IArticleViewModel } from './view-models/i-article.view-model'
+import { ICursorPagableViewModel } from 'src/shared-view-models/i-cursor-pagable.view-model'
 
 export interface IArticleService {
   findById(id: number): Promise<IArticleViewModel>
-  findMostPopularByQueryPagination(
+  findMostPopularByQuery(
     params: ArticleFindMostPopularByQueryParams,
-  ): Promise<IPaginationViewModel<IArticleViewModel>>
+  ): Promise<ICursorPagableViewModel<IArticleViewModel>>
   create(form: ArticleCreateForm): Promise<IArticleViewModel>
   updateById(id: number, form: ArticleUpdateForm): Promise<IArticleViewModel>
   removeById(id: number): Promise<void>
