@@ -1,7 +1,7 @@
 import { IsDateString } from 'class-validator'
-import { CursorPagableParams } from 'src/shared-params/cursor-pagable.params'
+import { PagableParams } from 'src/shared-params/pagable.params'
 
-export class ArticleFindMostPopularByQueryParams extends CursorPagableParams {
+export class ArticleFindMostPopularByQueryParams extends PagableParams {
   @IsDateString()
   from?: Date
 }
