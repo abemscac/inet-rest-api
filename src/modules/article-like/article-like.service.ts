@@ -4,8 +4,7 @@ import { Repository } from 'typeorm'
 import { ArticleLike } from './article-like.entity'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { IArticleLikeService } from './i-article-like.service'
-import { ArticleLikeDeleteByQueryParams } from './params/article-like-delete-by-query.params'
-import { ArticleLikeFindByQueryParams } from './params/article-like-find-by-query.params'
+import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'
 
 @Injectable()
 export class ArticleLikeService implements IArticleLikeService {
@@ -17,13 +16,12 @@ export class ArticleLikeService implements IArticleLikeService {
   findOneByQuery({
     articleId,
     userId,
-  }: ArticleLikeFindByQueryParams): Promise<ArticleLike> {
+  }: ArticleLikeFindOneByQueryParams): Promise<ArticleLike> {
     return this.articleLikeRepository.findOneOrFail({
       where: {
         articleId: articleId,
         userId: userId,
       },
-      select: ['articleId', 'userId', 'createdAt'],
     })
   }
 
@@ -48,7 +46,7 @@ export class ArticleLikeService implements IArticleLikeService {
   }
 
   async deleteOneByQuery(
-    params: ArticleLikeDeleteByQueryParams,
+    params: ArticleLikeFindOneByQueryParams,
   ): Promise<void> {
     const result = await this.articleLikeRepository.delete(params)
     if (!result.affected) {

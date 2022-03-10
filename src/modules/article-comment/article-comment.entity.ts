@@ -1,3 +1,4 @@
+import { Removable } from 'src/base-entities/removable.entity'
 import {
   Column,
   Entity,
@@ -6,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Article } from '../article/article.entity'
-import { Removable } from '../base-entities/removable.entity'
 import { User } from '../user/user.entity'
 
 @Entity({ name: 'article_comment' })

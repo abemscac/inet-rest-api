@@ -1,6 +1,6 @@
+import { Removable } from 'src/base-entities/removable.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Article } from '../article/article.entity'
-import { Removable } from '../base-entities/removable.entity'
 
 @Entity({ name: 'article_category' })
 export class ArticleCategory extends Removable {

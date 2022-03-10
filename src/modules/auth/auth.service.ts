@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
-import { UserService } from 'src/user/user.service'
+import { UserService } from '../user/user.service'
 import { AuthLoginForm } from './forms/auth.login.form'
 import { IAuthService } from './i-auth.service'
 import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'

@@ -3,10 +3,10 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { ArticleCategoryModule } from './article-category/article-category.module'
-import { ArticleLikeModule } from './article-like/article-like.module'
-import { AuthModule } from './auth/auth.module'
-import { UserModule } from './user/user.module'
+import { ArticleCategoryModule } from './modules/article-category/article-category.module'
+import { ArticleLikeModule } from './modules/article-like/article-like.module'
+import { AuthModule } from './modules/auth/auth.module'
+import { UserModule } from './modules/user/user.module'
 
 @Module({
   imports: [

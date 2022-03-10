@@ -1,3 +1,4 @@
+import { Creatable } from 'src/base-entities/creatable.entity'
 import {
   Column,
   Entity,
@@ -6,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Article } from '../article/article.entity'
-import { Creatable } from '../base-entities/creatable.entity'
 import { User } from '../user/user.entity'
 
 @Entity({ name: 'user_browse_history' })

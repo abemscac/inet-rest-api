@@ -1,8 +1,8 @@
+import { Updatable } from 'src/base-entities/updatable.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { ArticleComment } from '../article-comment/article-comment.entity'
 import { ArticleLike } from '../article-like/article-like.entity'
 import { Article } from '../article/article.entity'
-import { Updatable } from '../base-entities/updatable.entity'
 import { UserBrowseHistory } from '../user-browse-history/user-browse-history.entity'
 
 @Entity({ name: 'user' })

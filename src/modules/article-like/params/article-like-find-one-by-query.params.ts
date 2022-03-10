@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator'
 
-export class ArticleLikeFindByQueryParams {
+export class ArticleLikeFindOneByQueryParams {
   @IsNotEmpty()
   articleId: number
 
