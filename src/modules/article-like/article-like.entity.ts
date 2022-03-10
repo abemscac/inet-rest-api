@@ -1,6 +1,6 @@
+import { Creatable } from 'src/base-entities/creatable.entity'
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import { Article } from '../article/article.entity'
-import { Creatable } from '../base-entities/creatable.entity'
 import { User } from '../user/user.entity'
 
 @Entity({ name: 'article_like' })
