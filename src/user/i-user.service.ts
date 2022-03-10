@@ -1,9 +1,13 @@
-import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
 import { UserUpdatePasswordForm } from './forms/user-update-password.form'
 import { UserUpdateForm } from './forms/user-update.form'
+import { UserFindByUsernameOptions } from './options/user.find-by-username.options'
+import { User } from './user.entity'
 
 export interface IUserService {
-  findByUsername(username: string): Promise<IUserViewModel>
+  findByUsername(
+    username: string,
+    options?: UserFindByUsernameOptions,
+  ): Promise<User>
   updateById(id: number, form: UserUpdateForm): Promise<void>
   updatePasswordById(id: number, form: UserUpdatePasswordForm): Promise<void>
   removeById(id: number): Promise<void>
