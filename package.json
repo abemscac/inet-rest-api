@@ -1,8 +1,8 @@
 {
   "name": "inet-rest-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "INET RESTful API with NestJS, TypeORM, and MySQL",
+  "author": "abemscac",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
