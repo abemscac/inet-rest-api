@@ -11,11 +11,4 @@ export interface IUserService {
   updateById(id: number, form: UserUpdateForm): Promise<void>
   // updatePasswordById(id: number, form: UserUpdatePasswordForm): Promise<void>
   // removeById(id: number): Promise<void>
-
-  // utilities
-  _findById(id: number): Promise<User | undefined>
-  _updateRefreshTokenHashById(
-    id: number,
-    refreshTokenHash?: string,
-  ): Promise<void>
 }

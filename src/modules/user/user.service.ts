@@ -44,22 +44,10 @@ export class UserService implements IUserService {
   }
 
   async updateById(id: number, form: UserUpdateForm): Promise<void> {
-    this.passportPermitService.permit(id)
+    this.passportPermitService.permitOrFail(id)
     const user = await this.userRepository.findOneOrFail({ id })
     user.name = form.name
     user.avatarUrl = form.avatarUrl || null
     await this.userRepository.save(user)
-  }
-
-  // utilities
-  async _findById(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne({ id })
-  }
-
-  async _updateRefreshTokenHashById(
-    id: number,
-    refreshTokenHash?: string,
-  ): Promise<void> {
-    await this.userRepository.update({ id }, { refreshTokenHash })
   }
 }

@@ -15,7 +15,7 @@ export class PassportPermitService implements IPassportPermitService {
     return this.request.user as Readonly<IPassportPermitUser | undefined>
   }
 
-  permit(userId: number): void {
+  permitOrFail(userId: number): void {
     if (userId !== this.user?.id) {
       throw new ForbiddenException()
     }

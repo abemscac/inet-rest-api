@@ -1,8 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
+import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
-import { UserService } from '../user/user.service'
+import { User } from '../user/user.entity'
 import { AuthLoginForm } from './forms/auth.login.form'
 import { IAuthService } from './i-auth.service'
 import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
@@ -11,8 +13,9 @@ import { IAuthViewModel } from './view-models/i-auth.view-model'
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-    private readonly userService: UserService,
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
@@ -46,11 +49,16 @@ export class AuthService implements IAuthService {
     token?: string,
   ): Promise<void> {
     const value = !token ? undefined : await bcrypt.hash(token, 10)
-    await this.userService._updateRefreshTokenHashById(id, value)
+    await this.userRepository.update(
+      { id },
+      {
+        refreshTokenHash: value,
+      },
+    )
   }
 
   async login(form: AuthLoginForm): Promise<IAuthLoginViewModel> {
-    const user = await this.userService.findByUsername(form.username)
+    const user = await this.userRepository.findOne({ username: form.username })
     if (!user) {
       throw new UnauthorizedException()
     }
@@ -75,7 +83,7 @@ export class AuthService implements IAuthService {
 
   async refresh(): Promise<IAuthViewModel> {
     const { id, token } = this.passportPermitService.user || {}
-    const user = await this.userService._findById(id)
+    const user = await this.userRepository.findOne({ id })
     const tokenMatched = await bcrypt.compare(
       token ?? '',
       user.refreshTokenHash ?? '',

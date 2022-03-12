@@ -6,5 +6,5 @@ export interface IPassportPermitService {
    * of the endpoint uses any TokenStrategy.
    */
   get user(): Readonly<IPassportPermitUser | undefined>
-  permit(userId: number): void
+  permitOrFail(userId: number): void
 }
