@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Put,
+  UseGuards,
+} from '@nestjs/common'
 import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { UserUpdateForm } from './forms/user-update.form'
@@ -20,7 +28,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateById(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() form: UserUpdateForm,
   ): Promise<void> {
     return await this.userService.updateById(id, form)

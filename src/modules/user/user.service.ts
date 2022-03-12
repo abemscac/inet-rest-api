@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { PermittableService } from 'src/base-services/permittable.service'
+import { PassportUser } from 'src/injectables/passport-user.injectable'
 import { Repository } from 'typeorm'
 import { UserUpdateForm } from './forms/user-update.form'
 import { IUserService } from './i-user.service'
@@ -7,11 +9,14 @@ import { UserFindByUsernameOptions } from './options/user.find-by-username.optio
 import { User } from './user.entity'
 
 @Injectable()
-export class UserService implements IUserService {
+export class UserService extends PermittableService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+    readonly passportUser: PassportUser,
+  ) {
+    super(passportUser)
+  }
 
   async findByUsername(
     username: string,
@@ -42,6 +47,7 @@ export class UserService implements IUserService {
   }
 
   async updateById(id: number, form: UserUpdateForm): Promise<void> {
+    this.permit(id)
     const user = await this.userRepository.findOneOrFail({ id })
     user.name = form.name
     user.avatarUrl = form.avatarUrl || null
