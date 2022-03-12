@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { PermittableService } from 'src/base-services/permittable.service'
-import { PassportUser } from 'src/injectables/passport-user.injectable'
 import { Repository } from 'typeorm'
+import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserUpdateForm } from './forms/user-update.form'
 import { IUserService } from './i-user.service'
 import { UserFindByUsernameOptions } from './options/user.find-by-username.options'
 import { User } from './user.entity'
 
 @Injectable()
-export class UserService extends PermittableService implements IUserService {
+export class UserService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    readonly passportUser: PassportUser,
-  ) {
-    super(passportUser)
-  }
+    private readonly passportPermitService: PassportPermitService,
+  ) {}
 
   async findByUsername(
     username: string,
@@ -47,10 +44,22 @@ export class UserService extends PermittableService implements IUserService {
   }
 
   async updateById(id: number, form: UserUpdateForm): Promise<void> {
-    this.permit(id)
+    this.passportPermitService.permit(id)
     const user = await this.userRepository.findOneOrFail({ id })
     user.name = form.name
     user.avatarUrl = form.avatarUrl || null
     await this.userRepository.save(user)
+  }
+
+  // utilities
+  async _findById(id: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ id })
+  }
+
+  async _updateRefreshTokenHashById(
+    id: number,
+    refreshTokenHash?: string,
+  ): Promise<void> {
+    await this.userRepository.update({ id }, { refreshTokenHash })
   }
 }

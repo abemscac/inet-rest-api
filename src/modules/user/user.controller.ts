@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { UserUpdateForm } from './forms/user-update.form'
 import { UserService } from './user.service'
 
@@ -25,7 +25,7 @@ export class UserController {
     })
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AccessTokenAuthGuard)
   @Put(':id')
   async updateById(
     @Param('id', ParseIntPipe) id: number,

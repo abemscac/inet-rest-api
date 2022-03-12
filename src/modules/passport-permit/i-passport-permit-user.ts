@@ -1,4 +1,4 @@
 export interface IPassportPermitUser {
-  id?: number
-  username?: string
+  id: number
+  token: string
 }

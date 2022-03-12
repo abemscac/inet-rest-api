@@ -1,14 +1,18 @@
-import { ForbiddenException, Injectable } from '@nestjs/common'
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common'
+import { REQUEST } from '@nestjs/core'
+import { Request } from 'express'
 import { IPassportPermitUser } from './i-passport-permit-user'
 import { IPassportPermitService } from './i-passport-permit.service'
-import { PassportPermitUser } from './passport-permit-user'
 
 @Injectable()
 export class PassportPermitService implements IPassportPermitService {
-  constructor(private readonly passportPermitUser: PassportPermitUser) {}
+  constructor(
+    @Inject(REQUEST)
+    private readonly request: Request,
+  ) {}
 
-  get user(): Readonly<IPassportPermitUser> {
-    return this.passportPermitUser
+  get user(): Readonly<IPassportPermitUser | undefined> {
+    return this.request.user as Readonly<IPassportPermitUser | undefined>
   }
 
   permit(userId: number): void {
