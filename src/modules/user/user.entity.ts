@@ -13,6 +13,7 @@ export class User extends Updatable {
   @Column({
     type: 'varchar',
     length: 50,
+    unique: true,
   })
   username: string
 
@@ -36,6 +37,14 @@ export class User extends Updatable {
     nullable: true,
   })
   avatarUrl?: string
+
+  @Column({
+    type: 'char',
+    length: 60,
+    name: 'refresh_token_hash',
+    nullable: true,
+  })
+  refreshTokenHash?: string
 
   // relations
   @OneToMany(() => Article, (article) => article.author)

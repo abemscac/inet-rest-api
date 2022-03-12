@@ -7,6 +7,7 @@ CREATE TABLE `user`
     `password` CHAR(60) NOT NULL,
     `name` NVARCHAR(50),
     `avatar_url` VARCHAR(2000),
+    `refresh_token_hash` CHAR(60),
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `last_modified_at` TIMESTAMP,
     `removed_at` TIMESTAMP,
