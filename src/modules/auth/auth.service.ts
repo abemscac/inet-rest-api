@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
+import { BaseService } from 'src/base-service/base.service'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { User } from '../user/user.entity'
@@ -11,13 +12,15 @@ import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
 import { IAuthViewModel } from './view-models/i-auth.view-model'
 
 @Injectable()
-export class AuthService implements IAuthService {
+export class AuthService extends BaseService implements IAuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly passportPermitService: PassportPermitService,
-  ) {}
+  ) {
+    super()
+  }
 
   private async createTokens(userId: number): Promise<IAuthViewModel> {
     const accessToken = await this.jwtService.signAsync(

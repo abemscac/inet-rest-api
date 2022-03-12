@@ -1,9 +1,10 @@
+import { IBaseService } from 'src/base-service/i-base.service'
 import { UserUpdatePasswordForm } from './forms/user-update-password.form'
 import { UserUpdateForm } from './forms/user-update.form'
 import { UserFindByUsernameOptions } from './options/user.find-by-username.options'
 import { User } from './user.entity'
 
-export interface IUserService {
+export interface IUserService extends IBaseService {
   findByUsername(
     username: string,
     options?: UserFindByUsernameOptions,
