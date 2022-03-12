@@ -5,11 +5,11 @@ import { ArticleFindMostPopularByQueryParams } from './params/article-find-most-
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export interface IArticleService {
-  findById(id: number): Promise<IArticleViewModel>
-  findMostPopularByQuery(
-    params: ArticleFindMostPopularByQueryParams,
-  ): Promise<IPagableViewModel<IArticleViewModel>>
-  create(form: ArticleCreateForm): Promise<IArticleViewModel>
-  updateById(id: number, form: ArticleUpdateForm): Promise<IArticleViewModel>
-  removeById(id: number): Promise<void>
+  // findById(id: number): Promise<IArticleViewModel>
+  // findMostPopularByQuery(
+  //   params: ArticleFindMostPopularByQueryParams,
+  // ): Promise<IPagableViewModel<IArticleViewModel>>
+  // create(form: ArticleCreateForm): Promise<IArticleViewModel>
+  // updateById(id: number, form: ArticleUpdateForm): Promise<IArticleViewModel>
+  // removeById(id: number): Promise<void>
 }

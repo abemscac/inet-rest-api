@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { IArticleLikeService } from './i-article-like.service'
@@ -11,24 +12,22 @@ export class ArticleLikeService implements IArticleLikeService {
   constructor(
     @InjectRepository(ArticleLike)
     private readonly articleLikeRepository: Repository<ArticleLike>,
+    private readonly passportPermitService: PassportPermitService,
   ) {}
 
   findOneByQuery({
     articleId,
-    userId,
   }: ArticleLikeFindOneByQueryParams): Promise<ArticleLike> {
     return this.articleLikeRepository.findOneOrFail({
       where: {
-        articleId: articleId,
-        userId: userId,
+        articleId,
+        userId: this.passportPermitService.user.id,
       },
     })
   }
 
-  async create({
-    articleId,
-    userId,
-  }: ArticleLikeCreateForm): Promise<ArticleLike> {
+  async create({ articleId }: ArticleLikeCreateForm): Promise<ArticleLike> {
+    const userId = this.passportPermitService.user.id
     const prevEntity = await this.articleLikeRepository.findOne({
       articleId,
       userId,
@@ -45,10 +44,13 @@ export class ArticleLikeService implements IArticleLikeService {
     return newEntity
   }
 
-  async deleteOneByQuery(
-    params: ArticleLikeFindOneByQueryParams,
-  ): Promise<void> {
-    const result = await this.articleLikeRepository.delete(params)
+  async deleteOneByQuery({
+    articleId,
+  }: ArticleLikeFindOneByQueryParams): Promise<void> {
+    const result = await this.articleLikeRepository.delete({
+      articleId,
+      userId: this.passportPermitService.user.id,
+    })
     if (!result.affected) {
       throw new NotFoundException()
     }

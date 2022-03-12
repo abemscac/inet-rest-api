@@ -7,12 +7,15 @@ import {
   HttpStatus,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common'
+import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleLike } from './article-like.entity'
 import { ArticleLikeService } from './article-like.service'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'
 
+@UseGuards(AccessTokenAuthGuard)
 @Controller('article-likes')
 export class ArticleLikeController {
   constructor(private readonly articleLikeService: ArticleLikeService) {}
