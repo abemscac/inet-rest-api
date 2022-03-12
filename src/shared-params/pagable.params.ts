@@ -1,4 +1,4 @@
-import { IsDecimal, IsEnum, Min } from 'class-validator'
+import { IsEnum, IsInt, Min } from 'class-validator'
 
 export enum Pagination {
   default = 'default',
@@ -9,18 +9,18 @@ export class PagableParams {
   @IsEnum(Pagination)
   pagination?: Pagination
 
-  @IsDecimal()
+  @IsInt()
   @Min(0)
   cursor?: number
 
   /**
    * 0-indexed page number
    */
-  @IsDecimal()
+  @IsInt()
   @Min(0)
   page?: number
 
-  @IsDecimal()
+  @IsInt()
   @Min(1)
   limit?: number
 }

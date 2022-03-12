@@ -1,8 +1,8 @@
-import { IsDecimal, IsNotEmpty } from 'class-validator'
+import { IsInt, IsNotEmpty } from 'class-validator'
 
 export class ArticleCreateForm {
   @IsNotEmpty()
-  @IsDecimal()
+  @IsInt()
   categoryId: number
 
   @IsNotEmpty()
@@ -13,8 +13,4 @@ export class ArticleCreateForm {
 
   @IsNotEmpty()
   body: string
-
-  @IsNotEmpty()
-  @IsDecimal()
-  authorId: number
 }

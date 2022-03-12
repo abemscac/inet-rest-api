@@ -1,12 +1,8 @@
-import { IsDecimal, IsNotEmpty } from 'class-validator'
+import { IsInt, IsNotEmpty } from 'class-validator'
 
 export class ArticleCommentCreateForm {
   @IsNotEmpty()
-  @IsDecimal()
-  authorId: number
-
-  @IsNotEmpty()
-  @IsDecimal()
+  @IsInt()
   articleId: number
 
   @IsNotEmpty()

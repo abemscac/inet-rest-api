@@ -1,8 +1,8 @@
-import { IsDecimal, IsNotEmpty } from 'class-validator'
+import { IsInt, IsNotEmpty } from 'class-validator'
 
 export class ArticleUpdateForm {
   @IsNotEmpty()
-  @IsDecimal()
+  @IsInt()
   categoryId: number
 
   @IsNotEmpty()
