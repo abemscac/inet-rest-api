@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer'
-import { IsEnum, IsInt, Min } from 'class-validator'
+import { IsEnum, IsInt, IsOptional, Min } from 'class-validator'
 
 export enum Pagination {
   default = 'default',
@@ -8,11 +8,13 @@ export enum Pagination {
 
 export class PagableParams {
   @IsEnum(Pagination)
+  @IsOptional()
   pagination?: Pagination
 
   @IsInt()
   @Type(() => Number)
   @Min(0)
+  @IsOptional()
   cursor?: number
 
   /**
@@ -21,10 +23,12 @@ export class PagableParams {
   @IsInt()
   @Type(() => Number)
   @Min(0)
+  @IsOptional()
   page?: number
 
   @IsInt()
   @Type(() => Number)
   @Min(1)
+  @IsOptional()
   limit?: number
 }
