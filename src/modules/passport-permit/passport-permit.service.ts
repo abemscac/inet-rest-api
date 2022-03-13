@@ -1,7 +1,7 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common'
 import { REQUEST } from '@nestjs/core'
 import { Request } from 'express'
-import { BaseService } from 'src/base-service/base.service'
+import { BaseService } from 'src/base-services/base.service'
 import { IPassportPermitUser } from './i-passport-permit-user'
 import { IPassportPermitService } from './i-passport-permit.service'
 

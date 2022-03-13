@@ -12,4 +12,16 @@ export class BaseService implements IBaseService {
       throw new NotFoundException()
     }
   }
+
+  async projectTo<TResult, TEntity>(
+    promise: () => Promise<TEntity | TEntity[]>,
+    mapper: (value: TEntity) => TResult,
+  ): Promise<TResult | TResult[]> {
+    const value = await promise()
+    if (Array.isArray(value)) {
+      return value.map(mapper)
+    } else {
+      return mapper(value)
+    }
+  }
 }

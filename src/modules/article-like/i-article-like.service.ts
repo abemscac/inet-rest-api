@@ -1,4 +1,4 @@
-import { IBaseService } from 'src/base-service/i-base.service'
+import { IBaseService } from 'src/base-services/i-base.service'
 import { ArticleLike } from './article-like.entity'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'

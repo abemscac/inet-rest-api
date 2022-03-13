@@ -1,4 +1,4 @@
-import { IBaseService } from 'src/base-service/i-base.service'
+import { IBaseService } from 'src/base-services/i-base.service'
 import { UserUpdatePasswordForm } from './forms/user-update-password.form'
 import { UserUpdateForm } from './forms/user-update.form'
 import { UserFindByUsernameOptions } from './options/user.find-by-username.options'

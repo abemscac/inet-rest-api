@@ -1,4 +1,4 @@
-import { IBaseService } from 'src/base-service/i-base.service'
+import { IBaseService } from 'src/base-services/i-base.service'
 import { IPassportPermitUser } from './i-passport-permit-user'
 
 export interface IPassportPermitService extends IBaseService {

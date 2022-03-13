@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService } from 'src/base-service/base.service'
+import { BaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
@@ -46,7 +46,7 @@ export class ArticleLikeService
       articleId,
       userId,
     })
-    await this.articleLikeRepository.save(newEntity)
+    await this.articleLikeRepository.insert(newEntity)
     return newEntity
   }
 
