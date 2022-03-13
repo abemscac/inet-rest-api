@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService } from 'src/base-services/base.service'
+import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { ArticleCategory } from './article-category.entity'
-import { IArticleCategoryService } from './i-article-category.service'
+
+export interface IArticleCategoryService extends IBaseService {
+  findAll(): Promise<Array<ArticleCategory>>
+}
 
 @Injectable()
 export class ArticleCategoryService

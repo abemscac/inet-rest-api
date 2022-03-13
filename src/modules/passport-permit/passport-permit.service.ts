@@ -1,9 +1,17 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common'
 import { REQUEST } from '@nestjs/core'
 import { Request } from 'express'
-import { BaseService } from 'src/base-services/base.service'
+import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { IPassportPermitUser } from './i-passport-permit-user'
-import { IPassportPermitService } from './i-passport-permit.service'
+
+export interface IPassportPermitService extends IBaseService {
+  /**
+   * user and all of its' properties are guaranteed to exist if the AuthGuard
+   * of the endpoint uses any TokenStrategy.
+   */
+  get user(): Readonly<IPassportPermitUser | undefined>
+  permitOrFail(userId: number): void
+}
 
 @Injectable()
 export class PassportPermitService

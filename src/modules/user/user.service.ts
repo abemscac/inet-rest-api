@@ -1,12 +1,21 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService } from 'src/base-services/base.service'
+import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserUpdateForm } from './forms/user-update.form'
-import { IUserService } from './i-user.service'
 import { UserFindByUsernameOptions } from './options/user.find-by-username.options'
 import { User } from './user.entity'
+
+export interface IUserService extends IBaseService {
+  findByUsername(
+    username: string,
+    options?: UserFindByUsernameOptions,
+  ): Promise<User>
+  updateById(id: number, form: UserUpdateForm): Promise<void>
+  // updatePasswordById(id: number, form: UserUpdatePasswordForm): Promise<void>
+  // removeById(id: number): Promise<void>
+}
 
 @Injectable()
 export class UserService extends BaseService implements IUserService {

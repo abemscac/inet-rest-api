@@ -2,14 +2,19 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
-import { BaseService } from 'src/base-services/base.service'
+import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { User } from '../user/user.entity'
 import { AuthLoginForm } from './forms/auth.login.form'
-import { IAuthService } from './i-auth.service'
 import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
 import { IAuthViewModel } from './view-models/i-auth.view-model'
+
+export interface IAuthService extends IBaseService {
+  login(form: AuthLoginForm): Promise<IAuthLoginViewModel>
+  refresh(): Promise<IAuthViewModel>
+  logout(): Promise<void>
+}
 
 @Injectable()
 export class AuthService extends BaseService implements IAuthService {
