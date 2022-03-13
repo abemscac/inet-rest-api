@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ArticleCategoryModule } from './modules/article-category/article-category.module'
+import { ArticleCommentModule } from './modules/article-comment/article-comment.module'
 import { ArticleLikeModule } from './modules/article-like/article-like.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { UserModule } from './modules/user/user.module'
@@ -13,6 +14,7 @@ import { UserModule } from './modules/user/user.module'
     TypeOrmModule.forRoot(),
     ConfigModule.forRoot(),
     ArticleCategoryModule,
+    ArticleCommentModule,
     ArticleLikeModule,
     AuthModule,
     UserModule,
