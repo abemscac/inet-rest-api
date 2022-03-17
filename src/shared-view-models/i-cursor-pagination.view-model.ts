@@ -6,5 +6,4 @@ export interface ICursorPaginationViewModel<T> {
 interface ICursorPaginationMetadata {
   cursor: number
   limit: number
-  end: boolean
 }

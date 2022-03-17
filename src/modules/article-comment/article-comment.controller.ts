@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
+import { PagableParamsValidationPipe } from 'src/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleCommentService } from './article-comment.service'
@@ -22,7 +23,7 @@ export class ArticleCommentController {
 
   @Get()
   findByQuery(
-    @Query() params: ArticleCommentFindByQueryParams,
+    @Query(PagableParamsValidationPipe) params: ArticleCommentFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
     return this.articleCommentService.findByQuery(params)
   }

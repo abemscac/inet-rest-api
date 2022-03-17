@@ -13,7 +13,7 @@ async function bootstrap() {
     new FastifyAdapter({ logger: true }),
   )
   app
-    .useGlobalPipes(new ValidationPipe())
+    .useGlobalPipes(new ValidationPipe({ transform: true }))
     .useGlobalFilters(new EntityNotFoundErrorFilter())
     .setGlobalPrefix('api')
   await app.listen(33823, '0.0.0.0')

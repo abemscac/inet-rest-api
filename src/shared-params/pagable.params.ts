@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer'
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator'
+import { IsBoolean, IsEnum, IsInt, IsOptional, Min } from 'class-validator'
+import { BooleanTransform } from 'src/transforms/boolean.transform'
 
 export enum Pagination {
   default = 'default',
@@ -31,4 +32,12 @@ export class PagableParams {
   @Min(1)
   @IsOptional()
   limit?: number
+
+  /**
+   * Used to indicate that API should return all records at once.
+   */
+  @IsBoolean()
+  @BooleanTransform()
+  @IsOptional()
+  FLAG_UNLIMITED?: boolean
 }

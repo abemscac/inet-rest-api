@@ -41,7 +41,7 @@ export class UserService extends BaseService implements IUserService {
     }
 
     // We can't write like this.
-    // It'll say "Cannot read properties of undefined (reading 'manager') at Repository.findOne."
+    // It'll say 'Cannot read properties of undefined (reading 'manager') at Repository.findOne.'
     // const find = options?.findOneOrFail
     //   ? this.userRepository.findOneOrFail
     //   : this.userRepository.findOne

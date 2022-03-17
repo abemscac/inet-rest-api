@@ -1,26 +1,43 @@
-import { SelectQueryBuilder } from 'typeorm'
+import { BadRequestException } from '@nestjs/common'
+import { PagableParams, Pagination } from 'src/shared-params/pagable.params'
+import { ICursorPaginationViewModel } from 'src/shared-view-models/i-cursor-pagination.view-model'
+import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from 'src/shared-view-models/i-pagination.view-model'
+import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
 
-export type IBaseProjectorMapper<TEntity, TResult> = (
-  entity: TEntity,
+export type IBaseProjectorMapper<TProjection, TResult> = (
+  projection: TProjection,
+  index: number,
+  source: Array<TProjection>,
 ) => TResult
 
-export interface IBaseProjector<TEntity, TResult> {
+export type IBaseProjectorQueryCallback<TEntity> = (
+  queryBuilder: SelectQueryBuilder<TEntity>,
+) => void
+
+export interface IBaseProjector<TEntity, TResult, TProjection = TEntity> {
   get sql(): string
-  useAction(
-    callback: (
-      queryBuilder: SelectQueryBuilder<TEntity>,
-    ) => Promise<TEntity | Array<TEntity>>,
-  ): this
-  useMapper(mapper: IBaseProjectorMapper<TEntity, TResult>): this
+  where(where: string, parameters: ObjectLiteral): this
+  orderBy(sort: string, order?: 'ASC' | 'DESC'): this
+  setMapper(mapper: IBaseProjectorMapper<TProjection, TResult>): this
   project(): Promise<TResult>
-  projectAll(): Promise<Array<TResult>>
+  projectMany(): Promise<Array<TResult>>
+  /**
+   * You shou validate the params by {@link src/shared-params/pagable.params.ts} first.
+   */
+  projectPagination(
+    params: PagableParams,
+    /**
+     * Used to set query 'where {alias}.id > :cursor' when using cursor pagination.
+     */
+    alias: string,
+  ): Promise<IPagableViewModel<TResult>>
 }
 
-export class BaseProjector<TEntity, TResult>
-  implements IBaseProjector<TEntity, TResult>
+export class BaseProjector<TEntity, TResult, TProjection = TEntity>
+  implements IBaseProjector<TEntity, TResult, TProjection>
 {
-  private action?: () => Promise<TEntity | Array<TEntity>>
-  private mapper?: IBaseProjectorMapper<TEntity, TResult>
+  private mapper?: IBaseProjectorMapper<TProjection, TResult>
 
   constructor(private readonly queryBuilder: SelectQueryBuilder<TEntity>) {}
 
@@ -28,39 +45,98 @@ export class BaseProjector<TEntity, TResult>
     return this.queryBuilder.getSql()
   }
 
-  useAction(
-    callback: (
-      queryBuilder: SelectQueryBuilder<TEntity>,
-    ) => Promise<TEntity | TEntity[]>,
-  ): this {
-    this.action = () => callback(this.queryBuilder)
+  where(where: string, parameters: ObjectLiteral): this {
+    this.queryBuilder.where(where, parameters)
     return this
   }
 
-  useMapper(mapper: (entity: TEntity) => TResult): this {
+  orderBy(sort: string, order?: 'ASC' | 'DESC'): this {
+    this.queryBuilder.orderBy(sort, order)
+    return this
+  }
+
+  setMapper(mapper: IBaseProjectorMapper<TProjection, TResult>): this {
     this.mapper = mapper
     return this
   }
 
   async project(): Promise<TResult> {
-    const value = await this.action()
-    if (Array.isArray(value)) {
-      throw new Error(
-        'The action returned an array, but project is used. Do you mean to use "projectAll()"?',
-      )
+    const projection = await this.queryBuilder.getRawOne()
+    return this.mapper(projection, 0, [projection])
+  }
+
+  async projectMany(): Promise<TResult[]> {
+    const projections = await this.queryBuilder.getRawMany()
+    return projections.map(this.mapper)
+  }
+
+  async projectPagination(
+    params: PagableParams,
+    alias: string,
+  ): Promise<IPagableViewModel<TResult>> {
+    const { pagination } = params
+    if (!pagination) {
+      this.setOffsetAndLimit(params)
+      return await this.projectMany()
+    } else if (pagination === Pagination.default) {
+      return await this.projectDefaultPagination(params)
+    } else if (pagination === Pagination.cursor) {
+      return await this.projectCursorPagination(params, alias)
     } else {
-      return this.mapper(value)
+      throw new BadRequestException(`Unknown pagination '${pagination}'.`)
     }
   }
 
-  async projectAll(): Promise<TResult[]> {
-    const values = await this.action()
-    if (Array.isArray(values)) {
-      return values.map(this.mapper)
-    } else {
-      throw new Error(
-        'The action returned an entity, but projectAll is used. Do you mean to use "project()"?',
+  private async projectDefaultPagination(
+    params: PagableParams,
+  ): Promise<IPaginationViewModel<TResult>> {
+    const { page, limit, FLAG_UNLIMITED } = params
+
+    const totalCount = await this.queryBuilder.getCount()
+    const totalPages = FLAG_UNLIMITED
+      ? Number(totalCount > 0)
+      : Math.ceil(totalCount / limit)
+
+    this.setOffsetAndLimit(params)
+    const data = (await this.queryBuilder.take(1).getRawMany()).map(this.mapper)
+
+    return {
+      metadata: {
+        page: FLAG_UNLIMITED ? 0 : page,
+        limit: FLAG_UNLIMITED ? undefined : limit,
+        totalCount,
+        totalPages,
+      },
+      data,
+    }
+  }
+
+  private async projectCursorPagination(
+    params: PagableParams,
+    alias: string,
+  ): Promise<ICursorPaginationViewModel<TResult>> {
+    if (!alias) {
+      throw new BadRequestException(
+        `Param 'alias' must be provided when using cursor pagination in projector.`,
       )
     }
+    const { limit, cursor } = params
+    this.queryBuilder.where(`${alias}.id > :cursor`, { cursor })
+    this.setOffsetAndLimit(params)
+
+    const data = (await this.queryBuilder.getRawMany()).map(this.mapper)
+    return {
+      metadata: {
+        cursor,
+        limit,
+      },
+      data,
+    }
+  }
+
+  private setOffsetAndLimit = (params: PagableParams): void => {
+    const { page, limit, FLAG_UNLIMITED } = params
+    const offset = FLAG_UNLIMITED ? 0 : page * limit
+    this.queryBuilder.offset(offset).limit(FLAG_UNLIMITED ? undefined : limit)
   }
 }
