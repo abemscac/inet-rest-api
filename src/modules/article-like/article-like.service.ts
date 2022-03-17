@@ -1,30 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'
 
-export interface IArticleLikeService extends IBaseService {
+export interface IArticleLikeService {
   findOneByQuery(params: ArticleLikeFindOneByQueryParams): Promise<ArticleLike>
   create(form: ArticleLikeCreateForm): Promise<ArticleLike>
   deleteOneByQuery(params: ArticleLikeFindOneByQueryParams): Promise<void>
 }
 
 @Injectable()
-export class ArticleLikeService
-  extends BaseService
-  implements IArticleLikeService
-{
+export class ArticleLikeService implements IArticleLikeService {
   constructor(
     @InjectRepository(ArticleLike)
     private readonly articleLikeRepository: Repository<ArticleLike>,
     private readonly passportPermitService: PassportPermitService,
-  ) {
-    super()
-  }
+  ) {}
 
   findOneByQuery({
     articleId,

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Repository } from 'typeorm'
@@ -12,7 +11,7 @@ import { ArticleCommentFindByQueryParams } from './params/article-comment-find-b
 import { ArticleCommentViewModelProjector } from './projectors/article-comment-view-model.projector'
 import { IArticleCommentViewModel } from './view-models/i-article-comment.view-model'
 
-export interface IArticleCommentService extends IBaseService {
+export interface IArticleCommentService {
   findByQuery(
     params: ArticleCommentFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>>
@@ -21,19 +20,14 @@ export interface IArticleCommentService extends IBaseService {
 }
 
 @Injectable()
-export class ArticleCommentService
-  extends BaseService
-  implements IArticleCommentService
-{
+export class ArticleCommentService implements IArticleCommentService {
   constructor(
     @InjectRepository(ArticleComment)
     private readonly articleCommentRepository: Repository<ArticleComment>,
     @InjectRepository(Article)
     private readonly articleRepository: Repository<Article>,
     private readonly passportPermitService: PassportPermitService,
-  ) {
-    super()
-  }
+  ) {}
 
   async findByQuery(
     params: ArticleCommentFindByQueryParams,

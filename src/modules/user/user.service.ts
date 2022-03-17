@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserUpdateForm } from './forms/user-update.form'
 import { UserFindByUsernameOptions } from './options/user.find-by-username.options'
 import { User } from './user.entity'
 
-export interface IUserService extends IBaseService {
+export interface IUserService {
   findByUsername(
     username: string,
     options?: UserFindByUsernameOptions,
@@ -18,14 +17,12 @@ export interface IUserService extends IBaseService {
 }
 
 @Injectable()
-export class UserService extends BaseService implements IUserService {
+export class UserService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly passportPermitService: PassportPermitService,
-  ) {
-    super()
-  }
+  ) {}
 
   async findByUsername(
     username: string,

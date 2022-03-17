@@ -1,5 +1,4 @@
 import { Creatable } from 'src/base-entities/creatable.entity'
-import { IBaseService } from 'src/base-services/base.service'
 import { PagableParams } from 'src/shared-params/pagable.params'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import {
@@ -13,7 +12,7 @@ import { Article } from '../article/article.entity'
 import { User } from '../user/user.entity'
 import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
 
-export interface IUserBrowseHistoryService extends IBaseService {
+export interface IUserBrowseHistoryService {
   findByQuery(
     params: PagableParams,
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>>

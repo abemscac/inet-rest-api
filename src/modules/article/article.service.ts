@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BaseService, IBaseService } from 'src/base-services/base.service'
 import { Repository } from 'typeorm'
 import { Article } from './article.entity'
 
-export interface IArticleService extends IBaseService {
+export interface IArticleService {
   // findById(id: number): Promise<IArticleViewModel>
   // findMostPopularByQuery(
   //   params: ArticleFindMostPopularByQueryParams,
@@ -15,11 +14,9 @@ export interface IArticleService extends IBaseService {
 }
 
 @Injectable()
-export class ArticleService extends BaseService implements IArticleService {
+export class ArticleService implements IArticleService {
   constructor(
     @InjectRepository(Article)
     private readonly articleRepository: Repository<Article>,
-  ) {
-    super()
-  }
+  ) {}
 }
