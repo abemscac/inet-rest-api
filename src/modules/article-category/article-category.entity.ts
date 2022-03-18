@@ -4,25 +4,22 @@ import { Article } from '../article/article.entity'
 
 @Entity({ name: 'article_category' })
 export class ArticleCategory extends Removable {
-  @PrimaryGeneratedColumn('increment', { type: 'tinyint' })
+  @PrimaryGeneratedColumn('increment', { type: 'smallint' })
   id: number
 
   @Column({
     type: 'varchar',
     length: 20,
+    unique: true,
   })
   code: string
 
   @Column({
     type: 'varchar',
-    length: 20,
+    length: 2000,
+    name: 'image_url',
   })
-  icon: string
-
-  @Column({
-    type: 'tinyint',
-  })
-  index: number
+  imageUrl: string
 
   // relations
   @OneToMany(() => Article, (article) => article.category)

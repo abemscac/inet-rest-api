@@ -20,10 +20,9 @@ export class Article extends Updatable {
 
   @Column({
     name: 'category_id',
-    type: 'tinyint',
-    nullable: true,
+    type: 'smallint',
   })
-  categoryId?: number
+  categoryId: number
 
   @Column({
     name: 'cover_image_url',
@@ -57,10 +56,10 @@ export class Article extends Updatable {
 
   // relations
   @ManyToOne(() => ArticleCategory, (category) => category.articles, {
-    onDelete: 'SET NULL',
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'category_id' })
-  category?: ArticleCategory
+  category: ArticleCategory
 
   @ManyToOne(() => User, (user) => user.articles, {
     onDelete: 'CASCADE',

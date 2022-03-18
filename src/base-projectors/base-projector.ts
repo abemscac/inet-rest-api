@@ -19,7 +19,6 @@ export interface IBaseProjector<TEntity, TResult, TProjection = TEntity> {
   get sql(): string
   where(where: string, parameters: ObjectLiteral): this
   orderBy(sort: string, order?: 'ASC' | 'DESC'): this
-  setMapper(mapper: IBaseProjectorMapper<TProjection, TResult>): this
   project(): Promise<TResult>
   projectMany(): Promise<Array<TResult>>
   /**
@@ -55,7 +54,9 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
     return this
   }
 
-  setMapper(mapper: IBaseProjectorMapper<TProjection, TResult>): this {
+  protected setMapper(
+    mapper: IBaseProjectorMapper<TProjection, TResult>,
+  ): this {
     this.mapper = mapper
     return this
   }

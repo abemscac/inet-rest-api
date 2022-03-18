@@ -18,39 +18,29 @@ VALUES
 
 -- article_categories
 INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
+    (`code`, `image_url`)
 VALUES
-    ('animal', '🦒', 0);
+    ('chat', 'https://i.imgur.com/cnGUSeY.jpg');
 
 INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
+    (`code`, `image_url`)
 VALUES
-    ('happy', '😃', 1);
+    ('animal', 'https://i.imgur.com/JR2xyV6.jpg');
 
 INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
+    (`code`, `image_url`)
 VALUES
-    ('sad', '😢', 2);
+    ('food', 'https://i.imgur.com/VpthdjV.jpg');
 
 INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
+    (`code`, `image_url`)
 VALUES
-    ('food', '🍣', 3);
+    ('programming', 'https://i.imgur.com/xMqW5bp.jpg');
 
 INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
+    (`code`, `image_url`)
 VALUES
-    ('sports', '⚽', 4);
-
-INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
-VALUES
-    ('knowledge', '📘', 5);
-
-INSERT INTO `article_category`
-    (`code`, `icon`, `index`)
-VALUES
-    ('poo', '💩', 7);
+    ('sports', 'https://i.imgur.com/s4PDhtL.jpg');
 
 -- articles
 INSERT INTO `article`
