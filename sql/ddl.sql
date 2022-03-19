@@ -23,8 +23,6 @@ CREATE TABLE `article_category`
 	`code` VARCHAR(20) NOT NULL,
 	`image_url` VARCHAR(2000) NOT NULL,
 	`created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
-	`removed_at`TIMESTAMP,
-	`is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 	
 	PRIMARY KEY(`id`),
 	UNIQUE(`code`)
@@ -81,10 +79,9 @@ CREATE TABLE `user_browse_history`
     `user_id` INT NOT NULL,
     `article_id` INT NOT NULL,
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
-    `removed_at` TIMESTAMP,
-    `is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
+    UNIQUE(`user_id`, `article_id`),
     FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
     FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE
 );

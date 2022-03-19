@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm'
 import { Article } from '../article/article.entity'
 import { User } from '../user/user.entity'
@@ -21,6 +22,7 @@ export interface IUserBrowseHistoryService {
 }
 
 @Entity({ name: 'user_browse_history' })
+@Unique(['user_id', 'article_id'])
 export class UserBrowseHistory extends Creatable {
   @PrimaryGeneratedColumn()
   id: number

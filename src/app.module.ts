@@ -7,6 +7,7 @@ import { ArticleCategoryModule } from './modules/article-category/article-catego
 import { ArticleCommentModule } from './modules/article-comment/article-comment.module'
 import { ArticleLikeModule } from './modules/article-like/article-like.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { UserBrowseHistoryModule } from './modules/user-browse-history/user-browse-history.module'
 import { UserModule } from './modules/user/user.module'
 
 @Module({
@@ -18,6 +19,7 @@ import { UserModule } from './modules/user/user.module'
     ArticleLikeModule,
     AuthModule,
     UserModule,
+    UserBrowseHistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

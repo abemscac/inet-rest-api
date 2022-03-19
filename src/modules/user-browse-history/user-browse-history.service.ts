@@ -37,22 +37,46 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       .where('history.userId = :userId', {
         userId: this.passportPermitService.user.id,
       })
-      .orderBy('history.id', 'DESC')
+      .orderBy('history.createdAt', 'DESC')
       .projectPagination(params, 'history')
   }
 
   async create(
     form: UserBrowseHistoryCreateForm,
   ): Promise<IUserBrowseHistoryViewModel> {
-    const history = this.userBrowseHistoryRepository.create({
-      userId: this.passportPermitService.user.id,
-      articleId: form.articleId,
+    const now = new Date()
+    const userId = this.passportPermitService.user.id
+    const { articleId } = form
+    const prevHistory = await this.userBrowseHistoryRepository.findOne({
+      userId,
+      articleId,
     })
-    await this.userBrowseHistoryRepository.insert(history)
+    let historyId = 0
+    if (prevHistory) {
+      // update
+      prevHistory.createdAt = now
+      await this.userBrowseHistoryRepository.update(
+        {
+          id: prevHistory.id,
+        },
+        {
+          createdAt: now,
+        },
+      )
+      historyId = prevHistory.id
+    } else {
+      // create
+      const history = this.userBrowseHistoryRepository.create({
+        userId,
+        articleId,
+      })
+      await this.userBrowseHistoryRepository.insert(history)
+      historyId = history.id
+    }
     return new UserBrowseHistoryViewModelProjector(
       this.userBrowseHistoryRepository,
     )
-      .where('history.id = :historyId', { historyId: history.id })
+      .where('history.id = :historyId', { historyId })
       .project()
   }
 
