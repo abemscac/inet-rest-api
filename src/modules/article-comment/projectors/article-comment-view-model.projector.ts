@@ -20,11 +20,7 @@ interface IArticleCommentViewModelProjection {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IArticleCommentViewModelProjector
-  extends IBaseProjector<
-    ArticleComment,
-    IArticleCommentViewModel,
-    IArticleCommentViewModelProjection
-  > {}
+  extends IBaseProjector<IArticleCommentViewModel> {}
 
 export class ArticleCommentViewModelProjector
   extends BaseProjector<

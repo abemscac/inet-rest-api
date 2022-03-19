@@ -4,7 +4,7 @@ import { UserBrowseHistory } from '../user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from '../view-models/i-user-browse-history.view-model'
 import { JSDOM } from 'jsdom'
 
-export interface IUserBrowseHistoryViewModelProjection {
+interface IUserBrowseHistoryViewModelProjection {
   historyId: number
   historyCreatedAt: Date
   articleCategoryId: number

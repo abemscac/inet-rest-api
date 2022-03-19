@@ -15,12 +15,12 @@ export type IBaseProjectorQueryCallback<TEntity> = (
   queryBuilder: SelectQueryBuilder<TEntity>,
 ) => void
 
-export interface IBaseProjector<TEntity, TResult, TProjection = TEntity> {
+export interface IBaseProjector<T> {
   get sql(): string
   where(where: string, parameters: ObjectLiteral): this
   orderBy(sort: string, order?: 'ASC' | 'DESC'): this
-  project(): Promise<TResult>
-  projectMany(): Promise<Array<TResult>>
+  project(): Promise<T>
+  projectMany(): Promise<Array<T>>
   /**
    * You shou validate the params by {@link src/shared-params/pagable.params.ts} first.
    */
@@ -30,11 +30,11 @@ export interface IBaseProjector<TEntity, TResult, TProjection = TEntity> {
      * Used to set query 'where {alias}.id > :cursor' when using cursor pagination.
      */
     alias: string,
-  ): Promise<IPagableViewModel<TResult>>
+  ): Promise<IPagableViewModel<T>>
 }
 
 export class BaseProjector<TEntity, TResult, TProjection = TEntity>
-  implements IBaseProjector<TEntity, TResult, TProjection>
+  implements IBaseProjector<TResult>
 {
   private mapper?: IBaseProjectorMapper<TProjection, TResult>
 

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator'
 
-export class UserUpdateForm {
+export class UserUpdateProfileForm {
   @IsNotEmpty()
   name: string
 

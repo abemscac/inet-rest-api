@@ -1,19 +1,22 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import * as bcrypt from 'bcrypt'
+import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
+import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
-import { UserUpdateForm } from './forms/user-update.form'
-import { UserFindByUsernameOptions } from './options/user.find-by-username.options'
+import { UserCreateForm } from './forms/user-create.form'
+import { UserUpdatePasswordForm } from './forms/user-update-password.form'
+import { UserUpdateProfileForm } from './forms/user-update-profile.form'
+import { UserViewModelProjector } from './projectors/user-view-model.projector'
 import { User } from './user.entity'
 
 export interface IUserService {
-  findByUsername(
-    username: string,
-    options?: UserFindByUsernameOptions,
-  ): Promise<User>
-  updateById(id: number, form: UserUpdateForm): Promise<void>
-  // updatePasswordById(id: number, form: UserUpdatePasswordForm): Promise<void>
-  // removeById(id: number): Promise<void>
+  findByUsername(username: string): Promise<IUserViewModel>
+  create(form: UserCreateForm): Promise<User>
+  updateProfile(form: UserUpdateProfileForm): Promise<void>
+  updatePassword(form: UserUpdatePasswordForm): Promise<void>
+  remove(): Promise<void>
 }
 
 @Injectable()
@@ -24,39 +27,76 @@ export class UserService implements IUserService {
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
-  async findByUsername(
-    username: string,
-    options?: UserFindByUsernameOptions,
-  ): Promise<User> {
-    let user: User
+  async findByUsername(username: string): Promise<IUserViewModel> {
+    return await new UserViewModelProjector(this.userRepository)
+      .where('username = :username', { username })
+      .project()
+  }
 
-    const params = {
-      where: {
-        username,
-        isRemoved: false,
-      },
+  async create(form: UserCreateForm): Promise<User> {
+    const { username, password, name, avatarUrl } = form
+    const prevUser = await this.userRepository.findOne(
+      { username },
+      { select: ['id'] },
+    )
+    if (prevUser) {
+      throw new BadRequestException()
     }
-
-    // We can't write like this.
-    // It'll say 'Cannot read properties of undefined (reading 'manager') at Repository.findOne.'
-    // const find = options?.findOneOrFail
-    //   ? this.userRepository.findOneOrFail
-    //   : this.userRepository.findOne
-
-    if (options?.findOneOrFail) {
-      user = await this.userRepository.findOneOrFail(params)
-    } else {
-      user = await this.userRepository.findOne(params)
-    }
-
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = this.userRepository.create({
+      username,
+      password: hashedPassword,
+      name: name?.trim() || null,
+      avatarUrl: avatarUrl?.trim() || null,
+    })
+    await this.userRepository.insert(user)
     return user
   }
 
-  async updateById(id: number, form: UserUpdateForm): Promise<void> {
-    this.passportPermitService.permitOrFail(id)
-    const user = await this.userRepository.findOneOrFail({ id })
-    user.name = form.name
-    user.avatarUrl = form.avatarUrl || null
-    await this.userRepository.save(user)
+  async updateProfile(form: UserUpdateProfileForm): Promise<void> {
+    const { id } = this.passportPermitService.user
+    await TypeORMUtil.existOrFail(this.userRepository, { id, isRemoved: false })
+    await this.userRepository.update(
+      { id },
+      {
+        name: form.name?.trim() || null,
+        avatarUrl: form.avatarUrl?.trim() || null,
+      },
+    )
+  }
+
+  async updatePassword(form: UserUpdatePasswordForm): Promise<void> {
+    const { id } = this.passportPermitService.user
+    const user = await this.userRepository.findOneOrFail(
+      {
+        id,
+        isRemoved: false,
+      },
+      {
+        select: ['password'],
+      },
+    )
+    const { oldPassword, newPassword } = form
+    const passwordMatched = await bcrypt.compare(oldPassword, user.password)
+    if (!passwordMatched) {
+      throw new BadRequestException('')
+    }
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10)
+    await this.userRepository.update(
+      { id },
+      { password: hashedNewPassword, refreshTokenHash: null },
+    )
+  }
+
+  async remove(): Promise<void> {
+    const { id } = this.passportPermitService.user
+    await TypeORMUtil.existOrFail(this.userRepository, {
+      id,
+      isRemoved: false,
+    })
+    await this.userRepository.update(
+      { id },
+      { refreshTokenHash: null, removedAt: new Date(), isRemoved: true },
+    )
   }
 }

@@ -81,7 +81,12 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
   }
 
   async removeById(id: number): Promise<void> {
-    const history = await this.userBrowseHistoryRepository.findOneOrFail({ id })
+    const history = await this.userBrowseHistoryRepository.findOneOrFail(
+      { id },
+      {
+        select: ['userId'],
+      },
+    )
     this.passportPermitService.permitOrFail(history.userId)
     await this.userBrowseHistoryRepository.delete({ id })
   }

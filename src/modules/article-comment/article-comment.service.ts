@@ -63,7 +63,12 @@ export class ArticleCommentService implements IArticleCommentService {
   }
 
   async removeById(id: number): Promise<void> {
-    const comment = await this.articleCommentRepository.findOneOrFail({ id })
+    const comment = await this.articleCommentRepository.findOneOrFail(
+      { id },
+      {
+        select: ['authorId'],
+      },
+    )
     this.passportPermitService.permitOrFail(comment.authorId)
     this.articleCommentRepository.update(
       { id },
