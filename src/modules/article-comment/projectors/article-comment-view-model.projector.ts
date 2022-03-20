@@ -1,7 +1,4 @@
-import {
-  BaseProjector,
-  IBaseProjector,
-} from 'src/base-projectors/base-projector'
+import { BaseProjector } from 'src/base-projectors/base-projector'
 import { Repository } from 'typeorm'
 import { ArticleComment } from '../article-comment.entity'
 import { IArticleCommentViewModel } from '../view-models/i-article-comment.view-model'
@@ -18,33 +15,26 @@ interface IArticleCommentViewModelProjection {
   authorCreatedAt?: Date
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IArticleCommentViewModelProjector
-  extends IBaseProjector<IArticleCommentViewModel> {}
-
-export class ArticleCommentViewModelProjector
-  extends BaseProjector<
-    ArticleComment,
-    IArticleCommentViewModel,
-    IArticleCommentViewModelProjection
-  >
-  implements IArticleCommentViewModelProjector
-{
-  constructor(repository: Repository<ArticleComment>) {
+export class ArticleCommentViewModelProjector extends BaseProjector<
+  ArticleComment,
+  IArticleCommentViewModel,
+  IArticleCommentViewModelProjection
+> {
+  constructor(repository: Repository<ArticleComment>, alias: string) {
     super(
       repository
-        .createQueryBuilder('comment')
-        .innerJoin('comment.author', 'author')
+        .createQueryBuilder(alias)
+        .innerJoin(`${alias}.author`, 'author')
         .select([
-          'comment.id AS commentId',
-          '(CASE WHEN comment.isRemoved = 1 THEN NULL ELSE comment.body END) AS commentBody',
-          'comment.createdAt AS commentCreatedAt',
-          'comment.isRemoved AS commentIsRemoved',
-          '(CASE WHEN (comment.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.id END) AS authorId',
-          '(CASE WHEN (comment.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.username END) AS authorUsername',
-          '(CASE WHEN (comment.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.name END) AS authorName',
-          '(CASE WHEN (comment.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarUrl END) AS authorAvatarUrl',
-          '(CASE WHEN (comment.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.createdAt END) AS authorCreatedAt',
+          `${alias}.id AS commentId`,
+          `(CASE WHEN ${alias}.isRemoved = 1 THEN NULL ELSE ${alias}.body END) AS commentBody`,
+          `${alias}.createdAt AS commentCreatedAt`,
+          `${alias}.isRemoved AS commentIsRemoved`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.id END) AS authorId`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.username END) AS authorUsername`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.name END) AS authorName`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarUrl END) AS authorAvatarUrl`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.createdAt END) AS authorCreatedAt`,
         ]),
     )
     super.setMapper((projection) => ({

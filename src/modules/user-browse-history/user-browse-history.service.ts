@@ -33,6 +33,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>> {
     return new UserBrowseHistoryViewModelProjector(
       this.userBrowseHistoryRepository,
+      'history',
     )
       .where('history.userId = :userId', {
         userId: this.passportPermitService.user.id,
@@ -75,6 +76,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
     }
     return new UserBrowseHistoryViewModelProjector(
       this.userBrowseHistoryRepository,
+      'history',
     )
       .where('history.id = :historyId', { historyId })
       .project()

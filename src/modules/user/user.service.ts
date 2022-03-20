@@ -30,7 +30,7 @@ export class UserService implements IUserService {
   ) {}
 
   async findByUsername(username: string): Promise<IUserViewModel> {
-    return await new UserViewModelProjector(this.userRepository)
+    return await new UserViewModelProjector(this.userRepository, 'user')
       .where('username = :username AND is_removed = :isRemoved', {
         username,
         isRemoved: false,
@@ -115,7 +115,11 @@ export class UserService implements IUserService {
     } else {
       await this.userRepository.update(
         { id },
-        { refreshTokenHash: null, removedAt: new Date(), isRemoved: true },
+        {
+          refreshTokenHash: null,
+          removedAt: new Date(),
+          isRemoved: true,
+        },
       )
     }
   }

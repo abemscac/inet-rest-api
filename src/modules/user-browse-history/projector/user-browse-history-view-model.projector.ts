@@ -1,8 +1,8 @@
+import { JSDOM } from 'jsdom'
 import { BaseProjector } from 'src/base-projectors/base-projector'
 import { Repository } from 'typeorm'
 import { UserBrowseHistory } from '../user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from '../view-models/i-user-browse-history.view-model'
-import { JSDOM } from 'jsdom'
 
 interface IUserBrowseHistoryViewModelProjection {
   historyId: number
@@ -26,16 +26,16 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
   IUserBrowseHistoryViewModel,
   IUserBrowseHistoryViewModelProjection
 > {
-  constructor(repository: Repository<UserBrowseHistory>) {
+  constructor(repository: Repository<UserBrowseHistory>, alias: string) {
     super(
       repository
-        .createQueryBuilder('history')
-        .innerJoin('history.article', 'article')
+        .createQueryBuilder(alias)
+        .innerJoin(`${alias}.article`, 'article')
         .innerJoin('article.category', 'articleCategory')
         .innerJoin('article.author', 'author')
         .select([
-          'history.id AS historyId',
-          'history.createdAt AS historyCreatedAt',
+          `${alias}.id AS historyId`,
+          `${alias}.createdAt AS historyCreatedAt`,
           'articleCategory.id AS articleCategoryId',
           'articleCategory.code AS articleCategoryCode',
           'articleCategory.imageUrl AS articleCategoryImageUrl',

@@ -35,6 +35,7 @@ export class ArticleCommentService implements IArticleCommentService {
     const { articleId } = params
     return await new ArticleCommentViewModelProjector(
       this.articleCommentRepository,
+      'comment',
     )
       .where('comment.articleId = :articleId', { articleId })
       .orderBy('comment.id', 'ASC')
@@ -56,6 +57,7 @@ export class ArticleCommentService implements IArticleCommentService {
     await this.articleCommentRepository.insert(comment)
     return await new ArticleCommentViewModelProjector(
       this.articleCommentRepository,
+      'comment',
     )
       .where('comment.id = :id', { id: comment.id })
       .project()

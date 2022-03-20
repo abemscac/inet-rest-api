@@ -34,9 +34,7 @@ export interface IBaseProjector<T> {
   ): Promise<IPagableViewModel<T>>
 }
 
-export class BaseProjector<TEntity, TResult, TProjection = TEntity>
-  implements IBaseProjector<TResult>
-{
+export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
   private mapper?: IBaseProjectorMapper<TProjection, TResult>
 
   constructor(private readonly queryBuilder: SelectQueryBuilder<TEntity>) {}
