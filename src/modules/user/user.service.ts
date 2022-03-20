@@ -15,7 +15,7 @@ import { UserErrors } from './user.errors'
 
 export interface IUserService {
   findByUsername(username: string): Promise<IUserViewModel>
-  create(form: UserCreateForm): Promise<User>
+  create(form: UserCreateForm): Promise<IUserViewModel>
   updateProfile(form: UserUpdateProfileForm): Promise<void>
   updatePassword(form: UserUpdatePasswordForm): Promise<void>
   remove(): Promise<void>
@@ -35,10 +35,10 @@ export class UserService implements IUserService {
         username,
         isRemoved: false,
       })
-      .project()
+      .projectOrFail()
   }
 
-  async create(form: UserCreateForm): Promise<User> {
+  async create(form: UserCreateForm): Promise<IUserViewModel> {
     const { username, password, name, avatarUrl } = form
     const duplicateUsername = await TypeORMUtil.exist(this.userRepository, {
       username,
@@ -54,7 +54,13 @@ export class UserService implements IUserService {
       avatarUrl: avatarUrl?.trim() || null,
     })
     await this.userRepository.insert(user)
-    return user
+    return {
+      id: user.id,
+      username,
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+      createdAt: user.createdAt,
+    }
   }
 
   async updateProfile(form: UserUpdateProfileForm): Promise<void> {

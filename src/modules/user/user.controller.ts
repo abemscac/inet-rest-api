@@ -8,7 +8,6 @@ import {
   Param,
   Post,
   Put,
-  Response,
   UseGuards,
 } from '@nestjs/common'
 import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
@@ -30,12 +29,8 @@ export class UserController {
   }
 
   @Post()
-  async create(
-    @Response() response,
-    @Body() form: UserCreateForm,
-  ): Promise<void> {
-    await this.userService.create(form)
-    response.status(HttpStatus.OK).redirect('/auth/login')
+  async create(@Body() form: UserCreateForm): Promise<IUserViewModel> {
+    return await this.userService.create(form)
   }
 
   @UseGuards(AccessTokenAuthGuard)

@@ -17,7 +17,6 @@ export class UserViewModelProjector
     super(
       repository
         .createQueryBuilder('user')
-        .where('user.isRemoved = 0')
         .select([
           'user.id AS id',
           'user.username AS username',

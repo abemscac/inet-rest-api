@@ -7,14 +7,14 @@ export enum UserErrorCodes {
 export const UserErrors = {
   duplicateUsername: {
     code: UserErrorCodes.DuplicateUsername,
-    message: 'Duplicate username.',
+    message: 'Duplicate username',
   },
   oldPasswordUnmatched: {
     code: UserErrorCodes.OldPasswordUnmatched,
-    message: 'Old password unmatched.',
+    message: 'Old password unmatched',
   },
   pendingRemoval: {
     code: UserErrorCodes.PendingRemoval,
-    message: 'User removal is pending.',
+    message: 'User removal is pending',
   },
 }
