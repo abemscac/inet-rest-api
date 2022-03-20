@@ -1,6 +1,4 @@
 import { Creatable } from 'src/base-entities/creatable.entity'
-import { PagableParams } from 'src/shared-params/pagable.params'
-import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import {
   Column,
   Entity,
@@ -11,18 +9,9 @@ import {
 } from 'typeorm'
 import { Article } from '../article/article.entity'
 import { User } from '../user/user.entity'
-import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
-
-export interface IUserBrowseHistoryService {
-  findByQuery(
-    params: PagableParams,
-  ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>>
-  deleteById(id: number): Promise<void>
-  deleteAll(): Promise<void>
-}
 
 @Entity({ name: 'user_browse_history' })
-@Unique(['user_id', 'article_id'])
+@Unique(['userId', 'articleId'])
 export class UserBrowseHistory extends Creatable {
   @PrimaryGeneratedColumn()
   id: number

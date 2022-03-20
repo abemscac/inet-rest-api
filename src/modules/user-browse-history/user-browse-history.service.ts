@@ -16,7 +16,7 @@ export interface IUserBrowseHistoryService {
   create(
     form: UserBrowseHistoryCreateForm,
   ): Promise<IUserBrowseHistoryViewModel>
-  removeById(id: number): Promise<void>
+  deleteById(id: number): Promise<void>
   clear(): Promise<void>
 }
 
@@ -80,7 +80,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       .project()
   }
 
-  async removeById(id: number): Promise<void> {
+  async deleteById(id: number): Promise<void> {
     const history = await this.userBrowseHistoryRepository.findOneOrFail(
       { id },
       {

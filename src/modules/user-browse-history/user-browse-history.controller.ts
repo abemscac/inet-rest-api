@@ -38,8 +38,8 @@ export class UserBrowseHistoryController {
   }
 
   @Delete(':id')
-  async removeById(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return await this.userBrowseHistoryService.removeById(id)
+  async deleteById(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return await this.userBrowseHistoryService.deleteById(id)
   }
 
   @Delete('clear')
