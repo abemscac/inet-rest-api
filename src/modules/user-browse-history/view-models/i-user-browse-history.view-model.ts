@@ -1,7 +1,7 @@
-import { IArticleRelationViewModel } from './i-article.relation-view-model'
+import { IArticleSummaryViewModel } from 'src/modules/article/view-models/i-article-summary.view-model'
 
 export interface IUserBrowseHistoryViewModel {
   id: number
-  article: IArticleRelationViewModel
+  article: IArticleSummaryViewModel
   createdAt: Date
 }

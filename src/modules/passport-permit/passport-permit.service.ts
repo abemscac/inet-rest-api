@@ -5,8 +5,9 @@ import { IPassportPermitUser } from './i-passport-permit-user'
 
 export interface IPassportPermitService {
   /**
-   * user and all of its' properties are guaranteed to exist if the AuthGuard
-   * of the endpoint uses any TokenStrategy.
+   * User and all of its' properties are guaranteed to exist if:
+   * - the AuthGuard of the endpoint uses any TokenStrategy, and
+   * - the endpoint is not marked with @IsPublic() decorator
    */
   get user(): Readonly<IPassportPermitUser | undefined>
   permitOrFail(userId: number): void

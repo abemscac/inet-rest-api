@@ -1,14 +1,5 @@
-import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
+import { IArticleSummaryViewModel } from './i-article-summary.view-model'
 
-export interface IArticleViewModel {
-  id: number
-  categoryCode: string
-  coverImageUrl: string
-  title: string
-  body: string
-  views: number
-  likes: number
-  createdAt: Date
+export interface IArticleViewModel extends IArticleSummaryViewModel {
   lastModifiedAt: Date
-  author: IUserViewModel
 }

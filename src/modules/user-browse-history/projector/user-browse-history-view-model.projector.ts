@@ -11,9 +11,12 @@ interface IUserBrowseHistoryViewModelProjection {
   articleCategoryCode: string
   articleCategoryImageUrl: string
   articleId: number
-  articleTitle: string
   articleCoverImageUrl: string
+  articleTitle: string
   articleBody: string
+  articleViews: number
+  articleLikes: number
+  articleCreatedAt: Date
   authorId?: number
   authorUsername?: string
   authorName?: string
@@ -32,6 +35,11 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
         .createQueryBuilder(alias)
         .innerJoin(`${alias}.article`, 'article')
         .innerJoin('article.category', 'articleCategory')
+        .innerJoin(
+          'article_like',
+          'articleLike',
+          'article.id = articleLike.article_id',
+        )
         .innerJoin('article.author', 'author')
         .select([
           `${alias}.id AS historyId`,
@@ -40,15 +48,19 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
           'articleCategory.code AS articleCategoryCode',
           'articleCategory.imageUrl AS articleCategoryImageUrl',
           'article.id AS articleId',
-          'article.title AS articleTitle',
           'article.coverImageUrl AS articleCoverImageUrl',
+          'article.title AS articleTitle',
           'article.body AS articleBody',
+          'article.views AS articleViews',
+          'COUNT(articleLike.user_id) AS articleLikes',
+          'article.createdAt AS articleCreatedAt',
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.id END) AS authorId',
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.username END) AS authorUsername',
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.name END) AS authorName',
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarUrl END) as authorAvatarUrl',
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) as authorCreatedAt',
-        ]),
+        ])
+        .groupBy('article.id'),
     )
     super.setMapper((projection) => {
       const strippedBody = new JSDOM(
@@ -70,9 +82,12 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
             avatarUrl: projection.authorAvatarUrl,
             createdAt: projection.authorCreatedAt,
           },
-          title: projection.articleTitle,
           coverImageUrl: projection.articleCoverImageUrl,
+          title: projection.articleTitle,
           body: strippedBody,
+          views: projection.articleViews,
+          likes: projection.articleLikes,
+          createdAt: projection.articleCreatedAt,
         },
         createdAt: projection.historyCreatedAt,
       }
