@@ -1,5 +1,5 @@
-export interface ICursorPaginationViewModel<T> {
-  metadata: ICursorPaginationMetadata
+export interface ICursorPaginationViewModel<T>
+  extends ICursorPaginationMetadata {
   data: Array<T>
 }
 

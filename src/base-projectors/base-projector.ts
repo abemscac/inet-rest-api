@@ -102,12 +102,10 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
     const data = (await this.queryBuilder.take(1).getRawMany()).map(this.mapper)
 
     return {
-      metadata: {
-        page: FLAG_UNLIMITED ? 0 : page,
-        limit: FLAG_UNLIMITED ? undefined : limit,
-        totalCount,
-        totalPages,
-      },
+      page: FLAG_UNLIMITED ? 0 : page,
+      limit: FLAG_UNLIMITED ? undefined : limit,
+      totalCount,
+      totalPages,
       data,
     }
   }
@@ -127,10 +125,8 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
 
     const data = (await this.queryBuilder.getRawMany()).map(this.mapper)
     return {
-      metadata: {
-        cursor,
-        limit,
-      },
+      cursor,
+      limit,
       data,
     }
   }

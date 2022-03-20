@@ -1,5 +1,4 @@
-export interface IPaginationViewModel<T> {
-  metadata: IPaginationMetadata
+export interface IPaginationViewModel<T> extends IPaginationMetadata {
   data: Array<T>
 }
 
