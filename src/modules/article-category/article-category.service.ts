@@ -14,8 +14,8 @@ export class ArticleCategoryService implements IArticleCategoryService {
     private readonly articleCategoryRepository: Repository<ArticleCategory>,
   ) {}
 
-  findAll(): Promise<Array<ArticleCategory>> {
-    return this.articleCategoryRepository.find({
+  async findAll(): Promise<Array<ArticleCategory>> {
+    return await this.articleCategoryRepository.find({
       order: {
         code: 'ASC',
       },

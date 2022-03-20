@@ -37,6 +37,6 @@ export class ArticleLikeController {
   async deleteOneByQuery(
     @Query() params: ArticleLikeFindOneByQueryParams,
   ): Promise<void> {
-    await this.articleLikeService.deleteOneByQuery(params)
+    return await this.articleLikeService.deleteOneByQuery(params)
   }
 }

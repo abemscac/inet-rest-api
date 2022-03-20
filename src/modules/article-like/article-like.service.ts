@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
@@ -20,10 +21,10 @@ export class ArticleLikeService implements IArticleLikeService {
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
-  findOneByQuery({
+  async findOneByQuery({
     articleId,
   }: ArticleLikeFindOneByQueryParams): Promise<ArticleLike> {
-    return this.articleLikeRepository.findOneOrFail({
+    return await this.articleLikeRepository.findOneOrFail({
       where: {
         articleId,
         userId: this.passportPermitService.user.id,
@@ -52,12 +53,14 @@ export class ArticleLikeService implements IArticleLikeService {
   async deleteOneByQuery({
     articleId,
   }: ArticleLikeFindOneByQueryParams): Promise<void> {
-    const result = await this.articleLikeRepository.delete({
+    const userId = this.passportPermitService.user.id
+    await TypeORMUtil.existOrFail(this.articleLikeRepository, {
+      userId,
       articleId,
-      userId: this.passportPermitService.user.id,
     })
-    if (!result.affected) {
-      throw new NotFoundException()
-    }
+    await this.articleLikeRepository.delete({
+      userId,
+      articleId,
+    })
   }
 }

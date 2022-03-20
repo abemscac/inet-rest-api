@@ -22,23 +22,23 @@ export class ArticleCommentController {
   constructor(private readonly articleCommentService: ArticleCommentService) {}
 
   @Get()
-  findByQuery(
+  async findByQuery(
     @Query(PagableParamsValidationPipe) params: ArticleCommentFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
-    return this.articleCommentService.findByQuery(params)
+    return await this.articleCommentService.findByQuery(params)
   }
 
   @UseGuards(AccessTokenAuthGuard)
   @Post()
-  create(
+  async create(
     @Body() form: ArticleCommentCreateForm,
   ): Promise<IArticleCommentViewModel> {
-    return this.articleCommentService.create(form)
+    return await this.articleCommentService.create(form)
   }
 
   @UseGuards(AccessTokenAuthGuard)
   @Delete(':id')
-  removeById(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.articleCommentService.removeById(id)
+  async removeById(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return await this.articleCommentService.removeById(id)
   }
 }
