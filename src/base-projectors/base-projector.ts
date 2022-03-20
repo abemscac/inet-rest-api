@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common'
+import { BadRequestException, NotFoundException } from '@nestjs/common'
 import { PagableParams, Pagination } from 'src/shared-params/pagable.params'
 import { ICursorPaginationViewModel } from 'src/shared-view-models/i-cursor-pagination.view-model'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
@@ -20,6 +20,7 @@ export interface IBaseProjector<T> {
   where(where: string, parameters: ObjectLiteral): this
   orderBy(sort: string, order?: 'ASC' | 'DESC'): this
   project(): Promise<T>
+  projectOrFail(): Promise<T>
   projectMany(): Promise<Array<T>>
   /**
    * You shou validate the params by {@link src/shared-params/pagable.params.ts} first.
@@ -63,6 +64,14 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
 
   async project(): Promise<TResult> {
     const projection = await this.queryBuilder.getRawOne()
+    return !this.mapper ? projection : this.mapper(projection, 0, [projection])
+  }
+
+  async projectOrFail(): Promise<TResult> {
+    const projection = await this.queryBuilder.getRawOne()
+    if (!projection) {
+      throw new NotFoundException()
+    }
     return !this.mapper ? projection : this.mapper(projection, 0, [projection])
   }
 
@@ -141,11 +150,10 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
   private async getMappedArray(): Promise<Array<TResult>> {
     // set data without storing result from getRawMany to prevent
     // large amount of data taking too much space in memory
-    const { getRawMany } = this.queryBuilder
     if (this.mapper) {
-      return (await getRawMany()).map(this.mapper)
+      return (await this.queryBuilder.getRawMany()).map(this.mapper)
     } else {
-      return await getRawMany()
+      return await this.queryBuilder.getRawMany()
     }
   }
 }
