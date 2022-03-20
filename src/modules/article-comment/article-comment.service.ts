@@ -39,7 +39,7 @@ export class ArticleCommentService implements IArticleCommentService {
     )
       .where('comment.articleId = :articleId', { articleId })
       .orderBy('comment.id', 'ASC')
-      .projectPagination(params, 'comment')
+      .projectPagination(params)
   }
 
   async create(

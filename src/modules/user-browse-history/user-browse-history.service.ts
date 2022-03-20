@@ -39,13 +39,12 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
         userId: this.passportPermitService.user.id,
       })
       .orderBy('history.createdAt', 'DESC')
-      .projectPagination(params, 'history')
+      .projectPagination(params)
   }
 
   async create(
     form: UserBrowseHistoryCreateForm,
   ): Promise<IUserBrowseHistoryViewModel> {
-    const now = new Date()
     const userId = this.passportPermitService.user.id
     const { articleId } = form
     const prevHistory = await this.userBrowseHistoryRepository.findOne({
@@ -55,6 +54,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
     let historyId = 0
     if (prevHistory) {
       // update
+      const now = new Date()
       prevHistory.createdAt = now
       await this.userBrowseHistoryRepository.update(
         {

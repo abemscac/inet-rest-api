@@ -57,6 +57,7 @@ export class ArticleViewModelProjector extends BaseProjector<
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) AS authorCreatedAt',
         ])
         .groupBy(`${alias}.id`),
+      alias,
     )
     super.setMapper((projection) => ({
       id: projection.articleId,

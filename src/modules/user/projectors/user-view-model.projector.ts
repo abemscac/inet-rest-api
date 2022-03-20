@@ -18,6 +18,7 @@ export class UserViewModelProjector extends BaseProjector<
           `${alias}.avatarUrl AS avatarUrl`,
           `${alias}.createdAt AS createdAt`,
         ]),
+      alias,
     )
   }
 }

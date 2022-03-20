@@ -36,6 +36,7 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarUrl END) AS authorAvatarUrl`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.createdAt END) AS authorCreatedAt`,
         ]),
+      alias,
     )
     super.setMapper((projection) => ({
       id: projection.commentId,

@@ -61,6 +61,7 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
           '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) as authorCreatedAt',
         ])
         .groupBy('article.id'),
+      alias,
     )
     super.setMapper((projection) => {
       const strippedBody = new JSDOM(

@@ -25,19 +25,16 @@ export interface IBaseProjector<T> {
   /**
    * You shou validate the params by {@link src/shared-params/pagable.params.ts} first.
    */
-  projectPagination(
-    params: PagableParams,
-    /**
-     * Used to set query 'where {alias}.id > :cursor' when using cursor pagination.
-     */
-    alias: string,
-  ): Promise<IPagableViewModel<T>>
+  projectPagination(params: PagableParams): Promise<IPagableViewModel<T>>
 }
 
 export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
   private mapper?: IBaseProjectorMapper<TProjection, TResult>
 
-  constructor(private readonly queryBuilder: SelectQueryBuilder<TEntity>) {}
+  constructor(
+    private readonly queryBuilder: SelectQueryBuilder<TEntity>,
+    private readonly alias: string,
+  ) {}
 
   get sql(): string {
     return this.queryBuilder.getSql()
@@ -80,7 +77,6 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
 
   async projectPagination(
     params: PagableParams,
-    alias: string,
   ): Promise<IPagableViewModel<TResult>> {
     const { pagination } = params
     if (!pagination) {
@@ -89,7 +85,7 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     } else if (pagination === Pagination.default) {
       return await this.projectDefaultPagination(params)
     } else if (pagination === Pagination.cursor) {
-      return await this.projectCursorPagination(params, alias)
+      return await this.projectCursorPagination(params)
     } else {
       throw new BadRequestException(`Unknown pagination '${pagination}'.`)
     }
@@ -119,15 +115,14 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
 
   private async projectCursorPagination(
     params: PagableParams,
-    alias: string,
   ): Promise<ICursorPaginationViewModel<TResult>> {
-    if (!alias) {
+    if (!this.alias) {
       throw new BadRequestException(
         `Param 'alias' must be provided when using cursor pagination in projector.`,
       )
     }
     const { limit, cursor } = params
-    this.queryBuilder.where(`${alias}.id > :cursor`, { cursor })
+    this.queryBuilder.where(`${this.alias}.id > :cursor`, { cursor })
 
     this.setOffsetAndLimit(params)
     const data = await this.getMappedArray()
