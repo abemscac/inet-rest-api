@@ -2,20 +2,34 @@ import { NotFoundException } from '@nestjs/common'
 import { FindConditions, Repository } from 'typeorm'
 
 export interface ITypeORMUtil {
+  exist<T>(
+    repository: Repository<T>,
+    conditions: FindConditions<T>,
+  ): Promise<boolean>
   existOrFail<T>(
     repository: Repository<T>,
     conditions: FindConditions<T>,
   ): Promise<void>
 }
 
-export const TypeORMUtil: ITypeORMUtil = {
+class Util implements ITypeORMUtil {
+  async exist<T>(
+    repository: Repository<T>,
+    conditions: FindConditions<T>,
+  ): Promise<boolean> {
+    const count = await repository.count(conditions)
+    return count > 0
+  }
+
   async existOrFail<T>(
     repository: Repository<T>,
     conditions: FindConditions<T>,
   ): Promise<void> {
-    const count = await repository.count(conditions)
-    if (count === 0) {
+    const exist = await this.exist(repository, conditions)
+    if (!exist) {
       throw new NotFoundException()
     }
-  },
+  }
 }
+
+export const TypeORMUtil = new Util()
