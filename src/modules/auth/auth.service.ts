@@ -65,7 +65,17 @@ export class AuthService implements IAuthService {
   async login(form: AuthLoginForm): Promise<IAuthLoginViewModel> {
     const user = await this.userRepository.findOne(
       { username: form.username },
-      { select: ['id', 'password', 'isRemoved'] },
+      {
+        select: [
+          'id',
+          'username',
+          'password',
+          'name',
+          'avatarUrl',
+          'createdAt',
+          'isRemoved',
+        ],
+      },
     )
     if (!user || user.isRemoved) {
       throw new UnauthorizedException()
@@ -92,7 +102,7 @@ export class AuthService implements IAuthService {
 
   async refresh(): Promise<IAuthViewModel> {
     const { id, token } = this.passportPermitService.user || {}
-    const user = await this.userRepository.findOneOrFail(
+    const user = await this.userRepository.findOne(
       {
         id,
         isRemoved: false,
@@ -103,7 +113,7 @@ export class AuthService implements IAuthService {
     )
     const tokenMatched = await bcrypt.compare(
       token ?? '',
-      user.refreshTokenHash ?? '',
+      user?.refreshTokenHash ?? '',
     )
     if (!tokenMatched) {
       throw new UnauthorizedException()
