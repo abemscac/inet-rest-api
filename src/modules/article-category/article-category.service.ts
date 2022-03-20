@@ -16,11 +16,8 @@ export class ArticleCategoryService implements IArticleCategoryService {
 
   findAll(): Promise<Array<ArticleCategory>> {
     return this.articleCategoryRepository.find({
-      where: {
-        isRemoved: false,
-      },
       order: {
-        index: 'ASC',
+        code: 'ASC',
       },
     })
   }
