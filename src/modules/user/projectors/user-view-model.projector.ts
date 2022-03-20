@@ -19,11 +19,11 @@ export class UserViewModelProjector
         .createQueryBuilder('user')
         .where('user.isRemoved = 0')
         .select([
-          'user.id',
-          'user.username',
-          'user.name',
-          'user.avatarUrl',
-          'user.createdAt',
+          'user.id AS id',
+          'user.username AS username',
+          'user.name AS name',
+          'user.avatarUrl AS avatarUrl',
+          'user.createdAt AS createdAt',
         ]),
     )
   }

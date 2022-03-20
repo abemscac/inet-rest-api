@@ -63,12 +63,12 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
 
   async project(): Promise<TResult> {
     const projection = await this.queryBuilder.getRawOne()
-    return this.mapper(projection, 0, [projection])
+    return !this.mapper ? projection : this.mapper(projection, 0, [projection])
   }
 
   async projectMany(): Promise<TResult[]> {
     const projections = await this.queryBuilder.getRawMany()
-    return projections.map(this.mapper)
+    return !this.mapper ? projections : projections.map(this.mapper)
   }
 
   async projectPagination(
@@ -99,7 +99,7 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
       : Math.ceil(totalCount / limit)
 
     this.setOffsetAndLimit(params)
-    const data = (await this.queryBuilder.take(1).getRawMany()).map(this.mapper)
+    const data = await this.getMappedArray()
 
     return {
       page: FLAG_UNLIMITED ? 0 : page,
@@ -121,9 +121,10 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
     }
     const { limit, cursor } = params
     this.queryBuilder.where(`${alias}.id > :cursor`, { cursor })
-    this.setOffsetAndLimit(params)
 
-    const data = (await this.queryBuilder.getRawMany()).map(this.mapper)
+    this.setOffsetAndLimit(params)
+    const data = await this.getMappedArray()
+
     return {
       cursor,
       limit,
@@ -131,9 +132,20 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity>
     }
   }
 
-  private setOffsetAndLimit = (params: PagableParams): void => {
+  private setOffsetAndLimit(params: PagableParams): void {
     const { page, limit, FLAG_UNLIMITED } = params
     const offset = FLAG_UNLIMITED ? 0 : page * limit
     this.queryBuilder.offset(offset).limit(FLAG_UNLIMITED ? undefined : limit)
+  }
+
+  private async getMappedArray(): Promise<Array<TResult>> {
+    // set data without storing result from getRawMany to prevent
+    // large amount of data taking too much space in memory
+    const { getRawMany } = this.queryBuilder
+    if (this.mapper) {
+      return (await getRawMany()).map(this.mapper)
+    } else {
+      return await getRawMany()
+    }
   }
 }

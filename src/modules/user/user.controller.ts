@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
@@ -39,18 +40,21 @@ export class UserController {
 
   @UseGuards(AccessTokenAuthGuard)
   @Put('profile')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateProfile(@Body() form: UserUpdateProfileForm): Promise<void> {
     return await this.userService.updateProfile(form)
   }
 
   @UseGuards(AccessTokenAuthGuard)
   @Put('password')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updatePassword(@Body() form: UserUpdatePasswordForm): Promise<void> {
     return await this.userService.updatePassword(form)
   }
 
   @UseGuards(AccessTokenAuthGuard)
   @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async remove(): Promise<void> {
     await this.userService.remove()
   }

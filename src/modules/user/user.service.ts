@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
+import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
 import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
 import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Repository } from 'typeorm'
@@ -10,6 +11,7 @@ import { UserUpdatePasswordForm } from './forms/user-update-password.form'
 import { UserUpdateProfileForm } from './forms/user-update-profile.form'
 import { UserViewModelProjector } from './projectors/user-view-model.projector'
 import { User } from './user.entity'
+import { UserErrors } from './user.errors'
 
 export interface IUserService {
   findByUsername(username: string): Promise<IUserViewModel>
@@ -29,18 +31,20 @@ export class UserService implements IUserService {
 
   async findByUsername(username: string): Promise<IUserViewModel> {
     return await new UserViewModelProjector(this.userRepository)
-      .where('username = :username', { username })
+      .where('username = :username AND is_removed = :isRemoved', {
+        username,
+        isRemoved: false,
+      })
       .project()
   }
 
   async create(form: UserCreateForm): Promise<User> {
     const { username, password, name, avatarUrl } = form
-    const prevUser = await this.userRepository.findOne(
-      { username },
-      { select: ['id'] },
-    )
-    if (prevUser) {
-      throw new BadRequestException()
+    const duplicateUsername = await TypeORMUtil.exist(this.userRepository, {
+      username,
+    })
+    if (duplicateUsername) {
+      throw new BusinessLogicException(UserErrors.duplicateUsername)
     }
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = this.userRepository.create({
@@ -79,7 +83,7 @@ export class UserService implements IUserService {
     const { oldPassword, newPassword } = form
     const passwordMatched = await bcrypt.compare(oldPassword, user.password)
     if (!passwordMatched) {
-      throw new BadRequestException('')
+      throw new BusinessLogicException(UserErrors.oldPasswordUnmatched)
     }
     const hashedNewPassword = await bcrypt.hash(newPassword, 10)
     await this.userRepository.update(
@@ -90,13 +94,23 @@ export class UserService implements IUserService {
 
   async remove(): Promise<void> {
     const { id } = this.passportPermitService.user
-    await TypeORMUtil.existOrFail(this.userRepository, {
-      id,
-      isRemoved: false,
-    })
-    await this.userRepository.update(
-      { id },
-      { refreshTokenHash: null, removedAt: new Date(), isRemoved: true },
+    const user = await this.userRepository.findOne(
+      {
+        id,
+      },
+      {
+        select: ['isRemoved'],
+      },
     )
+    if (!user) {
+      throw new NotFoundException()
+    } else if (user.isRemoved) {
+      throw new BusinessLogicException(UserErrors.pendingRemoval)
+    } else {
+      await this.userRepository.update(
+        { id },
+        { refreshTokenHash: null, removedAt: new Date(), isRemoved: true },
+      )
+    }
   }
 }
