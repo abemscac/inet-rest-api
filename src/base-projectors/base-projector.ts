@@ -18,6 +18,7 @@ export type IBaseProjectorQueryCallback<TEntity> = (
 export interface IBaseProjector<T> {
   get sql(): string
   where(where: string, parameters: ObjectLiteral): this
+  andWhere(where: string, parameters: ObjectLiteral): this
   orderBy(sort: string, order?: 'ASC' | 'DESC'): this
   project(): Promise<T>
   projectOrFail(): Promise<T>
@@ -42,6 +43,11 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
 
   where(where: string, parameters: ObjectLiteral): this {
     this.queryBuilder.where(where, parameters)
+    return this
+  }
+
+  andWhere(where: string, parameters: ObjectLiteral): this {
+    this.queryBuilder.andWhere(where, parameters)
     return this
   }
 

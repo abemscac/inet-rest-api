@@ -19,8 +19,7 @@ import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleService } from './article.service'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
-import { ArticleFindMostPopularByQueryParams } from './params/article-find-most-popular-by-query.params'
-import { IArticleSummaryViewModel } from './view-models/i-article-summary.view-model'
+import { ArticleFindTopByQueryParams } from './params/article-find-top-by-query.params'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 @UseGuards(AccessTokenAuthGuard)
@@ -32,9 +31,9 @@ export class ArticleController {
   @Get('most-popular')
   async findMostPopularByQuery(
     @Query(PagableParamsValidationPipe)
-    params: ArticleFindMostPopularByQueryParams,
-  ): Promise<IPagableViewModel<IArticleSummaryViewModel>> {
-    return await this.articleService.findMostPopularByQuery(params)
+    params: ArticleFindTopByQueryParams,
+  ): Promise<IPagableViewModel<IArticleViewModel>> {
+    return await this.articleService.findTopByQuery(params)
   }
 
   @IsPublic()

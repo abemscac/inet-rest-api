@@ -1,7 +1,7 @@
-import { IArticleSummaryViewModel } from 'src/modules/article/view-models/i-article-summary.view-model'
+import { IArticleViewModel } from 'src/modules/article/view-models/i-article.view-model'
 
 export interface IUserBrowseHistoryViewModel {
   id: number
-  article: IArticleSummaryViewModel
+  article: IArticleViewModel
   createdAt: Date
 }

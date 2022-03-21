@@ -1,9 +1,13 @@
+import { JSDOM } from 'jsdom'
 import { BaseProjector } from 'src/base-projectors/base-projector'
 import { Repository } from 'typeorm'
 import { Article } from '../article.entity'
 import { IArticleViewModel } from '../view-models/i-article.view-model'
 
-interface IArticleViewModelProjection {
+export interface IArticleViewModelProjection {
+  articleCategoryId: number
+  articleCategoryCode: string
+  articleCategoryImageUrl: string
   articleId: number
   articleCoverImageUrl: string
   articleTitle: string
@@ -12,14 +16,69 @@ interface IArticleViewModelProjection {
   articleLikes: number
   articleCreatedAt: Date
   articleLastModifiedAt?: Date
-  articleCategoryId: number
-  articleCategoryCode: string
-  articleCategoryImageUrl: string
   authorId?: number
   authorUsername?: string
   authorName?: string
   authorAvatarUrl?: string
   authorCreatedAt?: Date
+}
+
+export const articleViewModelProjectionSelection = [
+  'articleCategory.id AS articleCategoryId',
+  'articleCategory.code AS articleCategoryCode',
+  'articleCategory.imageUrl AS articleCategoryImageUrl',
+  'article.id AS articleId',
+  'article.coverImageUrl AS articleCoverImageUrl',
+  'article.title AS articleTitle',
+  'article.body AS articleBody',
+  'article.views AS articleViews',
+  'COUNT(articleLike.user_id) AS articleLikes',
+  'article.createdAt AS articleCreatedAt',
+  'article.lastModifiedAt AS articleLastModifiedAt',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.id END) AS authorId',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.username END) AS authorUsername',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.name END) AS authorName',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarUrl END) as authorAvatarUrl',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) as authorCreatedAt',
+]
+
+interface IProjectArticleViewModelOptions {
+  stripBody?: boolean
+}
+
+export const projectArticleViewModel = (
+  projection: IArticleViewModelProjection,
+  options?: IProjectArticleViewModelOptions,
+): IArticleViewModel => {
+  const body = !options?.stripBody
+    ? projection.articleBody
+    : new JSDOM(
+        `<body>${projection.articleBody}</body>`,
+      ).window.document.body.textContent.substring(0, 200)
+  return {
+    id: projection.articleId,
+    category: {
+      id: projection.articleCategoryId,
+      code: projection.articleCategoryCode,
+      imageUrl: projection.articleCategoryImageUrl,
+    },
+    author: !projection.authorId
+      ? null
+      : {
+          id: projection.authorId,
+          username: projection.authorUsername,
+          name: projection.authorName,
+          avatarUrl: projection.authorAvatarUrl,
+          createdAt: projection.authorCreatedAt,
+        },
+    coverImageUrl: projection.articleCoverImageUrl,
+    title: projection.articleTitle,
+    body,
+    views: projection.articleViews,
+    likes: Number(projection.articleLikes),
+    createdAt: projection.articleCreatedAt,
+    lastModifiedAt: projection.articleLastModifiedAt ?? null,
+  }
 }
 
 export class ArticleViewModelProjector extends BaseProjector<
@@ -31,57 +90,19 @@ export class ArticleViewModelProjector extends BaseProjector<
     super(
       repository
         .createQueryBuilder(alias)
-        .innerJoin(`${alias}.category`, 'category')
-        .innerJoin(`${alias}.author`, 'author')
+        .innerJoin(`${alias}.category`, 'articleCategory')
         .innerJoin(
           'article_like',
           'articleLike',
-          'article.id = articleLike.article_id',
+          `${alias}.id = articleLike.article_id`,
         )
-        .select([
-          `${alias}.id AS articleId`,
-          `${alias}.coverImageUrl AS articleCoverImageUrl`,
-          `${alias}.title AS articleTitle`,
-          `${alias}.body AS articleBody`,
-          `${alias}.views AS articleViews`,
-          `${alias}.createdAt AS articleCreatedAt`,
-          `${alias}.lastModifiedAt AS articleLastModifiedAt`,
-          'COUNT(articleLike.user_id) AS articleLikes',
-          'category.id AS articleCategoryId',
-          'category.code AS articleCategoryCode',
-          'category.imageUrl AS articleCategoryImageUrl',
-          '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.id END) AS authorId',
-          '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.username END) AS authorUsername',
-          '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.name END) AS authorName',
-          '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarUrl END) AS authorAvatarUrl',
-          '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) AS authorCreatedAt',
-        ])
+        .innerJoin('article.author', 'author')
+        .select(articleViewModelProjectionSelection)
         .groupBy(`${alias}.id`),
       alias,
     )
-    super.setMapper((projection) => ({
-      id: projection.articleId,
-      category: {
-        id: projection.articleCategoryId,
-        code: projection.articleCategoryCode,
-        imageUrl: projection.articleCategoryImageUrl,
-      },
-      author: !projection.authorId
-        ? undefined
-        : {
-            id: projection.authorId,
-            username: projection.authorUsername,
-            name: projection.authorName,
-            avatarUrl: projection.authorAvatarUrl,
-            createdAt: projection.authorCreatedAt,
-          },
-      coverImageUrl: projection.articleCoverImageUrl,
-      title: projection.articleTitle,
-      body: projection.articleBody,
-      views: projection.articleViews,
-      likes: Number(projection.articleLikes),
-      createdAt: projection.articleCreatedAt,
-      lastModifiedAt: projection.articleLastModifiedAt,
-    }))
+    super.setMapper((projection) =>
+      projectArticleViewModel(projection, { stripBody: true }),
+    )
   }
 }

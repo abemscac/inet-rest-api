@@ -42,6 +42,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       .projectPagination(params)
   }
 
+  // this feature should NOT be exposed as an endpoint in controller.
   async create(
     form: UserBrowseHistoryCreateForm,
   ): Promise<IUserBrowseHistoryViewModel> {
