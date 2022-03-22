@@ -11,7 +11,7 @@ export class ArticleCategoryViewModelProjector extends BaseProjector<
     super(
       repository
         .createQueryBuilder(alias)
-        .select([`${alias}.id`, `${alias}.code`, `${alias}.imageUrl`]),
+        .select([`${alias}.id`, `${alias}.code`, `${alias}.imageHash`]),
       alias,
     )
   }

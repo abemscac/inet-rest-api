@@ -1,7 +1,7 @@
 export enum UserErrorCodes {
-  DuplicateUsername = 'USER-001',
-  OldPasswordUnmatched = 'USER-002',
-  PendingRemoval = 'USER-003',
+  DuplicateUsername = 'USER_DUPE_USN',
+  OldPasswordUnmatched = 'USER_PWD_UNMATCHED',
+  PendingRemoval = 'USER_PEND_RMV',
 }
 
 export const UserErrors = {

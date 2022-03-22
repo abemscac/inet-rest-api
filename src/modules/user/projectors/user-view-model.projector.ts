@@ -15,7 +15,7 @@ export class UserViewModelProjector extends BaseProjector<
           `${alias}.id AS id`,
           `${alias}.username AS username`,
           `${alias}.name AS name`,
-          `${alias}.avatarUrl AS avatarUrl`,
+          `${alias}.avatarImageHash AS avatarImageHash`,
           `${alias}.createdAt AS createdAt`,
         ]),
       alias,

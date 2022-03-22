@@ -33,10 +33,10 @@ export class User extends Updatable {
   @Column({
     type: 'varchar',
     length: 2000,
-    name: 'avatar_url',
+    name: 'avatar_image_hash',
     nullable: true,
   })
-  avatarUrl?: string
+  avatarImageHash?: string
 
   @Column({
     type: 'char',

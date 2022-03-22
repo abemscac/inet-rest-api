@@ -7,9 +7,9 @@ import { IArticleViewModel } from '../view-models/i-article.view-model'
 export interface IArticleViewModelProjection {
   articleCategoryId: number
   articleCategoryCode: string
-  articleCategoryImageUrl: string
+  articleCategoryImageHash: string
   articleId: number
-  articleCoverImageUrl: string
+  articleCoverImageHash: string
   articleTitle: string
   articleBody: string
   articleViews: number
@@ -19,16 +19,16 @@ export interface IArticleViewModelProjection {
   authorId?: number
   authorUsername?: string
   authorName?: string
-  authorAvatarUrl?: string
+  authorAvatarImageHash?: string
   authorCreatedAt?: Date
 }
 
 export const articleViewModelProjectionSelection = [
   'articleCategory.id AS articleCategoryId',
   'articleCategory.code AS articleCategoryCode',
-  'articleCategory.imageUrl AS articleCategoryImageUrl',
+  'articleCategory.imageHash AS articleCategoryImageHash',
   'article.id AS articleId',
-  'article.coverImageUrl AS articleCoverImageUrl',
+  'article.coverImageHash AS articleCoverImageHash',
   'article.title AS articleTitle',
   'article.body AS articleBody',
   'article.views AS articleViews',
@@ -38,7 +38,7 @@ export const articleViewModelProjectionSelection = [
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.id END) AS authorId',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.username END) AS authorUsername',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.name END) AS authorName',
-  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarUrl END) as authorAvatarUrl',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarImageHash END) as authorAvatarImageHash',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) as authorCreatedAt',
 ]
 
@@ -60,7 +60,7 @@ export const projectArticleViewModel = (
     category: {
       id: projection.articleCategoryId,
       code: projection.articleCategoryCode,
-      imageUrl: projection.articleCategoryImageUrl,
+      imageUrl: projection.articleCategoryImageHash,
     },
     author: !projection.authorId
       ? null
@@ -68,10 +68,10 @@ export const projectArticleViewModel = (
           id: projection.authorId,
           username: projection.authorUsername,
           name: projection.authorName,
-          avatarUrl: projection.authorAvatarUrl,
+          avatarUrl: projection.authorAvatarImageHash,
           createdAt: projection.authorCreatedAt,
         },
-    coverImageUrl: projection.articleCoverImageUrl,
+    coverImageUrl: projection.articleCoverImageHash,
     title: projection.articleTitle,
     body,
     views: projection.articleViews,

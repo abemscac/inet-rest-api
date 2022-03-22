@@ -31,7 +31,7 @@ export class AuthService implements IAuthService {
       },
       {
         expiresIn: 60 * 15,
-        secret: process.env.ACCESS_TOKEN_SECRET,
+        secret: process.env.INET_ACCESS_TOKEN_SECRET,
       },
     )
     const refreshToken = await this.jwtService.signAsync(
@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
       },
       {
         expiresIn: 60 * 60 * 24 * 7,
-        secret: process.env.REFRESH_TOKEN_SECRET,
+        secret: process.env.INET_REFRESH_TOKEN_SECRET,
       },
     )
     return {
@@ -71,7 +71,7 @@ export class AuthService implements IAuthService {
           'username',
           'password',
           'name',
-          'avatarUrl',
+          'avatarImageHash',
           'createdAt',
           'isRemoved',
         ],
@@ -93,7 +93,7 @@ export class AuthService implements IAuthService {
       id: user.id,
       username: form.username,
       name: user.name,
-      avatarUrl: user.avatarUrl,
+      avatarUrl: user.avatarImageHash,
       createdAt: user.createdAt,
       pendingRemoval: user.isRemoved,
       ...tokens,

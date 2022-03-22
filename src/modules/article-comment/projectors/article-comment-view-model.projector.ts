@@ -11,7 +11,7 @@ interface IArticleCommentViewModelProjection {
   authorId?: number
   authorUsername?: string
   authorName?: string
-  authorAvatarUrl?: string
+  authorAvatarImageHash?: string
   authorCreatedAt?: Date
 }
 
@@ -33,7 +33,7 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.id END) AS authorId`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.username END) AS authorUsername`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.name END) AS authorName`,
-          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarUrl END) AS authorAvatarUrl`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarImageHash END) AS authorAvatarImageHash`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.createdAt END) AS authorCreatedAt`,
         ]),
       alias,
@@ -46,7 +46,7 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
             id: projection.authorId,
             username: projection.authorUsername,
             name: projection.authorName,
-            avatarUrl: projection.authorAvatarUrl,
+            avatarUrl: projection.authorAvatarImageHash,
             createdAt: projection.authorCreatedAt,
           },
       body: projection.commentBody,

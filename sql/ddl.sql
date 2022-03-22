@@ -6,7 +6,7 @@ CREATE TABLE `user`
     `username` VARCHAR(50) NOT NULL,
     `password` CHAR(60) NOT NULL,
     `name` NVARCHAR(50),
-    `avatar_url` VARCHAR(2000),
+    `avatar_image_hash` VARCHAR(20),
     `refresh_token_hash` CHAR(60),
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `last_modified_at` TIMESTAMP,
@@ -21,7 +21,7 @@ CREATE TABLE `article_category`
 (
     `id` SMALLINT AUTO_INCREMENT NOT NULL,
 	`code` VARCHAR(20) NOT NULL,
-	`image_url` VARCHAR(2000) NOT NULL,
+	`image_hash` VARCHAR(20) NOT NULL,
 	`created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 	
 	PRIMARY KEY(`id`),
@@ -32,7 +32,7 @@ CREATE TABLE `article`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
     `category_id` SMALLINT NOT NULL,
-    `cover_image_url` VARCHAR(2000) NOT NULL,
+    `cover_image_hash` VARCHAR(20) NOT NULL,
     `title` NVARCHAR(100) NOT NULL,
     `body` TEXT NOT NULL,
     `views` INT DEFAULT 0 NOT NULL,

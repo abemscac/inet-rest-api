@@ -8,9 +8,6 @@ export class ArticleCreateForm {
   categoryId: number
 
   @IsNotEmpty()
-  coverImageUrl: string
-
-  @IsNotEmpty()
   title: string
 
   @IsNotEmpty()

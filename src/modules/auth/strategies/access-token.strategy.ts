@@ -13,7 +13,7 @@ export class AccessTokenStrategy extends PassportStrategy(
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+      secretOrKey: process.env.INET_ACCESS_TOKEN_SECRET,
       passReqToCallback: true,
     })
   }

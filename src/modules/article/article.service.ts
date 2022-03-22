@@ -89,6 +89,7 @@ export class ArticleService implements IArticleService {
   async create(form: ArticleCreateForm): Promise<IArticleViewModel> {
     const article = this.articleRepository.create({
       ...form,
+      coverImageHash: 'TODO',
       authorId: this.passportPermitService.user.id,
     })
     await this.articleRepository.insert(article)
@@ -104,7 +105,7 @@ export class ArticleService implements IArticleService {
     await this.articleRepository.update(
       { id },
       {
-        coverImageUrl: form.coverImageUrl.trim(),
+        coverImageHash: 'TODO',
         title: form.title.trim(),
         body: form.body.trim(),
       },

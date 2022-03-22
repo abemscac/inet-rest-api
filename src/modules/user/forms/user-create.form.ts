@@ -11,7 +11,4 @@ export class UserCreateForm {
 
   @Length(0, 50)
   name?: string
-
-  @Length(0, 2000)
-  avatarUrl?: string
 }

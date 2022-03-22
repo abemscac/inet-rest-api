@@ -25,11 +25,11 @@ export class Article extends Updatable {
   categoryId: number
 
   @Column({
-    name: 'cover_image_url',
+    name: 'cover_image_hash',
     type: 'varchar',
     length: 2000,
   })
-  coverImageUrl: string
+  coverImageHash: string
 
   @Column({
     type: 'nvarchar',

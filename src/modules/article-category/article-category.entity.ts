@@ -17,9 +17,9 @@ export class ArticleCategory extends Creatable {
   @Column({
     type: 'varchar',
     length: 2000,
-    name: 'image_url',
+    name: 'image_hash',
   })
-  imageUrl: string
+  imageHash: string
 
   // relations
   @OneToMany(() => Article, (article) => article.category)

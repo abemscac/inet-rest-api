@@ -39,7 +39,7 @@ export class UserService implements IUserService {
   }
 
   async create(form: UserCreateForm): Promise<IUserViewModel> {
-    const { username, password, name, avatarUrl } = form
+    const { username, password, name } = form
     const duplicateUsername = await TypeORMUtil.exist(this.userRepository, {
       username,
     })
@@ -51,14 +51,14 @@ export class UserService implements IUserService {
       username,
       password: hashedPassword,
       name: name?.trim() || null,
-      avatarUrl: avatarUrl?.trim() || null,
+      avatarImageHash: 'TODO',
     })
     await this.userRepository.insert(user)
     return {
       id: user.id,
       username,
       name: user.name,
-      avatarUrl: user.avatarUrl,
+      avatarUrl: user.avatarImageHash,
       createdAt: user.createdAt,
     }
   }
@@ -70,7 +70,7 @@ export class UserService implements IUserService {
       { id },
       {
         name: form.name?.trim() || null,
-        avatarUrl: form.avatarUrl?.trim() || null,
+        avatarImageHash: 'TODO',
       },
     )
   }
