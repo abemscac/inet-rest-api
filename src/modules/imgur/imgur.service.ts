@@ -2,9 +2,9 @@ import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { firstValueFrom, map } from 'rxjs'
 import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
+import { ImgurUtil } from 'src/utils/imgur.util'
 import { ImgurImageType, IMGUR_MAX_IMAGE_SIZE } from './imgur.constants'
 import { ImgurErrors } from './imgur.errors'
-import { ImgurOAuthInstance } from './imgur.oauth'
 import { IImgurUploadImageResponseModel } from './models/i-imgur-upload-image-response.model'
 
 export interface IImgurService {
@@ -30,7 +30,7 @@ export class ImgurService implements IImgurService {
     formData.append('album', process.env[`IMGUR_ALBUM_HASH_${type}`])
     formData.append('image', image, image.name)
 
-    const accessToken = await ImgurOAuthInstance.getAccessToken()
+    const accessToken = await ImgurUtil.oauth.getAccessToken()
 
     return await firstValueFrom<IImgurUploadImageResponseModel>(
       this.httpService

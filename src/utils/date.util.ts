@@ -1,12 +1,16 @@
-type TimeLapseOptions = {
+export interface IDateUtil {
+  timeLapse(base: Date, options?: ITimeLapseOptions): Date
+}
+
+export interface ITimeLapseOptions {
   year?: number
   month?: number
   week?: number
   day?: number
 }
 
-class Util {
-  timeLapse(base: Date, options: TimeLapseOptions): Date {
+class Util implements IDateUtil {
+  timeLapse(base: Date, options?: ITimeLapseOptions): Date {
     const { year = 0, month = 0, week = 0, day = 0 } = options
     const date = new Date(base)
 

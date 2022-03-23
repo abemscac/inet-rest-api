@@ -1,6 +1,14 @@
 import * as FormData from 'form-data'
 import { fetch } from 'src/utils/fetch.util'
 
+export interface IImgurUtil {
+  oauth: IImgurUtilOAuth
+}
+
+export interface IImgurUtilOAuth {
+  getAccessToken(): Promise<string>
+}
+
 const MS_ONE_DAY = 60 * 60 * 24 * 1000
 /**
  * AccessToken expires after a month, according to the official document.
@@ -12,26 +20,12 @@ const TOKEN_EXPIRATION = 30 * MS_ONE_DAY
  */
 const TOKEN_REFRESH_INTERVAL = TOKEN_EXPIRATION - 3 * MS_ONE_DAY
 
-export interface IImgurOAuth {
-  getAccessToken(): Promise<string>
-}
-
-interface IImgurGenerateAccessTokenResponseModel {
-  access_token: string
-  expired_in: number
-  token_type: string
-  scope: string | null
-  refresh_token: string
-  account_id: number
-  account_username: string
-}
-
-class Util {
+class ImgurUtilOAuth implements IImgurUtilOAuth {
   private generateAccessTokenPromise: Promise<string>
   private timeoutId: NodeJS.Timeout
 
   constructor() {
-    this._generateAccessToken()
+    // this._generateAccessToken()
   }
 
   getAccessToken(): Promise<string> {
@@ -86,4 +80,16 @@ class Util {
   }
 }
 
-export const ImgurOAuthUtil = new Util()
+export const ImgurUtil: IImgurUtil = {
+  oauth: new ImgurUtilOAuth(),
+}
+
+interface IImgurGenerateAccessTokenResponseModel {
+  access_token: string
+  expired_in: number
+  token_type: string
+  scope: string | null
+  refresh_token: string
+  account_id: number
+  account_username: string
+}

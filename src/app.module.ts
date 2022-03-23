@@ -14,7 +14,9 @@ import { UserModule } from './modules/user/user.module'
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      cache: true,
+    }),
     ArticleModule,
     ArticleCategoryModule,
     ArticleCommentModule,
