@@ -10,12 +10,15 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
 } from '@nestjs/common'
+import { FastifyFileInterceptor } from 'src/interceptors/fastify-file.interceptor'
 import { PagableParamsValidationPipe } from 'src/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
+import { ImageUploadGuard } from '../imgur/image-upload.guard'
 import { ArticleService } from './article.service'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
@@ -44,9 +47,17 @@ export class ArticleController {
     return await this.articleService.findById(id)
   }
 
+  @UseGuards(ImageUploadGuard)
   @Post()
-  async create(@Body() form: ArticleCreateForm): Promise<IArticleViewModel> {
-    return await this.articleService.create(form)
+  @FastifyFileInterceptor('coverImage')
+  async create(
+    @Body() form: ArticleCreateForm,
+    @UploadedFile() coverImage: Express.Multer.File,
+  ): Promise<IArticleViewModel> {
+    return await this.articleService.create({
+      ...form,
+      coverImage,
+    })
   }
 
   @Put(':id')

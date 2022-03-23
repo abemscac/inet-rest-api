@@ -7,6 +7,11 @@ export class ArticleCreateForm {
   @IsNotEmpty()
   categoryId: number
 
+  /**
+   * This field will be assigned in controller due to the limitation of NodeJS
+   */
+  coverImage: Express.Multer.File
+
   @IsNotEmpty()
   title: string
 

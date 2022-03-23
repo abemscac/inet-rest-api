@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
+import { contentParser } from 'fastify-multer'
 import { AppModule } from './app.module'
 import { EntityNotFoundErrorFilter } from './filters/entity-not-found-error.filter'
 
@@ -12,6 +13,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
   )
+  app.register(contentParser)
   app
     .useGlobalPipes(new ValidationPipe({ transform: true }))
     .useGlobalFilters(new EntityNotFoundErrorFilter())
