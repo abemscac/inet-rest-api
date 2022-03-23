@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { getAppConfig } from './app.config'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ArticleCategoryModule } from './modules/article-category/article-category.module'
@@ -16,6 +17,7 @@ import { UserModule } from './modules/user/user.module'
     TypeOrmModule.forRoot(),
     ConfigModule.forRoot({
       cache: true,
+      load: [getAppConfig],
     }),
     ArticleModule,
     ArticleCategoryModule,

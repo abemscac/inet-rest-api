@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
+import { getAppConfig } from 'src/app.config'
 import { Repository } from 'typeorm'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { User } from '../user/user.entity'
@@ -25,13 +26,14 @@ export class AuthService implements IAuthService {
   ) {}
 
   private async createTokens(userId: number): Promise<IAuthViewModel> {
+    const { accessTokenSecret, refreshTokenSecret } = getAppConfig().inetAuth
     const accessToken = await this.jwtService.signAsync(
       {
         sub: userId,
       },
       {
         expiresIn: 60 * 15,
-        secret: process.env.INET_ACCESS_TOKEN_SECRET,
+        secret: accessTokenSecret,
       },
     )
     const refreshToken = await this.jwtService.signAsync(
@@ -40,7 +42,7 @@ export class AuthService implements IAuthService {
       },
       {
         expiresIn: 60 * 60 * 24 * 7,
-        secret: process.env.INET_REFRESH_TOKEN_SECRET,
+        secret: refreshTokenSecret,
       },
     )
     return {

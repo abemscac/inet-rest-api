@@ -5,6 +5,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
 import { contentParser } from 'fastify-multer'
+import { getAppConfig } from './app.config'
 import { AppModule } from './app.module'
 import { EntityNotFoundErrorFilter } from './filters/entity-not-found-error.filter'
 
@@ -18,6 +19,6 @@ async function bootstrap() {
     .useGlobalPipes(new ValidationPipe({ transform: true }))
     .useGlobalFilters(new EntityNotFoundErrorFilter())
     .setGlobalPrefix('api')
-  await app.listen(process.env.API_PORT, '0.0.0.0')
+  await app.listen(getAppConfig().apiPort, '0.0.0.0')
 }
 bootstrap()

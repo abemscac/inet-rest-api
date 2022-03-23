@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CallHandler,
   ExecutionContext,
   Inject,
@@ -8,14 +9,20 @@ import {
   Type,
   UseInterceptors,
 } from '@nestjs/common'
+import { Request } from 'express'
 import FastifyMulter from 'fastify-multer'
 import { Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
+import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
+
+interface IFastifyFilesInterceptorOptions extends Options {
+  minCount?: number
+  maxCount?: number
+}
 
 function FastifyFiles(
   fieldName: string,
-  maxCount?: number,
-  localOptions?: Options,
+  localOptions?: IFastifyFilesInterceptorOptions,
 ): Type<NestInterceptor> {
   class MixinInterceptor implements NestInterceptor {
     protected multer: Multer
@@ -33,10 +40,11 @@ function FastifyFiles(
       next: CallHandler,
     ): Promise<Observable<any>> {
       const httpContext = context.switchToHttp()
+      const request = httpContext.getRequest() as Request
 
       await new Promise<void>((resolve, reject) =>
-        this.multer.array(fieldName, maxCount)(
-          httpContext.getRequest(),
+        this.multer.array(fieldName, localOptions?.maxCount)(
+          request,
           httpContext.getResponse(),
           (error: unknown) => {
             if (error) {
@@ -46,6 +54,14 @@ function FastifyFiles(
           },
         ),
       )
+
+      if (request.files?.length < localOptions?.minCount) {
+        throw new BadRequestException(
+          `At least ${localOptions?.minCount} files for '${fieldName}' is required, but only received ${request.files?.length}.`,
+        )
+      }
+
+      request.body[fieldName] = request.files
 
       return next.handle()
     }
@@ -57,5 +73,5 @@ function FastifyFiles(
 export const FastifyFilesInterceptor = (
   fieldName: string,
   maxCount?: number,
-  localOptions?: Options,
-) => UseInterceptors(FastifyFiles(fieldName, maxCount, localOptions))
+  localOptions?: IFastifyFilesInterceptorOptions,
+) => UseInterceptors(FastifyFiles(fieldName, localOptions))

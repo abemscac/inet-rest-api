@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CallHandler,
   ExecutionContext,
   Inject,
@@ -8,13 +9,18 @@ import {
   Type,
   UseInterceptors,
 } from '@nestjs/common'
+import { Request } from 'express'
 import FastifyMulter from 'fastify-multer'
 import { Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
 
+interface IFastifyFileInterceptorOptions extends Options {
+  required?: boolean
+}
+
 const FastifyFile = (
   fieldName: string,
-  localOptions?: Options,
+  localOptions?: IFastifyFileInterceptorOptions,
 ): Type<NestInterceptor> => {
   class MixinInterceptor implements NestInterceptor {
     protected multer: Multer
@@ -32,10 +38,11 @@ const FastifyFile = (
       next: CallHandler,
     ): Promise<Observable<any>> {
       const httpContext = context.switchToHttp()
+      const request = httpContext.getRequest() as Request
 
       await new Promise<void>((resolve, reject) =>
         this.multer.single(fieldName)(
-          httpContext.getRequest(),
+          request,
           httpContext.getResponse(),
           (error: unknown) => {
             if (error) {
@@ -46,6 +53,11 @@ const FastifyFile = (
         ),
       )
 
+      if (localOptions?.required && !request.file) {
+        throw new BadRequestException(`File '${fieldName}' is required.`)
+      }
+
+      request.body[fieldName] = request.file
       return next.handle()
     }
   }
@@ -55,5 +67,5 @@ const FastifyFile = (
 
 export const FastifyFileInterceptor = (
   fieldName: string,
-  localOptions?: Options,
+  localOptions?: IFastifyFileInterceptorOptions,
 ) => UseInterceptors(FastifyFile(fieldName, localOptions))

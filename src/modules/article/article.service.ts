@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { getAppConfig } from 'src/app.config'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { DateUtil } from 'src/utils/date.util'
-import { Repository } from 'typeorm'
+import { TypeORMUtil } from 'src/utils/typeorm.util'
+import { Connection, Repository } from 'typeorm'
+import { ImgurService } from '../imgur/imgur.service'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserBrowseHistoryService } from '../user-browse-history/user-browse-history.service'
 import { Article } from './article.entity'
@@ -32,6 +35,8 @@ export class ArticleService implements IArticleService {
     private readonly articleRepository: Repository<Article>,
     private readonly userBrowseHistoryService: UserBrowseHistoryService,
     private readonly passportPermitService: PassportPermitService,
+    private readonly imgurService: ImgurService,
+    private readonly connection: Connection,
   ) {}
 
   async findTopByQuery(
@@ -78,7 +83,8 @@ export class ArticleService implements IArticleService {
       .where('article.id = :id', { id })
       .projectOrFail()
     if (this.passportPermitService.user?.id) {
-      // no need to await here
+      // We don't care whether the creation of user-browse-history is done before the
+      // API returns, so there's no need to await here.
       this.userBrowseHistoryService.create({
         articleId: id,
       })
@@ -87,13 +93,31 @@ export class ArticleService implements IArticleService {
   }
 
   async create(form: ArticleCreateForm): Promise<IArticleViewModel> {
-    const article = this.articleRepository.create({
-      ...form,
-      coverImageHash: 'TODO',
-      authorId: this.passportPermitService.user.id,
-    })
-    await this.articleRepository.insert(article)
-    return await this.findById(article.id)
+    return await TypeORMUtil.transaction(
+      this.connection,
+      async (manager, commit, rollback) => {
+        const albumHash = getAppConfig().imgur.image.albumHashRecord.article
+        let imageHash: string
+        try {
+          const image = await this.imgurService.uploadImage(form.coverImage, {
+            albumHash,
+          })
+          imageHash = image.id
+          const article = this.articleRepository.create({
+            ...form,
+            coverImageHash: image.id,
+            authorId: this.passportPermitService.user.id,
+          })
+          await manager.insert(Article, article)
+          await commit()
+          return await this.findById(article.id)
+        } catch (error) {
+          await this.imgurService.deleteImage(imageHash)
+          await rollback()
+          throw error
+        }
+      },
+    )
   }
 
   async updateById(id: number, form: ArticleUpdateForm): Promise<void> {

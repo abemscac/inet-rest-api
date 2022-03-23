@@ -10,7 +10,6 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
   UseGuards,
 } from '@nestjs/common'
 import { FastifyFileInterceptor } from 'src/interceptors/fastify-file.interceptor'
@@ -49,15 +48,9 @@ export class ArticleController {
 
   @UseGuards(ImageUploadGuard)
   @Post()
-  @FastifyFileInterceptor('coverImage')
-  async create(
-    @Body() form: ArticleCreateForm,
-    @UploadedFile() coverImage: Express.Multer.File,
-  ): Promise<IArticleViewModel> {
-    return await this.articleService.create({
-      ...form,
-      coverImage,
-    })
+  @FastifyFileInterceptor('coverImage', { required: true })
+  async create(@Body() form: ArticleCreateForm): Promise<IArticleViewModel> {
+    return await this.articleService.create(form)
   }
 
   @Put(':id')
