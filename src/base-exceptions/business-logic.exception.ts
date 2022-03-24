@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common'
 
-interface IBusinessLogicError {
+export interface IBusinessLogicError {
   code: string
   message: string
 }

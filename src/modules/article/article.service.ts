@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { getAppConfig } from 'src/app.config'
+import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { DateUtil } from 'src/utils/date.util'
+import { ImgurUtil } from 'src/utils/imgur.util'
 import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Connection, Repository } from 'typeorm'
+import { ArticleCategory } from '../article-category/article-category.entity'
+import { ImgurAlbum } from '../imgur/imgur.constants'
 import { ImgurService } from '../imgur/imgur.service'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserBrowseHistoryService } from '../user-browse-history/user-browse-history.service'
 import { Article } from './article.entity'
+import { ArticleErrors } from './article.errors'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import {
@@ -33,6 +37,8 @@ export class ArticleService implements IArticleService {
   constructor(
     @InjectRepository(Article)
     private readonly articleRepository: Repository<Article>,
+    @InjectRepository(ArticleCategory)
+    private readonly articleCategoryRepository: Repository<ArticleCategory>,
     private readonly userBrowseHistoryService: UserBrowseHistoryService,
     private readonly passportPermitService: PassportPermitService,
     private readonly imgurService: ImgurService,
@@ -82,6 +88,16 @@ export class ArticleService implements IArticleService {
     )
       .where('article.id = :id', { id })
       .projectOrFail()
+
+    // We don't care whether the increment of views is done before the
+    // API returns, so there's no need to await here.
+    this.articleRepository.update(
+      { id },
+      {
+        views: article.views + 1,
+      },
+    )
+
     if (this.passportPermitService.user?.id) {
       // We don't care whether the creation of user-browse-history is done before the
       // API returns, so there's no need to await here.
@@ -89,31 +105,36 @@ export class ArticleService implements IArticleService {
         articleId: id,
       })
     }
+
     return article
   }
 
   async create(form: ArticleCreateForm): Promise<IArticleViewModel> {
+    await this.validateCategory(form.categoryId)
     return await TypeORMUtil.transaction(
       this.connection,
       async (manager, commit, rollback) => {
-        const albumHash = getAppConfig().imgur.image.albumHashRecord.article
-        let imageHash: string
+        let imageHash: string, articleId: number
         try {
           const image = await this.imgurService.uploadImage(form.coverImage, {
-            albumHash,
+            album: ImgurAlbum.Article,
           })
           imageHash = image.id
           const article = this.articleRepository.create({
-            ...form,
+            categoryId: form.categoryId,
             coverImageHash: image.id,
+            coverImageExt: ImgurUtil.getExtFromLink(image.link),
+            title: form.title,
+            body: form.body,
             authorId: this.passportPermitService.user.id,
           })
           await manager.insert(Article, article)
           await commit()
+          articleId = article.id
           return await this.findById(article.id)
         } catch (error) {
-          await this.imgurService.deleteImage(imageHash)
-          await rollback()
+          if (imageHash) await this.imgurService.deleteImage(imageHash)
+          if (articleId) await rollback()
           throw error
         }
       },
@@ -123,17 +144,54 @@ export class ArticleService implements IArticleService {
   async updateById(id: number, form: ArticleUpdateForm): Promise<void> {
     const article = await this.articleRepository.findOneOrFail(
       { id },
-      { select: ['authorId'] },
+      { select: ['categoryId', 'coverImageHash', 'authorId'] },
     )
     this.passportPermitService.permitOrFail(article.authorId)
-    await this.articleRepository.update(
-      { id },
-      {
-        coverImageHash: 'TODO',
-        title: form.title.trim(),
-        body: form.body.trim(),
-      },
-    )
+
+    if (form.categoryId !== article.categoryId) {
+      await this.validateCategory(form.categoryId)
+    }
+
+    const [trimmedTitle, trimmedBody] = [form.title.trim(), form.body.trim()]
+
+    if (!form.coverImage) {
+      await this.articleRepository.update(
+        { id },
+        {
+          title: trimmedTitle,
+          body: trimmedBody,
+        },
+      )
+    } else {
+      await TypeORMUtil.transaction(
+        this.connection,
+        async (manager, commit, rollback) => {
+          try {
+            const image = await this.imgurService.uploadImage(form.coverImage, {
+              album: ImgurAlbum.Article,
+            })
+            await manager.update(
+              Article,
+              { id },
+              {
+                categoryId: form.categoryId,
+                coverImageHash: image.id,
+                coverImageExt: ImgurUtil.getExtFromLink(image.link),
+                title: trimmedTitle,
+                body: trimmedBody,
+              },
+            )
+            await this.imgurService.deleteImage(article.coverImageHash)
+            await commit()
+          } catch (error) {
+            // TODO: write log into files to catch uploaded-but-never-used image and
+            // failed-removal image
+            await rollback()
+            throw error
+          }
+        },
+      )
+    }
   }
 
   async removeById(id: number): Promise<void> {
@@ -154,5 +212,17 @@ export class ArticleService implements IArticleService {
         isRemoved: true,
       },
     )
+  }
+
+  private async validateCategory(categoryId: number): Promise<void> {
+    const categoryExists = await TypeORMUtil.exist(
+      this.articleCategoryRepository,
+      {
+        id: categoryId,
+      },
+    )
+    if (!categoryExists) {
+      throw new BusinessLogicException(ArticleErrors.CategoryDoesNotExist)
+    }
   }
 }

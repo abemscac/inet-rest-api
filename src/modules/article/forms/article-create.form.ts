@@ -8,7 +8,7 @@ export class ArticleCreateForm {
   categoryId: number
 
   /**
-   * This field will be assigned in controller due to the limitation of NodeJS
+   * This field will be assigned in FastifyFileInterceptor
    */
   coverImage: Express.Multer.File
 

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { ArticleCategory } from '../article-category/article-category.entity'
 import { ImgurModule } from '../imgur/imgur.module'
 import { PassportPermitModule } from '../passport-permit/passport-permit.module'
 import { UserBrowseHistoryModule } from '../user-browse-history/user-browse-history.module'
@@ -10,6 +11,7 @@ import { ArticleService } from './article.service'
 @Module({
   imports: [
     TypeOrmModule.forFeature([Article]),
+    TypeOrmModule.forFeature([ArticleCategory]),
     PassportPermitModule,
     UserBrowseHistoryModule,
     ImgurModule,

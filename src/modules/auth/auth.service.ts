@@ -32,7 +32,7 @@ export class AuthService implements IAuthService {
         sub: userId,
       },
       {
-        expiresIn: 60 * 15,
+        expiresIn: '15m',
         secret: accessTokenSecret,
       },
     )
@@ -41,7 +41,7 @@ export class AuthService implements IAuthService {
         sub: userId,
       },
       {
-        expiresIn: 60 * 60 * 24 * 7,
+        expiresIn: '7d',
         secret: refreshTokenSecret,
       },
     )

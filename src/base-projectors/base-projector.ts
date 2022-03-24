@@ -76,7 +76,7 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     return !this.mapper ? projection : this.mapper(projection, 0, [projection])
   }
 
-  async projectMany(): Promise<TResult[]> {
+  async projectMany(): Promise<Array<TResult>> {
     const projections = await this.queryBuilder.getRawMany()
     return !this.mapper ? projections : projections.map(this.mapper)
   }

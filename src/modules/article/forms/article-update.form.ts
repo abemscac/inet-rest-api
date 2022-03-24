@@ -7,6 +7,11 @@ export class ArticleUpdateForm {
   @IsNotEmpty()
   categoryId: number
 
+  /**
+   * This field will be assigned in FastifyFileInterceptor
+   */
+  coverImage?: Express.Multer.File
+
   @IsNotEmpty()
   title: string
 

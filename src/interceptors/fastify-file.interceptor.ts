@@ -3,6 +3,7 @@ import {
   CallHandler,
   ExecutionContext,
   Inject,
+  InternalServerErrorException,
   mixin,
   NestInterceptor,
   Optional,
@@ -15,7 +16,39 @@ import { Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
 
 interface IFastifyFileInterceptorOptions extends Options {
-  required?: boolean
+  /**
+   * File extensions array with ".", for example, ['.jpg', '.jpeg', '.png']
+   */
+  accept?: Array<string>
+  required: boolean
+}
+
+export const validateAccept = (accept?: Array<string>) => {
+  if (!accept?.length) return
+  // validate accept
+  accept.forEach((ext) => {
+    if (!ext.startsWith('.')) {
+      throw new InternalServerErrorException(
+        `The item in accept must starts with "."`,
+      )
+    }
+  })
+}
+
+export const validateExtensions = (
+  fieldName: string,
+  file?: Express.Multer.File,
+  accept?: Array<string>,
+): void => {
+  if (!file || !accept?.length) return
+  const accepted = accept.some((ext) => file.originalname.endsWith(ext))
+  if (!accepted) {
+    throw new BadRequestException(
+      `The extension of file '${fieldName}' must be one of ${accept.join(
+        ' ',
+      )}.`,
+    )
+  }
 }
 
 const FastifyFile = (
@@ -56,6 +89,8 @@ const FastifyFile = (
       if (localOptions?.required && !request.file) {
         throw new BadRequestException(`File '${fieldName}' is required.`)
       }
+      validateAccept(localOptions?.accept)
+      validateExtensions(fieldName, request.file, localOptions?.accept)
 
       request.body[fieldName] = request.file
       return next.handle()

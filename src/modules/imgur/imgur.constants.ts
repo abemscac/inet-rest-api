@@ -1,4 +1,4 @@
-export enum ImgurImageType {
+export enum ImgurAlbum {
   Article = 'article',
   ArticleCategory = 'articleCategory',
   UserAvatar = 'userAvatar',

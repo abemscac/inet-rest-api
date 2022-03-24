@@ -44,7 +44,7 @@ export class UserService implements IUserService {
       username,
     })
     if (duplicateUsername) {
-      throw new BusinessLogicException(UserErrors.duplicateUsername)
+      throw new BusinessLogicException(UserErrors.DuplicateUsername)
     }
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = this.userRepository.create({
@@ -89,7 +89,7 @@ export class UserService implements IUserService {
     const { oldPassword, newPassword } = form
     const passwordMatched = await bcrypt.compare(oldPassword, user.password)
     if (!passwordMatched) {
-      throw new BusinessLogicException(UserErrors.oldPasswordUnmatched)
+      throw new BusinessLogicException(UserErrors.OldPasswordUnmatched)
     }
     const hashedNewPassword = await bcrypt.hash(newPassword, 10)
     await this.userRepository.update(
@@ -111,7 +111,7 @@ export class UserService implements IUserService {
     if (!user) {
       throw new NotFoundException()
     } else if (user.isRemoved) {
-      throw new BusinessLogicException(UserErrors.pendingRemoval)
+      throw new BusinessLogicException(UserErrors.PendingRemoval)
     } else {
       await this.userRepository.update(
         { id },

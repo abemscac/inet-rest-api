@@ -91,7 +91,7 @@ export class ArticleViewModelProjector extends BaseProjector<
       repository
         .createQueryBuilder(alias)
         .innerJoin(`${alias}.category`, 'articleCategory')
-        .innerJoin(
+        .leftJoin(
           'article_like',
           'articleLike',
           `${alias}.id = articleLike.article_id`,

@@ -32,6 +32,13 @@ export class Article extends Updatable {
   coverImageHash: string
 
   @Column({
+    name: 'cover_image_ext',
+    type: 'varchar',
+    length: 5,
+  })
+  coverImageExt: string
+
+  @Column({
     type: 'nvarchar',
     length: 100,
   })

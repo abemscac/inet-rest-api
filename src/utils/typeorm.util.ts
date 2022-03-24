@@ -12,7 +12,7 @@ export interface ITypeORMUtil {
   ): Promise<void>
   transaction<T>(
     connection: Connection,
-    callback: ITypeORMUtilTransactionCallback<T>,
+    action: ITypeORMUtilTransactionCallback<T>,
   ): Promise<T>
 }
 
@@ -43,19 +43,19 @@ class Util implements ITypeORMUtil {
 
   async transaction<T>(
     connection: Connection,
-    callback: ITypeORMUtilTransactionCallback<T>,
+    action: ITypeORMUtilTransactionCallback<T>,
   ): Promise<T> {
     const queryRunner = connection.createQueryRunner()
     await queryRunner.connect()
     await queryRunner.startTransaction()
+
+    // Making these wrappers because we can't directly pass the functions back.
+    // The queryRunner will become undefined.
+    const commit = async () => queryRunner.commitTransaction()
+    const rollback = async () => queryRunner.rollbackTransaction()
+
     try {
-      return callback(
-        queryRunner.manager,
-        queryRunner.commitTransaction,
-        queryRunner.rollbackTransaction,
-      )
-    } catch (error) {
-      throw error
+      return await action(queryRunner.manager, commit, rollback)
     } finally {
       await queryRunner.release()
     }

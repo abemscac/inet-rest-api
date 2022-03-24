@@ -1,20 +1,25 @@
-export enum UserErrorCodes {
-  DuplicateUsername = 'USER_DUPE_USN',
-  OldPasswordUnmatched = 'USER_PWD_UNMATCHED',
-  PendingRemoval = 'USER_PEND_RMV',
+import { IBusinessLogicError } from 'src/base-exceptions/business-logic.exception'
+
+export enum UserErrorCode {
+  DuplicateUsername = 'USER_DUPLICATE_USERNAME',
+  OldPasswordUnmatched = 'USER_OLD_PASSWORD_UNMATCHED',
+  PendingRemoval = 'USER_PENDING_REMOVAL',
 }
 
-export const UserErrors = {
-  duplicateUsername: {
-    code: UserErrorCodes.DuplicateUsername,
+export const UserErrors: Record<
+  keyof typeof UserErrorCode,
+  IBusinessLogicError
+> = {
+  DuplicateUsername: {
+    code: UserErrorCode.DuplicateUsername,
     message: 'Duplicate username',
   },
-  oldPasswordUnmatched: {
-    code: UserErrorCodes.OldPasswordUnmatched,
+  OldPasswordUnmatched: {
+    code: UserErrorCode.OldPasswordUnmatched,
     message: 'Old password unmatched',
   },
-  pendingRemoval: {
-    code: UserErrorCodes.PendingRemoval,
+  PendingRemoval: {
+    code: UserErrorCode.PendingRemoval,
     message: 'User removal is pending',
   },
 }

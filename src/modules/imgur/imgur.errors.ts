@@ -1,12 +1,16 @@
+import { IBusinessLogicError } from 'src/base-exceptions/business-logic.exception'
 import { IMGUR_MAX_IMAGE_SIZE } from './imgur.constants'
 
-export enum ImgurErrorCodes {
-  FileSizeExceed = 'FILE_SIZE_EXCEED',
+export enum ImgurErrorCode {
+  FileSizeExceed = 'GENERIC_FILE_SIZE_EXCEED',
 }
 
-export const ImgurErrors = {
-  fileSizeExceed: {
-    code: ImgurErrorCodes.FileSizeExceed,
-    message: `File size of uploaded image must not exceed ${IMGUR_MAX_IMAGE_SIZE} bytes.`,
+export const ImgurErrors: Record<
+  keyof typeof ImgurErrorCode,
+  IBusinessLogicError
+> = {
+  FileSizeExceed: {
+    code: ImgurErrorCode.FileSizeExceed,
+    message: `The maximum image size is ${IMGUR_MAX_IMAGE_SIZE} bytes.`,
   },
 }

@@ -25,7 +25,7 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
         .createQueryBuilder(alias)
         .innerJoin(`${alias}.article`, 'article')
         .innerJoin('article.category', 'articleCategory')
-        .innerJoin(
+        .leftJoin(
           'article_like',
           'articleLike',
           'article.id = articleLike.article_id',

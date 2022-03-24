@@ -5,6 +5,7 @@ import { getAppConfig } from 'src/app.config'
 
 export interface IImgurUtil {
   oauth: IImgurUtilOAuth
+  getExtFromLink(link: string): string
 }
 
 export interface IImgurUtilOAuth {
@@ -108,6 +109,10 @@ class ImgurUtilOAuth implements IImgurUtilOAuth {
 
 export const ImgurUtil: IImgurUtil = {
   oauth: new ImgurUtilOAuth(),
+  getExtFromLink(link: string) {
+    const array = link.split('.')
+    return array[array.length - 1]
+  },
 }
 
 interface IImgurGenerateAccessTokenResponseModel {

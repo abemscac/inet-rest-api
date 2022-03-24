@@ -5,10 +5,16 @@ export interface IImgurUploadImageResponseModel {
 }
 
 export interface IImgurImage {
+  /**
+   * Hash
+   */
   id: string
   title: string | null
   description: string | null
   datetime: number
+  /**
+   * For example, "image/jpeg"
+   */
   type: string
   animated: boolean
   width: number
@@ -32,5 +38,8 @@ export interface IImgurImage {
   in_gallery: boolean
   deletehash: string
   name: string
+  /**
+   * For example, https://i.imgur.com/HASH.jpg
+   */
   link: string
 }

@@ -1,4 +1,4 @@
-import { ImgurImageType } from './modules/imgur/imgur.constants'
+import { ImgurAlbum } from './modules/imgur/imgur.constants'
 
 interface IAppConfig {
   apiPort: string
@@ -17,7 +17,7 @@ interface IAppConfig {
     image: {
       uploadApiUrl: string
       deleteApiUrl: string
-      albumHashRecord: Record<ImgurImageType, string>
+      albumHashRecord: Record<ImgurAlbum, string>
     }
   }
 }
@@ -40,10 +40,10 @@ const getAppConfig = (): IAppConfig => ({
       uploadApiUrl: process.env.IMGUR_IMAGE_UPLOAD_API_URL,
       deleteApiUrl: process.env.IMGUR_IMAGE_DELETE_API_URL,
       albumHashRecord: {
-        [ImgurImageType.Article]: process.env.IMGUR_ALBUM_HASH_ARTICLE,
-        [ImgurImageType.ArticleCategory]:
+        [ImgurAlbum.Article]: process.env.IMGUR_ALBUM_HASH_ARTICLE,
+        [ImgurAlbum.ArticleCategory]:
           process.env.IMGUR_ALBUM_HASH_ARTICLE_CATEGORY,
-        [ImgurImageType.UserAvatar]: process.env.IMGUR_ALBUM_HASH_USER_AVATAR,
+        [ImgurAlbum.UserAvatar]: process.env.IMGUR_ALBUM_HASH_USER_AVATAR,
       },
     },
   },

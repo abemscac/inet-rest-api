@@ -39,6 +39,14 @@ export class User extends Updatable {
   avatarImageHash?: string
 
   @Column({
+    type: 'varchar',
+    length: 5,
+    name: 'avatar_image_ext',
+    nullable: true,
+  })
+  avatarImageExt?: string
+
+  @Column({
     type: 'char',
     length: 60,
     name: 'refresh_token_hash',

@@ -13,9 +13,13 @@ import { Request } from 'express'
 import FastifyMulter from 'fastify-multer'
 import { Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
-import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
+import { validateAccept, validateExtensions } from './fastify-file.interceptor'
 
 interface IFastifyFilesInterceptorOptions extends Options {
+  /**
+   * File extensions array with ".", for example, ['.jpg', '.jpeg', '.png']
+   */
+  accept?: Array<string>
   minCount?: number
   maxCount?: number
 }
@@ -59,6 +63,11 @@ function FastifyFiles(
         throw new BadRequestException(
           `At least ${localOptions?.minCount} files for '${fieldName}' is required, but only received ${request.files?.length}.`,
         )
+      } else if (Array.isArray(request.files) && request.files.length) {
+        validateAccept(localOptions?.accept)
+        request.files?.forEach((file) =>
+          validateExtensions(fieldName, file, localOptions?.accept),
+        )
       }
 
       request.body[fieldName] = request.files
@@ -72,6 +81,5 @@ function FastifyFiles(
 
 export const FastifyFilesInterceptor = (
   fieldName: string,
-  maxCount?: number,
   localOptions?: IFastifyFilesInterceptorOptions,
 ) => UseInterceptors(FastifyFiles(fieldName, localOptions))
