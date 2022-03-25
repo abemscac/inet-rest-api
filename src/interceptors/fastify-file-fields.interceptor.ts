@@ -33,13 +33,14 @@ function FastifyFileFields(
       @Inject('MULTER_MODULE_OPTIONS')
       options: Multer,
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.multer = (FastifyMulter as any)({ ...options, ...localOptions })
     }
 
     async intercept(
       context: ExecutionContext,
       next: CallHandler,
-    ): Promise<Observable<any>> {
+    ): Promise<Observable<unknown>> {
       const httpContext = context.switchToHttp()
       const request = httpContext.getRequest() as Request
 
