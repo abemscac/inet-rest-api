@@ -1,3 +1,5 @@
 import { SetMetadata } from '@nestjs/common'
 
-export const IsPublic = () => SetMetadata('isPublic', true)
+export const IsPublicMetadataSymbol = Symbol('isPublic')
+
+export const IsPublic = () => SetMetadata(IsPublicMetadataSymbol, true)

@@ -17,8 +17,8 @@ export interface IImgurUtilOAuth {
 }
 
 class ImgurUtilOAuth implements IImgurUtilOAuth {
-  private generateAccessTokenPromise: Promise<string>
-  private initialized: boolean
+  private generateAccessTokenPromise: Promise<string> | null
+  private initialized = false
 
   init(): void {
     if (this.initialized) {

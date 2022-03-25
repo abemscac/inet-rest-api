@@ -51,7 +51,7 @@ export class AuthService implements IAuthService {
     }
   }
 
-  private async updateRefreshTokenHashById(
+  private async updateHashedRefreshTokenById(
     id: number,
     token?: string,
   ): Promise<void> {
@@ -59,7 +59,7 @@ export class AuthService implements IAuthService {
     await this.userRepository.update(
       { id },
       {
-        refreshTokenHash: value,
+        hashedRefreshToken: value,
       },
     )
   }
@@ -71,7 +71,7 @@ export class AuthService implements IAuthService {
         select: [
           'id',
           'username',
-          'password',
+          'hashedPassword',
           'name',
           'avatarImageHash',
           'createdAt',
@@ -83,13 +83,16 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException()
     }
 
-    const passwordMatched = await bcrypt.compare(form.password, user.password)
+    const passwordMatched = await bcrypt.compare(
+      form.password,
+      user.hashedPassword,
+    )
     if (!passwordMatched) {
       throw new UnauthorizedException()
     }
 
     const tokens = await this.createTokens(user.id)
-    await this.updateRefreshTokenHashById(user.id, tokens.refreshToken)
+    await this.updateHashedRefreshTokenById(user.id, tokens.refreshToken)
 
     return {
       id: user.id,
@@ -103,31 +106,31 @@ export class AuthService implements IAuthService {
   }
 
   async refresh(): Promise<IAuthViewModel> {
-    const { id, token } = this.passportPermitService.user || {}
-    const user = await this.userRepository.findOne(
+    const { id = 0, token } = this.passportPermitService.user || {}
+    const user = await this.userRepository.findOneOrFail(
       {
         id,
         isRemoved: false,
       },
       {
-        select: ['refreshTokenHash'],
+        select: ['hashedRefreshToken'],
       },
     )
     const tokenMatched = await bcrypt.compare(
       token ?? '',
-      user?.refreshTokenHash ?? '',
+      user.hashedRefreshToken ?? '',
     )
     if (!tokenMatched) {
       throw new UnauthorizedException()
     }
     const tokens = await this.createTokens(id)
-    await this.updateRefreshTokenHashById(id, tokens.refreshToken)
+    await this.updateHashedRefreshTokenById(id, tokens.refreshToken)
     return tokens
   }
 
   async logout(): Promise<void> {
-    await this.updateRefreshTokenHashById(
-      this.passportPermitService.user.id,
+    await this.updateHashedRefreshTokenById(
+      this.passportPermitService.user?.id ?? 0,
       undefined,
     )
   }

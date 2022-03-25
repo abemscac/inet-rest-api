@@ -15,12 +15,12 @@ export interface IArticleViewModelProjection {
   articleViews: number
   articleLikes: number
   articleCreatedAt: Date
-  articleLastModifiedAt?: Date
-  authorId?: number
-  authorUsername?: string
-  authorName?: string
-  authorAvatarImageHash?: string
-  authorCreatedAt?: Date
+  articleLastModifiedAt: Date | null
+  authorId: number | null
+  authorUsername: string | null
+  authorName: string | null
+  authorAvatarImageHash: string | null
+  authorCreatedAt: Date | null
 }
 
 export const articleViewModelProjectionSelection = [
@@ -52,9 +52,9 @@ export const projectArticleViewModel = (
 ): IArticleViewModel => {
   const body = !options?.stripBody
     ? projection.articleBody
-    : new JSDOM(
+    : (new JSDOM(
         `<body>${projection.articleBody}</body>`,
-      ).window.document.body.textContent.substring(0, 200)
+      ).window.document.body.textContent?.substring(0, 200) as string)
   return {
     id: projection.articleId,
     category: {
@@ -65,11 +65,11 @@ export const projectArticleViewModel = (
     author: !projection.authorId
       ? null
       : {
-          id: projection.authorId,
-          username: projection.authorUsername,
+          id: projection.authorId as number,
+          username: projection.authorUsername as string,
           name: projection.authorName,
           avatarUrl: projection.authorAvatarImageHash,
-          createdAt: projection.authorCreatedAt,
+          createdAt: projection.authorCreatedAt as Date,
         },
     coverImageUrl: projection.articleCoverImageHash,
     title: projection.articleTitle,

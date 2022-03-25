@@ -105,13 +105,13 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     const totalCount = await this.queryBuilder.getCount()
     const totalPages = FLAG_UNLIMITED
       ? Number(totalCount > 0)
-      : Math.ceil(totalCount / limit)
+      : Math.ceil(totalCount / (limit as number))
 
     this.setOffsetAndLimit(params)
     const data = await this.getMappedArray()
 
     return {
-      page: FLAG_UNLIMITED ? 0 : page,
+      page: FLAG_UNLIMITED ? 0 : (page as number),
       limit: FLAG_UNLIMITED ? undefined : limit,
       totalCount,
       totalPages,
@@ -134,15 +134,15 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     const data = await this.getMappedArray()
 
     return {
-      cursor,
-      limit,
+      cursor: cursor as number,
+      limit: limit as number,
       data,
     }
   }
 
   private setOffsetAndLimit(params: PagableParams): void {
     const { page, limit, FLAG_UNLIMITED } = params
-    const offset = FLAG_UNLIMITED ? 0 : page * limit
+    const offset = FLAG_UNLIMITED ? 0 : (page as number) * (limit as number)
     this.queryBuilder.offset(offset).limit(FLAG_UNLIMITED ? undefined : limit)
   }
 

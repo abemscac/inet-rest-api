@@ -20,15 +20,16 @@ export class User extends Updatable {
   @Column({
     type: 'char',
     length: 60,
+    name: 'hashed_password',
   })
-  password: string
+  hashedPassword: string
 
   @Column({
     type: 'nvarchar',
     length: 50,
     nullable: true,
   })
-  name?: string
+  name: string | null
 
   @Column({
     type: 'varchar',
@@ -36,7 +37,7 @@ export class User extends Updatable {
     name: 'avatar_image_hash',
     nullable: true,
   })
-  avatarImageHash?: string
+  avatarImageHash: string | null
 
   @Column({
     type: 'varchar',
@@ -44,15 +45,15 @@ export class User extends Updatable {
     name: 'avatar_image_ext',
     nullable: true,
   })
-  avatarImageExt?: string
+  avatarImageExt: string | null
 
   @Column({
     type: 'char',
     length: 60,
-    name: 'refresh_token_hash',
+    name: 'hashed_refresh_token',
     nullable: true,
   })
-  refreshTokenHash?: string
+  hashedRefreshToken: string | null
 
   // relations
   @OneToMany(() => Article, (article) => article.author)

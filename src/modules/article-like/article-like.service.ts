@@ -27,13 +27,13 @@ export class ArticleLikeService implements IArticleLikeService {
     return await this.articleLikeRepository.findOneOrFail({
       where: {
         articleId,
-        userId: this.passportPermitService.user.id,
+        userId: this.passportPermitService.user?.id,
       },
     })
   }
 
   async create({ articleId }: ArticleLikeCreateForm): Promise<ArticleLike> {
-    const userId = this.passportPermitService.user.id
+    const userId = this.passportPermitService.user?.id
     const prevEntity = await this.articleLikeRepository.findOne({
       articleId,
       userId,
@@ -53,7 +53,7 @@ export class ArticleLikeService implements IArticleLikeService {
   async deleteOneByQuery({
     articleId,
   }: ArticleLikeFindOneByQueryParams): Promise<void> {
-    const userId = this.passportPermitService.user.id
+    const userId = this.passportPermitService.user?.id
     await TypeORMUtil.existOrFail(this.articleLikeRepository, {
       userId,
       articleId,

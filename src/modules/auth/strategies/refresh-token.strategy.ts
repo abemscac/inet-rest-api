@@ -6,10 +6,12 @@ import { getAppConfig } from 'src/app.config'
 import { IPassportPermitUser } from 'src/modules/passport-permit/i-passport-permit-user'
 import { IJwtPayload } from '../interfaces/i-jwt-payload'
 
+export const RefreshTokenStrategyName = 'refresh-token'
+
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  'refresh-token',
+  RefreshTokenStrategyName,
 ) {
   constructor() {
     const { refreshTokenSecret } = getAppConfig().inetAuth
@@ -24,7 +26,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const token = request.headers.authorization?.replace('Bearer', '').trim()
     return {
       id: payload.sub,
-      token,
+      token: token ?? '',
     }
   }
 }

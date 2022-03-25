@@ -5,14 +5,14 @@ import { IArticleCommentViewModel } from '../view-models/i-article-comment.view-
 
 interface IArticleCommentViewModelProjection {
   commentId: number
-  commentBody: string
+  commentBody: string | null
   commentCreatedAt: Date
   commentIsRemoved: boolean
-  authorId?: number
-  authorUsername?: string
-  authorName?: string
-  authorAvatarImageHash?: string
-  authorCreatedAt?: Date
+  authorId: number | null
+  authorUsername: string | null
+  authorName: string | null
+  authorAvatarImageHash: string | null
+  authorCreatedAt: Date | null
 }
 
 export class ArticleCommentViewModelProjector extends BaseProjector<
@@ -41,13 +41,13 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
     super.setMapper((projection) => ({
       id: projection.commentId,
       author: !projection.authorId
-        ? undefined
+        ? null
         : {
             id: projection.authorId,
-            username: projection.authorUsername,
+            username: projection.authorUsername as string,
             name: projection.authorName,
             avatarUrl: projection.authorAvatarImageHash,
-            createdAt: projection.authorCreatedAt,
+            createdAt: projection.authorCreatedAt as Date,
           },
       body: projection.commentBody,
       createdAt: projection.commentCreatedAt,

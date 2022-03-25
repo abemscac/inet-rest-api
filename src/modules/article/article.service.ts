@@ -5,7 +5,7 @@ import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { DateUtil } from 'src/utils/date.util'
 import { ImgurUtil } from 'src/utils/imgur.util'
 import { TypeORMUtil } from 'src/utils/typeorm.util'
-import { Connection, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { ArticleCategory } from '../article-category/article-category.entity'
 import { ImgurAlbum } from '../imgur/imgur.constants'
 import { ImgurService } from '../imgur/imgur.service'
@@ -42,7 +42,6 @@ export class ArticleService implements IArticleService {
     private readonly userBrowseHistoryService: UserBrowseHistoryService,
     private readonly passportPermitService: PassportPermitService,
     private readonly imgurService: ImgurService,
-    private readonly connection: Connection,
   ) {}
 
   async findTopByQuery(
@@ -92,17 +91,16 @@ export class ArticleService implements IArticleService {
       })
       .projectOrFail()
 
-    // We don't care whether the increment of views is done before the
-    // API returns, so there's no need to await here.
-    this.articleRepository.update(
-      { id },
-      {
-        views: article.views + 1,
-      },
-    )
+    // The increment doesn't have to be done before the API returns, so there's no need to await here.
+    this.articleRepository
+      .createQueryBuilder()
+      .update(Article)
+      .set({ views: () => 'views + 1' })
+      .where({ id })
+      .execute()
 
     if (this.passportPermitService.user?.id) {
-      // We don't care whether the creation of user-browse-history is done before the
+      // The creation of user-browse-history doesn't have to be done before the
       // API returns, so there's no need to await here.
       this.userBrowseHistoryService.create({
         articleId: id,
@@ -115,7 +113,8 @@ export class ArticleService implements IArticleService {
   async create(form: ArticleCreateForm): Promise<IArticleViewModel> {
     await this.validateCategory(form.categoryId)
 
-    let imageHash: string, articleId: number
+    let imageHash = '',
+      articleId = 0
     try {
       const image = await this.imgurService.uploadImage(form.coverImage, {
         album: ImgurAlbum.Article,
@@ -127,7 +126,7 @@ export class ArticleService implements IArticleService {
         coverImageExt: ImgurUtil.getExtFromLink(image.link),
         title: form.title,
         body: form.body,
-        authorId: this.passportPermitService.user.id,
+        authorId: this.passportPermitService.user?.id,
       })
       await this.articleRepository.insert(article)
       articleId = article.id
@@ -159,7 +158,7 @@ export class ArticleService implements IArticleService {
       body: form.body,
     }
 
-    let newImageHash: string
+    let newImageHash = ''
     try {
       if (form.coverImage) {
         const newImage = await this.imgurService.uploadImage(form.coverImage, {

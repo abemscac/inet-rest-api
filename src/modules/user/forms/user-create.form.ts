@@ -14,10 +14,10 @@ export class UserCreateForm {
 
   @Length(0, 50)
   @Transform((params) => params.value?.trim())
-  name?: string
+  name?: string | null
 
   /**
    * This field will be assigned in FastifyFileInterceptor
    */
-  avatar?: Express.Multer.File
+  avatar?: Express.Multer.File | null
 }

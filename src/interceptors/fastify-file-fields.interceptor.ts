@@ -57,14 +57,18 @@ function FastifyFileFields(
       )
 
       for (const key in fields) {
-        const fileCount = request.files?.[key]?.length ?? 0
-        const { minCount } = fields[key]
+        const record = request.files as
+          | Record<string, Array<Express.Multer.File>>
+          | undefined
+        const files = record?.[key]
+        const fileCount = files?.length ?? 0
+        const { minCount = 0 } = fields[key]
         if (fileCount < minCount) {
           throw new BadRequestException(
             `At least ${minCount} files for '${key}' is required, but only received ${fileCount}.`,
           )
         }
-        request.body[key] = request.files?.[key]
+        request.body[key] = files
       }
 
       return next.handle()

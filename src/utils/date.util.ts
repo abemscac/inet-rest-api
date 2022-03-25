@@ -1,5 +1,5 @@
 export interface IDateUtil {
-  timeLapse(base: Date, options?: ITimeLapseOptions): Date
+  timeLapse(base: Date, options: ITimeLapseOptions): Date
 }
 
 export interface ITimeLapseOptions {
@@ -10,7 +10,7 @@ export interface ITimeLapseOptions {
 }
 
 class Util implements IDateUtil {
-  timeLapse(base: Date, options?: ITimeLapseOptions): Date {
+  timeLapse(base: Date, options: ITimeLapseOptions): Date {
     const { year = 0, month = 0, week = 0, day = 0 } = options
     const date = new Date(base)
 

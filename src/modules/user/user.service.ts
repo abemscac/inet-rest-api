@@ -54,12 +54,12 @@ export class UserService implements IUserService {
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = this.userRepository.create({
       username,
-      password: hashedPassword,
+      hashedPassword,
       name: name || null,
     })
 
-    let avatarHash: string,
-      avatarUrl: string = null
+    let avatarHash = '',
+      avatarUrl = ''
     try {
       if (form.avatar) {
         const image = await this.imgurService.uploadImage(form.avatar, {
@@ -88,13 +88,13 @@ export class UserService implements IUserService {
   }
 
   async updateProfile(form: UserUpdateProfileForm): Promise<void> {
-    const { id } = this.passportPermitService.user
+    const { id = 0 } = this.passportPermitService.user ?? {}
     await TypeORMUtil.existOrFail(this.userRepository, { id, isRemoved: false })
     const user: Partial<User> = {
       name: form.name,
     }
 
-    let newImageHash: string
+    let newImageHash = ''
     try {
       if (form.avatar) {
         const newImage = await this.imgurService.uploadImage(form.avatar, {
@@ -113,30 +113,36 @@ export class UserService implements IUserService {
   }
 
   async updatePassword(form: UserUpdatePasswordForm): Promise<void> {
-    const { id } = this.passportPermitService.user
+    const { id = 0 } = this.passportPermitService.user ?? {}
     const user = await this.userRepository.findOneOrFail(
       {
         id,
         isRemoved: false,
       },
       {
-        select: ['password'],
+        select: ['hashedPassword'],
       },
     )
     const { oldPassword, newPassword } = form
-    const passwordMatched = await bcrypt.compare(oldPassword, user.password)
+    const passwordMatched = await bcrypt.compare(
+      oldPassword,
+      user.hashedPassword,
+    )
     if (!passwordMatched) {
       throw new BusinessLogicException(UserErrors.OldPasswordUnmatched)
     }
     const hashedNewPassword = await bcrypt.hash(newPassword, 10)
     await this.userRepository.update(
       { id },
-      { password: hashedNewPassword, refreshTokenHash: null },
+      {
+        hashedPassword: hashedNewPassword,
+        hashedRefreshToken: null,
+      },
     )
   }
 
   async remove(): Promise<void> {
-    const { id } = this.passportPermitService.user
+    const { id = 0 } = this.passportPermitService.user ?? {}
     const user = await this.userRepository.findOne(
       {
         id,
@@ -153,7 +159,7 @@ export class UserService implements IUserService {
       await this.userRepository.update(
         { id },
         {
-          refreshTokenHash: null,
+          hashedRefreshToken: null,
           removedAt: new Date(),
           isRemoved: true,
         },

@@ -51,7 +51,7 @@ export class ArticleCommentService implements IArticleCommentService {
     })
     const comment = this.articleCommentRepository.create({
       articleId: form.articleId,
-      authorId: this.passportPermitService.user.id,
+      authorId: this.passportPermitService.user?.id,
       body: form.body,
     })
     await this.articleCommentRepository.insert(comment)

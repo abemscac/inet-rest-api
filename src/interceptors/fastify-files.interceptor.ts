@@ -62,15 +62,17 @@ function FastifyFiles(
         ),
       )
 
-      if (request.files?.length < localOptions?.minCount) {
-        throw new BadRequestException(
-          `At least ${localOptions?.minCount} files for '${fieldName}' is required, but only received ${request.files?.length}.`,
-        )
-      } else if (Array.isArray(request.files) && request.files.length) {
-        validateAccept(localOptions?.accept)
-        request.files?.forEach((file) =>
-          validateExtensions(fieldName, file, localOptions?.accept),
-        )
+      if (Array.isArray(request.files)) {
+        if (request.files.length < (localOptions?.minCount ?? 0)) {
+          throw new BadRequestException(
+            `At least ${localOptions?.minCount} files for '${fieldName}' is required, but only received ${request.files?.length}.`,
+          )
+        } else if (request.files.length) {
+          validateAccept(localOptions?.accept)
+          request.files?.forEach((file) =>
+            validateExtensions(fieldName, file, localOptions?.accept),
+          )
+        }
       }
 
       request.body[fieldName] = request.files

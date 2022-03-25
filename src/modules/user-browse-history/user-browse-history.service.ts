@@ -36,7 +36,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       'history',
     )
       .where('history.userId = :userId', {
-        userId: this.passportPermitService.user.id,
+        userId: this.passportPermitService.user?.id ?? 0,
       })
       .orderBy('history.createdAt', 'DESC')
       .projectPagination(params)
@@ -46,7 +46,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
   async create(
     form: UserBrowseHistoryCreateForm,
   ): Promise<IUserBrowseHistoryViewModel> {
-    const userId = this.passportPermitService.user.id
+    const { id: userId = 0 } = this.passportPermitService.user ?? {}
     const { articleId } = form
     const prevHistory = await this.userBrowseHistoryRepository.findOne({
       userId,
@@ -96,7 +96,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
 
   async clear(): Promise<void> {
     await this.userBrowseHistoryRepository.delete({
-      userId: this.passportPermitService.user.id,
+      userId: this.passportPermitService.user?.id ?? 0,
     })
   }
 }

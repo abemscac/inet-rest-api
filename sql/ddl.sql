@@ -4,11 +4,11 @@ CREATE TABLE `user`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
     `username` VARCHAR(50) NOT NULL,
-    `password` CHAR(60) NOT NULL,
+    `hashed_password` CHAR(60) NOT NULL,
     `name` NVARCHAR(50),
     `avatar_image_hash` VARCHAR(20),
     `avatar_image_ext` VARCHAR(5),
-    `refresh_token_hash` CHAR(60),
+    `hashed_refresh_token` CHAR(60),
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `last_modified_at` TIMESTAMP,
     `removed_at` TIMESTAMP,
