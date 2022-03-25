@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   BadRequestException,
   CallHandler,
   ExecutionContext,
@@ -8,12 +9,14 @@ import {
   NestInterceptor,
   Optional,
   Type,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
 import { Request } from 'express'
 import FastifyMulter from 'fastify-multer'
 import { Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
+import { FileUploadGuard } from 'src/modules/imgur/file-upload.guard'
 
 interface IFastifyFileInterceptorOptions extends Options {
   /**
@@ -101,4 +104,8 @@ const FastifyFile = (
 export const FastifyFileInterceptor = (
   fieldName: string,
   localOptions?: IFastifyFileInterceptorOptions,
-) => UseInterceptors(FastifyFile(fieldName, localOptions))
+) =>
+  applyDecorators(
+    UseGuards(FileUploadGuard),
+    UseInterceptors(FastifyFile(fieldName, localOptions)),
+  )

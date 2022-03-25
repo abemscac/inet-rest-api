@@ -17,7 +17,6 @@ import { PagableParamsValidationPipe } from 'src/pipes/pagable-params.validation
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
-import { ImageUploadGuard } from '../imgur/image-upload.guard'
 import { ArticleService } from './article.service'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
@@ -46,7 +45,6 @@ export class ArticleController {
     return await this.articleService.findById(id)
   }
 
-  @UseGuards(ImageUploadGuard)
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
   async create(@Body() form: ArticleCreateForm): Promise<IArticleViewModel> {

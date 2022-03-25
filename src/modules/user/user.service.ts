@@ -3,8 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
 import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
+import { ImgurUtil } from 'src/utils/imgur.util'
 import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Repository } from 'typeorm'
+import { ImgurAlbum } from '../imgur/imgur.constants'
+import { ImgurService } from '../imgur/imgur.service'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserCreateForm } from './forms/user-create.form'
 import { UserUpdatePasswordForm } from './forms/user-update-password.form'
@@ -27,6 +30,7 @@ export class UserService implements IUserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly passportPermitService: PassportPermitService,
+    private readonly imgurService: ImgurService,
   ) {}
 
   async findByUsername(username: string): Promise<IUserViewModel> {
@@ -46,19 +50,39 @@ export class UserService implements IUserService {
     if (duplicateUsername) {
       throw new BusinessLogicException(UserErrors.DuplicateUsername)
     }
+
     const hashedPassword = await bcrypt.hash(password, 10)
     const user = this.userRepository.create({
       username,
       password: hashedPassword,
-      name: name?.trim() || null,
-      avatarImageHash: 'TODO',
+      name: name || null,
     })
-    await this.userRepository.insert(user)
+
+    let avatarHash: string,
+      avatarUrl: string = null
+    try {
+      if (form.avatar) {
+        const image = await this.imgurService.uploadImage(form.avatar, {
+          album: ImgurAlbum.UserAvatar,
+        })
+        avatarHash = image.id
+        avatarUrl = image.link
+        user.avatarImageHash = image.id
+        user.avatarImageExt = ImgurUtil.getExtFromLink(image.link)
+      }
+      await this.userRepository.insert(user)
+    } catch (error) {
+      if (avatarHash) {
+        await this.imgurService.deleteImage(avatarHash)
+      }
+      throw error
+    }
+
     return {
       id: user.id,
       username,
       name: user.name,
-      avatarUrl: user.avatarImageHash,
+      avatarUrl: avatarUrl,
       createdAt: user.createdAt,
     }
   }
@@ -66,13 +90,26 @@ export class UserService implements IUserService {
   async updateProfile(form: UserUpdateProfileForm): Promise<void> {
     const { id } = this.passportPermitService.user
     await TypeORMUtil.existOrFail(this.userRepository, { id, isRemoved: false })
-    await this.userRepository.update(
-      { id },
-      {
-        name: form.name?.trim() || null,
-        avatarImageHash: 'TODO',
-      },
-    )
+    const user: Partial<User> = {
+      name: form.name,
+    }
+
+    let newImageHash: string
+    try {
+      if (form.avatar) {
+        const newImage = await this.imgurService.uploadImage(form.avatar, {
+          album: ImgurAlbum.UserAvatar,
+        })
+        newImageHash = newImage.id
+        user.avatarImageHash = newImage.id
+        user.avatarImageExt = ImgurUtil.getExtFromLink(newImage.link)
+      }
+      await this.userRepository.update({ id }, user)
+    } catch (error) {
+      if (newImageHash) {
+        await this.imgurService.deleteImage(newImageHash)
+      }
+    }
   }
 
   async updatePassword(form: UserUpdatePasswordForm): Promise<void> {

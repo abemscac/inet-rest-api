@@ -1,14 +1,23 @@
+import { Transform } from 'class-transformer'
 import { IsNotEmpty, Length } from 'class-validator'
 
 export class UserCreateForm {
-  @Length(4, 50)
   @IsNotEmpty()
+  @Length(4, 50)
+  @Transform((params) => params.value?.trim())
   username: string
 
-  @Length(4, 60)
   @IsNotEmpty()
+  @Length(4, 60)
+  @Transform((params) => params.value?.trim())
   password: string
 
   @Length(0, 50)
+  @Transform((params) => params.value?.trim())
   name?: string
+
+  /**
+   * This field will be assigned in FastifyFileInterceptor
+   */
+  avatar?: Express.Multer.File
 }

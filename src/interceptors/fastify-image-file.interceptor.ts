@@ -1,3 +1,5 @@
+import { applyDecorators, UseGuards } from '@nestjs/common'
+import { FileUploadGuard } from 'src/modules/imgur/file-upload.guard'
 import { FastifyFileInterceptor } from './fastify-file.interceptor'
 
 interface IFastifyImageFileInterceptorOptions {
@@ -6,9 +8,12 @@ interface IFastifyImageFileInterceptorOptions {
 
 export const FastifyImageFileInterceptor = (
   fieldName: string,
-  options?: IFastifyImageFileInterceptorOptions,
+  options: IFastifyImageFileInterceptorOptions,
 ) =>
-  FastifyFileInterceptor(fieldName, {
-    ...options,
-    accept: ['.jpg', '.jpeg', '.png'],
-  })
+  applyDecorators(
+    UseGuards(FileUploadGuard),
+    FastifyFileInterceptor(fieldName, {
+      ...options,
+      accept: ['.jpg', '.jpeg', '.png'],
+    }),
+  )

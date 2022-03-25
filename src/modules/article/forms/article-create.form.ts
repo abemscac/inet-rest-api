@@ -1,10 +1,10 @@
-import { Type } from 'class-transformer'
+import { Transform, Type } from 'class-transformer'
 import { IsInt, IsNotEmpty } from 'class-validator'
 
 export class ArticleCreateForm {
+  @IsNotEmpty()
   @IsInt()
   @Type(() => Number)
-  @IsNotEmpty()
   categoryId: number
 
   /**
@@ -13,8 +13,10 @@ export class ArticleCreateForm {
   coverImage: Express.Multer.File
 
   @IsNotEmpty()
+  @Transform((params) => params.value?.trim())
   title: string
 
   @IsNotEmpty()
+  @Transform((params) => params.value?.trim())
   body: string
 }

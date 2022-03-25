@@ -1,5 +1,7 @@
 import { HttpService } from '@nestjs/axios'
+import { InjectQueue } from '@nestjs/bull'
 import { Injectable } from '@nestjs/common'
+import { Queue } from 'bull'
 import * as FormData from 'form-data'
 import { firstValueFrom, map } from 'rxjs'
 import { getAppConfig } from 'src/app.config'
@@ -7,6 +9,11 @@ import { BusinessLogicException } from 'src/base-exceptions/business-logic.excep
 import { ImgurUtil } from 'src/utils/imgur.util'
 import { ImgurAlbum, IMGUR_MAX_IMAGE_SIZE } from './imgur.constants'
 import { ImgurErrors } from './imgur.errors'
+import {
+  IImgurQueuePayload,
+  ImgurQueueEvent,
+  ImgurQueueName,
+} from './imgur.queue'
 import {
   IImgurImage,
   IImgurUploadImageResponseModel,
@@ -26,7 +33,11 @@ interface IImgurServiceUploadImageOptions {
 
 @Injectable()
 export class ImgurService implements IImgurService {
-  constructor(private readonly httpService: HttpService) {
+  constructor(
+    private readonly httpService: HttpService,
+    @InjectQueue(ImgurQueueName)
+    private readonly imgurQueue: Queue<IImgurQueuePayload>,
+  ) {
     ImgurUtil.oauth.init()
   }
 
@@ -62,14 +73,8 @@ export class ImgurService implements IImgurService {
   }
 
   async deleteImage(hash: string): Promise<void> {
-    const { deleteApiUrl } = getAppConfig().imgur.image
-    const accessToken = await ImgurUtil.oauth.getAccessToken()
-    await firstValueFrom(
-      this.httpService.delete(`${deleteApiUrl}/${hash}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }),
-    )
+    await this.imgurQueue.add(ImgurQueueEvent.RemoveImage, {
+      hash,
+    })
   }
 }

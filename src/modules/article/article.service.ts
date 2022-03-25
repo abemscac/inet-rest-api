@@ -1,7 +1,5 @@
-import { InjectQueue } from '@nestjs/bull'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Queue } from 'bull'
 import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { DateUtil } from 'src/utils/date.util'
@@ -15,11 +13,6 @@ import { PassportPermitService } from '../passport-permit/passport-permit.servic
 import { UserBrowseHistoryService } from '../user-browse-history/user-browse-history.service'
 import { Article } from './article.entity'
 import { ArticleErrors } from './article.errors'
-import {
-  ArticleQueueEventType,
-  ArticleQueueName,
-  IArticleQueuePayload,
-} from './article.queue'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import {
@@ -46,8 +39,6 @@ export class ArticleService implements IArticleService {
     private readonly articleRepository: Repository<Article>,
     @InjectRepository(ArticleCategory)
     private readonly articleCategoryRepository: Repository<ArticleCategory>,
-    @InjectQueue(ArticleQueueName)
-    private readonly articleQueue: Queue<IArticleQueuePayload>,
     private readonly userBrowseHistoryService: UserBrowseHistoryService,
     private readonly passportPermitService: PassportPermitService,
     private readonly imgurService: ImgurService,
@@ -123,34 +114,31 @@ export class ArticleService implements IArticleService {
 
   async create(form: ArticleCreateForm): Promise<IArticleViewModel> {
     await this.validateCategory(form.categoryId)
-    return await TypeORMUtil.transaction(
-      this.connection,
-      async (manager, commit) => {
-        let imageHash: string
-        try {
-          const image = await this.imgurService.uploadImage(form.coverImage, {
-            album: ImgurAlbum.Article,
-          })
-          imageHash = image.id
-          const article = this.articleRepository.create({
-            categoryId: form.categoryId,
-            coverImageHash: image.id,
-            coverImageExt: ImgurUtil.getExtFromLink(image.link),
-            title: form.title.trim(),
-            body: form.body.trim(),
-            authorId: this.passportPermitService.user.id,
-          })
-          await manager.insert(Article, article)
-          await commit()
-          return await this.findById(article.id)
-        } catch (error) {
-          if (imageHash) {
-            await this.addDeleteImageJobToQueue(imageHash)
-          }
-          throw error
-        }
-      },
-    )
+
+    let imageHash: string, articleId: number
+    try {
+      const image = await this.imgurService.uploadImage(form.coverImage, {
+        album: ImgurAlbum.Article,
+      })
+      imageHash = image.id
+      const article = this.articleRepository.create({
+        categoryId: form.categoryId,
+        coverImageHash: image.id,
+        coverImageExt: ImgurUtil.getExtFromLink(image.link),
+        title: form.title,
+        body: form.body,
+        authorId: this.passportPermitService.user.id,
+      })
+      await this.articleRepository.insert(article)
+      articleId = article.id
+    } catch (error) {
+      if (imageHash) {
+        await this.imgurService.deleteImage(imageHash)
+      }
+      throw error
+    }
+
+    return await this.findById(articleId)
   }
 
   async updateById(id: number, form: ArticleUpdateForm): Promise<void> {
@@ -160,56 +148,34 @@ export class ArticleService implements IArticleService {
     )
     this.passportPermitService.permitOrFail(article.authorId)
 
-    if (form.categoryId !== article.categoryId) {
+    const categoryChanged = form.categoryId !== article.categoryId
+    if (categoryChanged) {
       await this.validateCategory(form.categoryId)
     }
 
-    const [trimmedTitle, trimmedBody] = [form.title.trim(), form.body.trim()]
+    const partialArticle: Partial<Article> = {
+      categoryId: categoryChanged ? form.categoryId : undefined,
+      title: form.title,
+      body: form.body,
+    }
 
-    if (!form.coverImage) {
-      await this.articleRepository.update(
-        { id },
-        {
-          categoryId: form.categoryId,
-          title: trimmedTitle,
-          body: trimmedBody,
-        },
-      )
-    } else {
-      await TypeORMUtil.transaction(
-        this.connection,
-        async (manager, commit) => {
-          let newImageHash: string
-          const prevImageHash = article.coverImageHash
-          try {
-            const newImage = await this.imgurService.uploadImage(
-              form.coverImage,
-              {
-                album: ImgurAlbum.Article,
-              },
-            )
-            newImageHash = newImage.id
-            await manager.update(
-              Article,
-              { id },
-              {
-                categoryId: form.categoryId,
-                coverImageHash: newImage.id,
-                coverImageExt: ImgurUtil.getExtFromLink(newImage.link),
-                title: trimmedTitle,
-                body: trimmedBody,
-              },
-            )
-            await this.addDeleteImageJobToQueue(prevImageHash)
-            await commit()
-          } catch (error) {
-            if (newImageHash) {
-              await this.addDeleteImageJobToQueue(newImageHash)
-            }
-            throw error
-          }
-        },
-      )
+    let newImageHash: string
+    try {
+      if (form.coverImage) {
+        const newImage = await this.imgurService.uploadImage(form.coverImage, {
+          album: ImgurAlbum.Article,
+        })
+        newImageHash = newImage.id
+        partialArticle.coverImageHash = newImage.id
+        partialArticle.coverImageExt = ImgurUtil.getExtFromLink(newImage.link)
+        await this.articleRepository.update({ id }, partialArticle)
+        await this.imgurService.deleteImage(article.coverImageHash)
+      }
+    } catch (error) {
+      if (newImageHash) {
+        await this.imgurService.deleteImage(newImageHash)
+      }
+      throw error
     }
   }
 
@@ -243,11 +209,5 @@ export class ArticleService implements IArticleService {
     if (!categoryExists) {
       throw new BusinessLogicException(ArticleErrors.CategoryDoesNotExist)
     }
-  }
-
-  private async addDeleteImageJobToQueue(imageHash: string): Promise<void> {
-    await this.articleQueue.add(ArticleQueueEventType.RemoveCoverImage, {
-      coverImageHash: imageHash,
-    })
   }
 }

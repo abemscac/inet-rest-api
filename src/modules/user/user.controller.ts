@@ -10,6 +10,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common'
+import { FastifyImageFileInterceptor } from 'src/interceptors/fastify-image-file.interceptor'
 import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { UserCreateForm } from './forms/user-create.form'
@@ -29,6 +30,7 @@ export class UserController {
   }
 
   @Post()
+  @FastifyImageFileInterceptor('avatar', { required: false })
   async create(@Body() form: UserCreateForm): Promise<IUserViewModel> {
     return await this.userService.create(form)
   }
@@ -36,6 +38,7 @@ export class UserController {
   @UseGuards(AccessTokenAuthGuard)
   @Put('profile')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @FastifyImageFileInterceptor('avatar', { required: false })
   async updateProfile(@Body() form: UserUpdateProfileForm): Promise<void> {
     return await this.userService.updateProfile(form)
   }
