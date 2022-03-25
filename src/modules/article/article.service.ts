@@ -1,5 +1,7 @@
+import { InjectQueue } from '@nestjs/bull'
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Queue } from 'bull'
 import { BusinessLogicException } from 'src/base-exceptions/business-logic.exception'
 import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
 import { DateUtil } from 'src/utils/date.util'
@@ -13,6 +15,11 @@ import { PassportPermitService } from '../passport-permit/passport-permit.servic
 import { UserBrowseHistoryService } from '../user-browse-history/user-browse-history.service'
 import { Article } from './article.entity'
 import { ArticleErrors } from './article.errors'
+import {
+  ArticleQueueEventType,
+  ArticleQueueName,
+  IArticleQueuePayload,
+} from './article.queue'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import {
@@ -39,6 +46,8 @@ export class ArticleService implements IArticleService {
     private readonly articleRepository: Repository<Article>,
     @InjectRepository(ArticleCategory)
     private readonly articleCategoryRepository: Repository<ArticleCategory>,
+    @InjectQueue(ArticleQueueName)
+    private readonly articleQueue: Queue<IArticleQueuePayload>,
     private readonly userBrowseHistoryService: UserBrowseHistoryService,
     private readonly passportPermitService: PassportPermitService,
     private readonly imgurService: ImgurService,
@@ -86,7 +95,10 @@ export class ArticleService implements IArticleService {
       this.articleRepository,
       'article',
     )
-      .where('article.id = :id', { id })
+      .where('article.id = :id AND article.is_removed = :isRemoved', {
+        id,
+        isRemoved: false,
+      })
       .projectOrFail()
 
     // We don't care whether the increment of views is done before the
@@ -113,8 +125,8 @@ export class ArticleService implements IArticleService {
     await this.validateCategory(form.categoryId)
     return await TypeORMUtil.transaction(
       this.connection,
-      async (manager, commit, rollback) => {
-        let imageHash: string, articleId: number
+      async (manager, commit) => {
+        let imageHash: string
         try {
           const image = await this.imgurService.uploadImage(form.coverImage, {
             album: ImgurAlbum.Article,
@@ -124,17 +136,17 @@ export class ArticleService implements IArticleService {
             categoryId: form.categoryId,
             coverImageHash: image.id,
             coverImageExt: ImgurUtil.getExtFromLink(image.link),
-            title: form.title,
-            body: form.body,
+            title: form.title.trim(),
+            body: form.body.trim(),
             authorId: this.passportPermitService.user.id,
           })
           await manager.insert(Article, article)
           await commit()
-          articleId = article.id
           return await this.findById(article.id)
         } catch (error) {
-          if (imageHash) await this.imgurService.deleteImage(imageHash)
-          if (articleId) await rollback()
+          if (imageHash) {
+            await this.addDeleteImageJobToQueue(imageHash)
+          }
           throw error
         }
       },
@@ -158,6 +170,7 @@ export class ArticleService implements IArticleService {
       await this.articleRepository.update(
         { id },
         {
+          categoryId: form.categoryId,
           title: trimmedTitle,
           body: trimmedBody,
         },
@@ -165,28 +178,34 @@ export class ArticleService implements IArticleService {
     } else {
       await TypeORMUtil.transaction(
         this.connection,
-        async (manager, commit, rollback) => {
+        async (manager, commit) => {
+          let newImageHash: string
+          const prevImageHash = article.coverImageHash
           try {
-            const image = await this.imgurService.uploadImage(form.coverImage, {
-              album: ImgurAlbum.Article,
-            })
+            const newImage = await this.imgurService.uploadImage(
+              form.coverImage,
+              {
+                album: ImgurAlbum.Article,
+              },
+            )
+            newImageHash = newImage.id
             await manager.update(
               Article,
               { id },
               {
                 categoryId: form.categoryId,
-                coverImageHash: image.id,
-                coverImageExt: ImgurUtil.getExtFromLink(image.link),
+                coverImageHash: newImage.id,
+                coverImageExt: ImgurUtil.getExtFromLink(newImage.link),
                 title: trimmedTitle,
                 body: trimmedBody,
               },
             )
-            await this.imgurService.deleteImage(article.coverImageHash)
+            await this.addDeleteImageJobToQueue(prevImageHash)
             await commit()
           } catch (error) {
-            // TODO: write log into files to catch uploaded-but-never-used image and
-            // failed-removal image
-            await rollback()
+            if (newImageHash) {
+              await this.addDeleteImageJobToQueue(newImageHash)
+            }
             throw error
           }
         },
@@ -224,5 +243,11 @@ export class ArticleService implements IArticleService {
     if (!categoryExists) {
       throw new BusinessLogicException(ArticleErrors.CategoryDoesNotExist)
     }
+  }
+
+  private async addDeleteImageJobToQueue(imageHash: string): Promise<void> {
+    await this.articleQueue.add(ArticleQueueEventType.RemoveCoverImage, {
+      coverImageHash: imageHash,
+    })
   }
 }

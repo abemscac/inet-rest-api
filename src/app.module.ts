@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -18,6 +19,12 @@ import { UserModule } from './modules/user/user.module'
     ConfigModule.forRoot({
       cache: true,
       load: [getAppConfig],
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
     }),
     ArticleModule,
     ArticleCategoryModule,

@@ -44,9 +44,7 @@ export const validateExtensions = (
   const accepted = accept.some((ext) => file.originalname.endsWith(ext))
   if (!accepted) {
     throw new BadRequestException(
-      `The extension of file '${fieldName}' must be one of ${accept.join(
-        ' ',
-      )}.`,
+      `File ${fieldName} must be one of ${accept.join(' ')} for this request.`,
     )
   }
 }
