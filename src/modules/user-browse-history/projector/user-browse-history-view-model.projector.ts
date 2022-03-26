@@ -1,10 +1,11 @@
 import { Repository } from 'typeorm'
 import { BaseProjector } from '~/base-projectors/base-projector'
 import {
+  articleViewModelPipe,
   articleViewModelProjectionSelection,
   IArticleViewModelProjection,
-  projectArticleViewModel,
 } from '~/modules/article/projectors/article-view-model.projector'
+import { IArticleViewModel } from '~/modules/article/view-models/i-article.view-model'
 import { UserBrowseHistory } from '../user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from '../view-models/i-user-browse-history.view-model'
 
@@ -39,12 +40,13 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
         .groupBy('article.id'),
       alias,
     )
-    super.setMapper((projection) => {
-      return {
-        id: projection.historyId,
-        article: projectArticleViewModel(projection, { stripBody: true }),
-        createdAt: projection.historyCreatedAt,
-      }
-    })
+    super.setPipes((_, projection) => ({
+      id: projection.historyId,
+      article: articleViewModelPipe({ stripBody: true })(
+        {},
+        projection,
+      ) as IArticleViewModel,
+      createdAt: projection.historyCreatedAt,
+    }))
   }
 }

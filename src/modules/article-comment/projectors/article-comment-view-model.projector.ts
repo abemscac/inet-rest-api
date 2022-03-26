@@ -38,7 +38,7 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
         ]),
       alias,
     )
-    super.setMapper((projection) => ({
+    super.setPipes((_, projection) => ({
       id: projection.commentId,
       author: !projection.authorId
         ? null

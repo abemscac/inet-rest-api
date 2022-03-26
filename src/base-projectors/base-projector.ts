@@ -1,43 +1,49 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common'
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
 import { PagableParams, Pagination } from '~/shared-params/pagable.params'
 import { ICursorPaginationViewModel } from '~/shared-view-models/i-cursor-pagination.view-model'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 
-export type IBaseProjectorMapper<TProjection, TResult> = (
-  projection: TProjection,
-  index: number,
-  source: Array<TProjection>,
-) => TResult
+export type IProjectorPipe<TResult, TProjection> = (
+  result: Partial<TResult>,
+  projection: Readonly<TProjection>,
+) => Partial<TResult>
 
-export type IBaseProjectorQueryCallback<TEntity> = (
-  queryBuilder: SelectQueryBuilder<TEntity>,
-) => void
-
-export interface IBaseProjector<T> {
-  get sql(): string
+export interface IBaseProjector<TResult extends Record<string, unknown>> {
+  getSql(): string
   where(where: string, parameters: ObjectLiteral): this
   andWhere(where: string, parameters: ObjectLiteral): this
   orderBy(sort: string, order?: 'ASC' | 'DESC'): this
-  project(): Promise<T>
-  projectOrFail(): Promise<T>
-  projectMany(): Promise<Array<T>>
+  project(): Promise<TResult>
+  projectOrFail(): Promise<TResult>
+  projectMany(): Promise<Array<TResult>>
   /**
    * You shou validate the params by {@link src/shared-params/pagable.params.ts} first.
    */
-  projectPagination(params: PagableParams): Promise<IPagableViewModel<T>>
+  projectPagination(params: PagableParams): Promise<IPagableViewModel<TResult>>
 }
 
-export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
-  private mapper?: IBaseProjectorMapper<TProjection, TResult>
+export class BaseProjector<
+  TEntity,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TResult extends Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TProjection extends Record<string, any> = TEntity,
+> implements IBaseProjector<TResult>
+{
+  private pipes: Array<IProjectorPipe<TResult, TProjection>> = []
 
   constructor(
     private readonly queryBuilder: SelectQueryBuilder<TEntity>,
     private readonly alias: string,
   ) {}
 
-  get sql(): string {
+  getSql(): string {
     return this.queryBuilder.getSql()
   }
 
@@ -56,16 +62,15 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     return this
   }
 
-  protected setMapper(
-    mapper: IBaseProjectorMapper<TProjection, TResult>,
+  protected setPipes(
+    ...pipes: Array<IProjectorPipe<TResult, TProjection>>
   ): this {
-    this.mapper = mapper
+    this.pipes = pipes
     return this
   }
 
   async project(): Promise<TResult> {
-    const projection = await this.queryBuilder.getRawOne()
-    return !this.mapper ? projection : this.mapper(projection, 0, [projection])
+    return this.pipeProjectionToResult(await this.queryBuilder.getRawOne())
   }
 
   async projectOrFail(): Promise<TResult> {
@@ -73,12 +78,19 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     if (!projection) {
       throw new NotFoundException()
     }
-    return !this.mapper ? projection : this.mapper(projection, 0, [projection])
+    return this.pipeProjectionToResult(projection)
   }
 
   async projectMany(): Promise<Array<TResult>> {
-    const projections = await this.queryBuilder.getRawMany()
-    return !this.mapper ? projections : projections.map(this.mapper)
+    // set data without storing result from getRawMany to prevent
+    // large amount of data taking too much space in memory
+    if (this.pipes.length) {
+      return (await this.queryBuilder.getRawMany()).map(
+        this.pipeProjectionToResult.bind(this),
+      )
+    } else {
+      return await this.queryBuilder.getRawMany()
+    }
   }
 
   async projectPagination(
@@ -108,7 +120,7 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
       : Math.ceil(totalCount / (limit as number))
 
     this.setOffsetAndLimit(params)
-    const data = await this.getMappedArray()
+    const data = await this.projectMany()
 
     return {
       page: FLAG_UNLIMITED ? 0 : (page as number),
@@ -131,7 +143,7 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     this.queryBuilder.where(`${this.alias}.id > :cursor`, { cursor })
 
     this.setOffsetAndLimit(params)
-    const data = await this.getMappedArray()
+    const data = await this.projectMany()
 
     return {
       cursor: cursor as number,
@@ -146,13 +158,19 @@ export class BaseProjector<TEntity, TResult, TProjection = TEntity> {
     this.queryBuilder.offset(offset).limit(FLAG_UNLIMITED ? undefined : limit)
   }
 
-  private async getMappedArray(): Promise<Array<TResult>> {
-    // set data without storing result from getRawMany to prevent
-    // large amount of data taking too much space in memory
-    if (this.mapper) {
-      return (await this.queryBuilder.getRawMany()).map(this.mapper)
-    } else {
-      return await this.queryBuilder.getRawMany()
+  private pipeProjectionToResult(projection?: TProjection): TResult {
+    if (!projection) {
+      throw new InternalServerErrorException(
+        `The projection to be piped must be truthy, but got ${projection}.`,
+      )
     }
+    return (
+      !this.pipes.length
+        ? projection
+        : this.pipes.reduce(
+            (result, nextPipe) => nextPipe(result, projection),
+            {} as Partial<TResult>,
+          )
+    ) as TResult
   }
 }

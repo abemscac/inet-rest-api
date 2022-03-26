@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { Repository } from 'typeorm'
-import { BaseProjector } from '~/base-projectors/base-projector'
+import { BaseProjector, IProjectorPipe } from '~/base-projectors/base-projector'
 import { Article } from '../article.entity'
 import { IArticleViewModel } from '../view-models/i-article.view-model'
 
@@ -42,27 +42,27 @@ export const articleViewModelProjectionSelection = [
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) as authorCreatedAt',
 ]
 
-interface IProjectArticleViewModelOptions {
-  stripBody?: boolean
+interface IArticleViewModelPipeOptions {
+  stripBody: boolean
 }
 
-export const projectArticleViewModel = (
-  projection: IArticleViewModelProjection,
-  options?: IProjectArticleViewModelOptions,
-): IArticleViewModel => {
-  const body = !options?.stripBody
-    ? projection.articleBody
-    : (new JSDOM(
-        `<body>${projection.articleBody}</body>`,
-      ).window.document.body.textContent?.substring(0, 200) as string)
-  return {
-    id: projection.articleId,
-    category: {
+export const articleViewModelPipe = (
+  options: IArticleViewModelPipeOptions,
+): IProjectorPipe<IArticleViewModel, IArticleViewModelProjection> => {
+  return (result, projection) => {
+    const body = !options.stripBody
+      ? projection.articleBody
+      : (new JSDOM(
+          `<body>${projection.articleBody}</body>`,
+        ).window.document.body.textContent?.substring(0, 200) as string)
+
+    result.id = projection.articleId
+    result.category = {
       id: projection.articleCategoryId,
       code: projection.articleCategoryCode,
       imageUrl: projection.articleCategoryImageHash,
-    },
-    author: !projection.authorId
+    }
+    result.author = !projection.authorId
       ? null
       : {
           id: projection.authorId as number,
@@ -70,14 +70,16 @@ export const projectArticleViewModel = (
           name: projection.authorName,
           avatarUrl: projection.authorAvatarImageHash,
           createdAt: projection.authorCreatedAt as Date,
-        },
-    coverImageUrl: projection.articleCoverImageHash,
-    title: projection.articleTitle,
-    body,
-    views: projection.articleViews,
-    likes: Number(projection.articleLikes),
-    createdAt: projection.articleCreatedAt,
-    lastModifiedAt: projection.articleLastModifiedAt ?? null,
+        }
+    result.coverImageUrl = projection.articleCoverImageHash
+    result.title = projection.articleTitle
+    result.body = body
+    result.views = projection.articleViews
+    result.likes = Number(projection.articleLikes)
+    result.createdAt = projection.articleCreatedAt
+    result.lastModifiedAt = projection.articleLastModifiedAt ?? null
+
+    return result
   }
 }
 
@@ -101,8 +103,6 @@ export class ArticleViewModelProjector extends BaseProjector<
         .groupBy(`${alias}.id`),
       alias,
     )
-    super.setMapper((projection) =>
-      projectArticleViewModel(projection, { stripBody: true }),
-    )
+    super.setPipes(articleViewModelPipe({ stripBody: true }))
   }
 }
