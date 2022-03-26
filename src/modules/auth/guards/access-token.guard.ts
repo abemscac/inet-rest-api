@@ -1,7 +1,10 @@
-import { ExecutionContext, Injectable } from '@nestjs/common'
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
-import { Observable } from 'rxjs'
 import { IsPublicMetadataSymbol } from '../decorators/is-public.decorator'
 import { AccessTokenStrategyName } from '../strategies/access-token.strategy'
 
@@ -11,13 +14,28 @@ export class AccessTokenAuthGuard extends AuthGuard(AccessTokenStrategyName) {
     super()
   }
 
-  canActivate(
+  private isPublic(context: ExecutionContext): boolean | undefined {
+    return this.reflector.getAllAndOverride(IsPublicMetadataSymbol, [
+      context.getHandler(),
+      context.getClass(),
+    ])
+  }
+
+  handleRequest(
+    err: unknown,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    user: any,
+    info: unknown,
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const isPublic: boolean | undefined = this.reflector.getAllAndOverride(
-      IsPublicMetadataSymbol,
-      [context.getHandler(), context.getClass()],
-    )
-    return isPublic || super.canActivate(context)
+  ) {
+    if (this.isPublic(context) || user) {
+      // By the design of AuthGuard from passport, the "user" here will be false (yes, boolean)
+      // when error occurred. Super weird.
+      return !user ? undefined : user
+    } else if (user) {
+      return user
+    } else {
+      throw new UnauthorizedException()
+    }
   }
 }

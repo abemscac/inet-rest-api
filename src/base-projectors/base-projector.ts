@@ -82,8 +82,8 @@ export class BaseProjector<
   }
 
   async projectMany(): Promise<Array<TResult>> {
-    // set data without storing result from getRawMany to prevent
-    // large amount of data taking too much space in memory
+    // Set data without storing result from getRawMany to prevent
+    // large amount of data taking too much space in memory.
     if (this.pipes.length) {
       return (await this.queryBuilder.getRawMany()).map(
         this.pipeProjectionToResult.bind(this),

@@ -1,8 +1,6 @@
 import { Transform } from 'class-transformer'
-import { IsNotEmpty } from 'class-validator'
 
 export class UserUpdateProfileForm {
-  @IsNotEmpty()
   @Transform((params) => params.value?.trim())
   name: string | null
 

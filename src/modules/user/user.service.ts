@@ -59,7 +59,7 @@ export class UserService implements IUserService {
     })
 
     let avatarHash = '',
-      avatarUrl = ''
+      avatarUrl: string | null = null
     try {
       if (form.avatar) {
         const image = await this.imgurService.uploadImage(form.avatar, {
@@ -82,7 +82,7 @@ export class UserService implements IUserService {
       id: user.id,
       username,
       name: user.name,
-      avatarUrl: avatarUrl,
+      avatarUrl,
       createdAt: user.createdAt,
     }
   }
