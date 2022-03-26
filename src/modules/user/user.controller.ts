@@ -10,8 +10,8 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common'
-import { FastifyImageFileInterceptor } from 'src/interceptors/fastify-image-file.interceptor'
-import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
+import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
+import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { UserCreateForm } from './forms/user-create.form'
 import { UserUpdatePasswordForm } from './forms/user-update-password.form'

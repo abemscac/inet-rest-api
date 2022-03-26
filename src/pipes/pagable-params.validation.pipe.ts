@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
-import { PagableParams } from 'src/shared-params/pagable.params'
+import { PagableParams } from '~/shared-params/pagable.params'
 
 @Injectable()
 export class PagableParamsValidationPipe implements PipeTransform {

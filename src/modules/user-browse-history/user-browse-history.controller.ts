@@ -9,9 +9,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { PagableParamsValidationPipe } from 'src/pipes/pagable-params.validation.pipe'
-import { PagableParams } from 'src/shared-params/pagable.params'
-import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
+import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
+import { PagableParams } from '~/shared-params/pagable.params'
+import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { UserBrowseHistoryService } from './user-browse-history.service'
 import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'

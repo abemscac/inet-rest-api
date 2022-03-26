@@ -1,5 +1,5 @@
-import { IArticleCategoryViewModel } from 'src/modules/article-category/view-models/i-article-category.view-model'
-import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
+import { IArticleCategoryViewModel } from '~/modules/article-category/view-models/i-article-category.view-model'
+import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 
 export interface IArticleViewModel {
   id: number

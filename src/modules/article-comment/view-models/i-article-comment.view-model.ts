@@ -1,4 +1,4 @@
-import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
+import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 
 export interface IArticleCommentViewModel {
   id: number

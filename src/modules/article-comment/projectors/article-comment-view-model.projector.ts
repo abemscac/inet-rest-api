@@ -1,5 +1,5 @@
-import { BaseProjector } from 'src/base-projectors/base-projector'
 import { Repository } from 'typeorm'
+import { BaseProjector } from '~/base-projectors/base-projector'
 import { ArticleComment } from '../article-comment.entity'
 import { IArticleCommentViewModel } from '../view-models/i-article-comment.view-model'
 

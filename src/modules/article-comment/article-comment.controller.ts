@@ -9,8 +9,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { PagableParamsValidationPipe } from 'src/pipes/pagable-params.validation.pipe'
-import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
+import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
+import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleCommentService } from './article-comment.service'

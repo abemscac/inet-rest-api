@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common'
 import * as FormData from 'form-data'
 import fetch from 'node-fetch'
-import { getAppConfig } from 'src/app.config'
+import { getAppConfig } from '~/app.config'
 
 export interface IImgurUtil {
   oauth: IImgurUtilOAuth

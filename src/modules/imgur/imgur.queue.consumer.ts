@@ -3,8 +3,8 @@ import { Process, Processor } from '@nestjs/bull'
 import { InternalServerErrorException } from '@nestjs/common'
 import { Job } from 'bull'
 import { firstValueFrom } from 'rxjs'
-import { getAppConfig } from 'src/app.config'
-import { ImgurUtil } from 'src/utils/imgur.util'
+import { getAppConfig } from '~/app.config'
+import { ImgurUtil } from '~/utils/imgur.util'
 import {
   IImgurQueuePayload,
   ImgurQueueEvent,

@@ -1,4 +1,4 @@
-import { IBusinessLogicError } from 'src/base-exceptions/business-logic.exception'
+import { IBusinessLogicError } from '~/base-exceptions/business-logic.exception'
 import { IMGUR_MAX_IMAGE_SIZE } from './imgur.constants'
 
 export enum ImgurErrorCode {

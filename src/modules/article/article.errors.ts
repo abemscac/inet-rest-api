@@ -1,4 +1,4 @@
-import { IBusinessLogicError } from 'src/base-exceptions/business-logic.exception'
+import { IBusinessLogicError } from '~/base-exceptions/business-logic.exception'
 
 export enum ArticleErrorCode {
   CategoryDoesNotExist = 'ARTICLE_CATEGORY_DOES_NOT_EXIST',

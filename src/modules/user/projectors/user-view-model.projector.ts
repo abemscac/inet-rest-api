@@ -1,6 +1,6 @@
-import { BaseProjector } from 'src/base-projectors/base-projector'
-import { IUserViewModel } from 'src/shared-view-models/i-user.view-model'
 import { Repository } from 'typeorm'
+import { BaseProjector } from '~/base-projectors/base-projector'
+import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 import { User } from '../user.entity'
 
 export class UserViewModelProjector extends BaseProjector<

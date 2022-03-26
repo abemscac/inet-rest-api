@@ -16,7 +16,7 @@ import { Request } from 'express'
 import FastifyMulter from 'fastify-multer'
 import { Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
-import { FileUploadGuard } from 'src/modules/imgur/file-upload.guard'
+import { FileUploadGuard } from '~/modules/imgur/file-upload.guard'
 
 interface IFastifyFileInterceptorOptions extends Options {
   /**

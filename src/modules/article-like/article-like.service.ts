@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { TypeORMUtil } from 'src/utils/typeorm.util'
 import { Repository } from 'typeorm'
+import { TypeORMUtil } from '~/utils/typeorm.util'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'

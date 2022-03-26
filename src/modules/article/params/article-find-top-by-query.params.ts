@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 import { IsEnum, IsInt, IsOptional } from 'class-validator'
-import { PagableParams } from 'src/shared-params/pagable.params'
+import { PagableParams } from '~/shared-params/pagable.params'
 
 export enum ArticleFindTopByQueryTimeInterval {
   today = 'today',

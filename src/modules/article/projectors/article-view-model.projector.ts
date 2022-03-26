@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
-import { BaseProjector } from 'src/base-projectors/base-projector'
 import { Repository } from 'typeorm'
+import { BaseProjector } from '~/base-projectors/base-projector'
 import { Article } from '../article.entity'
 import { IArticleViewModel } from '../view-models/i-article.view-model'
 

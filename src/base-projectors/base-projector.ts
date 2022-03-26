@@ -1,9 +1,9 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common'
-import { PagableParams, Pagination } from 'src/shared-params/pagable.params'
-import { ICursorPaginationViewModel } from 'src/shared-view-models/i-cursor-pagination.view-model'
-import { IPagableViewModel } from 'src/shared-view-models/i-pagable.view-model'
-import { IPaginationViewModel } from 'src/shared-view-models/i-pagination.view-model'
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
+import { PagableParams, Pagination } from '~/shared-params/pagable.params'
+import { ICursorPaginationViewModel } from '~/shared-view-models/i-cursor-pagination.view-model'
+import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 
 export type IBaseProjectorMapper<TProjection, TResult> = (
   projection: TProjection,

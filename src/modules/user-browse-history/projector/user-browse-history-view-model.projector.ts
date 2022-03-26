@@ -1,10 +1,10 @@
-import { BaseProjector } from 'src/base-projectors/base-projector'
+import { Repository } from 'typeorm'
+import { BaseProjector } from '~/base-projectors/base-projector'
 import {
   articleViewModelProjectionSelection,
   IArticleViewModelProjection,
   projectArticleViewModel,
-} from 'src/modules/article/projectors/article-view-model.projector'
-import { Repository } from 'typeorm'
+} from '~/modules/article/projectors/article-view-model.projector'
 import { UserBrowseHistory } from '../user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from '../view-models/i-user-browse-history.view-model'
 

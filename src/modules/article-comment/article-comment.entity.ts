@@ -1,4 +1,3 @@
-import { Removable } from 'src/base-entities/removable.entity'
 import {
   Column,
   Entity,
@@ -6,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm'
+import { Removable } from '~/base-entities/removable.entity'
 import { Article } from '../article/article.entity'
 import { User } from '../user/user.entity'
 

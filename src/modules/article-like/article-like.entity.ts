@@ -1,5 +1,5 @@
-import { Creatable } from 'src/base-entities/creatable.entity'
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
+import { Creatable } from '~/base-entities/creatable.entity'
 import { Article } from '../article/article.entity'
 import { User } from '../user/user.entity'
 

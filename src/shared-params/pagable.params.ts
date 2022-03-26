@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 import { IsBoolean, IsEnum, IsInt, IsOptional, Min } from 'class-validator'
-import { BooleanTransform } from 'src/transforms/boolean.transform'
+import { BooleanTransform } from '~/transforms/boolean.transform'
 
 export enum Pagination {
   default = 'default',

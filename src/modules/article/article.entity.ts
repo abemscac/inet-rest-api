@@ -1,4 +1,3 @@
-import { Updatable } from 'src/base-entities/updatable.entity'
 import {
   Column,
   Entity,
@@ -7,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
+import { Updatable } from '~/base-entities/updatable.entity'
 import { ArticleCategory } from '../article-category/article-category.entity'
 import { ArticleComment } from '../article-comment/article-comment.entity'
 import { ArticleLike } from '../article-like/article-like.entity'

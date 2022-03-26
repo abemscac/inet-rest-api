@@ -1,5 +1,5 @@
 import { applyDecorators, UseGuards } from '@nestjs/common'
-import { FileUploadGuard } from 'src/modules/imgur/file-upload.guard'
+import { FileUploadGuard } from '~/modules/imgur/file-upload.guard'
 import { FastifyFileInterceptor } from './fastify-file.interceptor'
 
 interface IFastifyImageFileInterceptorOptions {

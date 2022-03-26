@@ -15,7 +15,7 @@ import { Request } from 'express'
 import FastifyMulter from 'fastify-multer'
 import { Field, Multer, Options } from 'multer'
 import { Observable } from 'rxjs'
-import { FileUploadGuard } from 'src/modules/imgur/file-upload.guard'
+import { FileUploadGuard } from '~/modules/imgur/file-upload.guard'
 
 interface IFastifyFileFieldsInterceptorField extends Field {
   minCount?: number

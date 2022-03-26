@@ -1,5 +1,5 @@
-import { Updatable } from 'src/base-entities/updatable.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Updatable } from '~/base-entities/updatable.entity'
 import { ArticleComment } from '../article-comment/article-comment.entity'
 import { ArticleLike } from '../article-like/article-like.entity'
 import { Article } from '../article/article.entity'

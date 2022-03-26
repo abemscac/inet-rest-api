@@ -1,5 +1,5 @@
-import { Creatable } from 'src/base-entities/creatable.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Creatable } from '~/base-entities/creatable.entity'
 import { Article } from '../article/article.entity'
 
 @Entity({ name: 'article_category' })
