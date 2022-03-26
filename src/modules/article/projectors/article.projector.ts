@@ -1,15 +1,21 @@
 import { JSDOM } from 'jsdom'
 import { Repository } from 'typeorm'
-import { BaseProjector, IProjectorPipe } from '~/base-projectors/base-projector'
+import {
+  BaseProjector,
+  IProjectionPipe,
+} from '~/base-projectors/base-projector'
+import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { Article } from '../article.entity'
 import { IArticleViewModel } from '../view-models/i-article.view-model'
 
-export interface IArticleViewModelProjection {
+export interface IArticleProjection {
   articleCategoryId: number
   articleCategoryCode: string
   articleCategoryImageHash: string
+  articleCategoryImageExt: string
   articleId: number
   articleCoverImageHash: string
+  articleCoverImageExt: string
   articleTitle: string
   articleBody: string
   articleViews: number
@@ -20,15 +26,18 @@ export interface IArticleViewModelProjection {
   authorUsername: string | null
   authorName: string | null
   authorAvatarImageHash: string | null
+  authorAvatarImageExt: string | null
   authorCreatedAt: Date | null
 }
 
-export const articleViewModelProjectionSelection = [
+export const ArticleProjectionSelection = [
   'articleCategory.id AS articleCategoryId',
   'articleCategory.code AS articleCategoryCode',
   'articleCategory.imageHash AS articleCategoryImageHash',
+  'articleCategory.imageExt AS articleCategoryImageExt',
   'article.id AS articleId',
   'article.coverImageHash AS articleCoverImageHash',
+  'article.coverImageExt AS articleCoverImageExt',
   'article.title AS articleTitle',
   'article.body AS articleBody',
   'article.views AS articleViews',
@@ -39,16 +48,17 @@ export const articleViewModelProjectionSelection = [
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.username END) AS authorUsername',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.name END) AS authorName',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarImageHash END) as authorAvatarImageHash',
+  '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.avatarImageExt END) as authorAvatarImageExt',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.createdAt END) as authorCreatedAt',
 ]
 
-interface IArticleViewModelPipeOptions {
+interface IArticleProjectionPipeOptions {
   stripBody: boolean
 }
 
-export const articleViewModelPipe = (
-  options: IArticleViewModelPipeOptions,
-): IProjectorPipe<IArticleViewModel, IArticleViewModelProjection> => {
+export const ArticleProjectionPipe = (
+  options: IArticleProjectionPipeOptions,
+): IProjectionPipe<IArticleViewModel, IArticleProjection> => {
   return (result, projection) => {
     const body = !options.stripBody
       ? projection.articleBody
@@ -60,7 +70,12 @@ export const articleViewModelPipe = (
     result.category = {
       id: projection.articleCategoryId,
       code: projection.articleCategoryCode,
-      imageUrl: projection.articleCategoryImageHash,
+      imageUrl:
+        ImgurUtil.toLink({
+          hash: projection.articleCategoryImageHash,
+          ext: projection.articleCategoryImageExt,
+          size: ImageSize.SmallSquare,
+        }) ?? '',
     }
     result.author = !projection.authorId
       ? null
@@ -68,10 +83,19 @@ export const articleViewModelPipe = (
           id: projection.authorId as number,
           username: projection.authorUsername as string,
           name: projection.authorName,
-          avatarUrl: projection.authorAvatarImageHash,
+          avatarUrl: ImgurUtil.toLink({
+            hash: projection.authorAvatarImageHash,
+            ext: projection.authorAvatarImageExt,
+            size: ImageSize.SmallSquare,
+          }),
           createdAt: projection.authorCreatedAt as Date,
         }
-    result.coverImageUrl = projection.articleCoverImageHash
+    result.coverImageUrl =
+      ImgurUtil.toLink({
+        hash: projection.articleCoverImageHash,
+        ext: projection.articleCoverImageExt,
+        size: ImageSize.HugeThumbnail,
+      }) ?? ''
     result.title = projection.articleTitle
     result.body = body
     result.views = projection.articleViews
@@ -86,7 +110,7 @@ export const articleViewModelPipe = (
 export class ArticleViewModelProjector extends BaseProjector<
   Article,
   IArticleViewModel,
-  IArticleViewModelProjection
+  IArticleProjection
 > {
   constructor(repository: Repository<Article>, alias: string) {
     super(
@@ -99,10 +123,10 @@ export class ArticleViewModelProjector extends BaseProjector<
           `${alias}.id = articleLike.article_id`,
         )
         .innerJoin('article.author', 'author')
-        .select(articleViewModelProjectionSelection)
+        .select(ArticleProjectionSelection)
         .groupBy(`${alias}.id`),
       alias,
     )
-    super.setPipes(articleViewModelPipe({ stripBody: true }))
+    super.setPipes(ArticleProjectionPipe({ stripBody: true }))
   }
 }

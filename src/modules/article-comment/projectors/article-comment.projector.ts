@@ -1,5 +1,6 @@
 import { Repository } from 'typeorm'
 import { BaseProjector } from '~/base-projectors/base-projector'
+import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { ArticleComment } from '../article-comment.entity'
 import { IArticleCommentViewModel } from '../view-models/i-article-comment.view-model'
 
@@ -12,10 +13,11 @@ interface IArticleCommentViewModelProjection {
   authorUsername: string | null
   authorName: string | null
   authorAvatarImageHash: string | null
+  authorAvatarImageExt: string | null
   authorCreatedAt: Date | null
 }
 
-export class ArticleCommentViewModelProjector extends BaseProjector<
+export class ArticleCommentProjector extends BaseProjector<
   ArticleComment,
   IArticleCommentViewModel,
   IArticleCommentViewModelProjection
@@ -34,6 +36,7 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.username END) AS authorUsername`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.name END) AS authorName`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarImageHash END) AS authorAvatarImageHash`,
+          `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.avatarImageExt END) AS authorAvatarImageExt`,
           `(CASE WHEN (${alias}.isRemoved = 1 OR author.isRemoved = 1) THEN NULL ELSE author.createdAt END) AS authorCreatedAt`,
         ]),
       alias,
@@ -46,7 +49,11 @@ export class ArticleCommentViewModelProjector extends BaseProjector<
             id: projection.authorId,
             username: projection.authorUsername as string,
             name: projection.authorName,
-            avatarUrl: projection.authorAvatarImageHash,
+            avatarUrl: ImgurUtil.toLink({
+              hash: projection.authorAvatarImageHash,
+              ext: projection.authorAvatarImageExt,
+              size: ImageSize.SmallSquare,
+            }),
             createdAt: projection.authorCreatedAt as Date,
           },
       body: projection.commentBody,

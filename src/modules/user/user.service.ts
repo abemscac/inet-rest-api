@@ -12,7 +12,7 @@ import { PassportPermitService } from '../passport-permit/passport-permit.servic
 import { UserCreateForm } from './forms/user-create.form'
 import { UserUpdatePasswordForm } from './forms/user-update-password.form'
 import { UserUpdateProfileForm } from './forms/user-update-profile.form'
-import { UserViewModelProjector } from './projectors/user-view-model.projector'
+import { UserProjector } from './projectors/user.projector'
 import { User } from './user.entity'
 import { UserErrors } from './user.errors'
 
@@ -34,7 +34,7 @@ export class UserService implements IUserService {
   ) {}
 
   async findByUsername(username: string): Promise<IUserViewModel> {
-    return await new UserViewModelProjector(this.userRepository, 'user')
+    return await new UserProjector(this.userRepository, 'user')
       .where('username = :username AND is_removed = :isRemoved', {
         username,
         isRemoved: false,

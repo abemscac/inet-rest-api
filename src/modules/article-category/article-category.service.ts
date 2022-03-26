@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { ArticleCategory } from './article-category.entity'
-import { ArticleCategoryViewModelProjector } from './projectors/article-category-view-model.projector'
+import { ArticleCategoryProjector } from './projectors/article-category.projector'
 import { IArticleCategoryViewModel } from './view-models/i-article-category.view-model'
 
 export interface IArticleCategoryService {
@@ -17,11 +17,11 @@ export class ArticleCategoryService implements IArticleCategoryService {
   ) {}
 
   async findAll(): Promise<Array<IArticleCategoryViewModel>> {
-    return await new ArticleCategoryViewModelProjector(
+    return await new ArticleCategoryProjector(
       this.articleCategoryRepository,
       'articleCategory',
     )
-      .orderBy('code', 'ASC')
+      .orderBy('id', 'ASC')
       .projectMany()
   }
 }

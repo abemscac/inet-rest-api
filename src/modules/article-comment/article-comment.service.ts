@@ -8,7 +8,7 @@ import { PassportPermitService } from '../passport-permit/passport-permit.servic
 import { ArticleComment } from './article-comment.entity'
 import { ArticleCommentCreateForm } from './forms/article-comment-create.form'
 import { ArticleCommentFindByQueryParams } from './params/article-comment-find-by-query.params'
-import { ArticleCommentViewModelProjector } from './projectors/article-comment-view-model.projector'
+import { ArticleCommentProjector } from './projectors/article-comment.projector'
 import { IArticleCommentViewModel } from './view-models/i-article-comment.view-model'
 
 export interface IArticleCommentService {
@@ -33,7 +33,7 @@ export class ArticleCommentService implements IArticleCommentService {
     params: ArticleCommentFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
     const { articleId } = params
-    return await new ArticleCommentViewModelProjector(
+    return await new ArticleCommentProjector(
       this.articleCommentRepository,
       'comment',
     )
@@ -55,7 +55,7 @@ export class ArticleCommentService implements IArticleCommentService {
       body: form.body,
     })
     await this.articleCommentRepository.insert(comment)
-    return await new ArticleCommentViewModelProjector(
+    return await new ArticleCommentProjector(
       this.articleCommentRepository,
       'comment',
     )

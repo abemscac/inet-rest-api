@@ -6,6 +6,7 @@ import { getAppConfig } from '~/app.config'
 export interface IImgurUtil {
   oauth: IImgurUtilOAuth
   getExtFromLink(link: string): string
+  toLink(metadata: IImageMetadata): string | null
 }
 
 export interface IImgurUtilOAuth {
@@ -14,6 +15,40 @@ export interface IImgurUtilOAuth {
    */
   init(): void
   getAccessToken(): Promise<string>
+}
+
+interface IImageMetadata {
+  hash?: string | null
+  ext?: string | null
+  size: ImageSize
+}
+
+export enum ImageSize {
+  Original = '',
+  /**
+   * 90x90
+   */
+  SmallSquare = 's',
+  /**
+   * 160x160
+   */
+  BigSquare = 'b',
+  /**
+   * 160xAUTO, won't be larger than original size.
+   */
+  SmallThumbnail = 't',
+  /**
+   * 320xAUTO, won't be larger than original size.
+   */
+  MediumThumbnail = 'm',
+  /**
+   * 640xAUTO, won't be larger than original size.
+   */
+  LargeThumbnail = 'l',
+  /**
+   * 1024xAUTO, won't be larger than original size.
+   */
+  HugeThumbnail = 'h',
 }
 
 class ImgurUtilOAuth implements IImgurUtilOAuth {
@@ -109,9 +144,16 @@ class ImgurUtilOAuth implements IImgurUtilOAuth {
 
 export const ImgurUtil: IImgurUtil = {
   oauth: new ImgurUtilOAuth(),
-  getExtFromLink(link: string) {
+  getExtFromLink(link: string): string {
     const array = link.split('.')
     return array[array.length - 1]
+  },
+  toLink(metadata: IImageMetadata): string | null {
+    const { hash, ext, size } = metadata
+    if (!hash || !ext) {
+      return null
+    }
+    return `https://i.imgur.com/${hash}${size}.${ext}`
   },
 }
 

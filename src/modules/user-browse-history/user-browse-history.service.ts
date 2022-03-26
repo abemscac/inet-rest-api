@@ -5,7 +5,7 @@ import { PagableParams } from '~/shared-params/pagable.params'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { UserBrowseHistoryCreateForm } from './forms/user-browse-history-create.form'
-import { UserBrowseHistoryViewModelProjector } from './projector/user-browse-history-view-model.projector'
+import { UserBrowseHistoryProjector } from './projector/user-browse-history.projector'
 import { UserBrowseHistory } from './user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
 
@@ -31,7 +31,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
   async findByQuery(
     params: PagableParams,
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>> {
-    return new UserBrowseHistoryViewModelProjector(
+    return new UserBrowseHistoryProjector(
       this.userBrowseHistoryRepository,
       'history',
     )
@@ -75,7 +75,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       await this.userBrowseHistoryRepository.insert(history)
       historyId = history.id
     }
-    return new UserBrowseHistoryViewModelProjector(
+    return new UserBrowseHistoryProjector(
       this.userBrowseHistoryRepository,
       'history',
     )

@@ -9,7 +9,7 @@ import { ICursorPaginationViewModel } from '~/shared-view-models/i-cursor-pagina
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 
-export type IProjectorPipe<TResult, TProjection> = (
+export type IProjectionPipe<TResult, TProjection> = (
   result: Partial<TResult>,
   projection: Readonly<TProjection>,
 ) => Partial<TResult>
@@ -36,7 +36,7 @@ export class BaseProjector<
   TProjection extends Record<string, any> = TEntity,
 > implements IBaseProjector<TResult>
 {
-  private pipes: Array<IProjectorPipe<TResult, TProjection>> = []
+  private pipes: Array<IProjectionPipe<TResult, TProjection>> = []
 
   constructor(
     private readonly queryBuilder: SelectQueryBuilder<TEntity>,
@@ -63,7 +63,7 @@ export class BaseProjector<
   }
 
   protected setPipes(
-    ...pipes: Array<IProjectorPipe<TResult, TProjection>>
+    ...pipes: Array<IProjectionPipe<TResult, TProjection>>
   ): this {
     this.pipes = pipes
     return this

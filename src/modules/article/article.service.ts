@@ -19,7 +19,7 @@ import {
   ArticleFindTopByQueryParams,
   ArticleFindTopByQueryTimeInterval,
 } from './params/article-find-top-by-query.params'
-import { ArticleViewModelProjector } from './projectors/article-view-model.projector'
+import { ArticleViewModelProjector } from './projectors/article.projector'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export interface IArticleService {

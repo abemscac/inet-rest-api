@@ -1,21 +1,20 @@
 import { Repository } from 'typeorm'
 import { BaseProjector } from '~/base-projectors/base-projector'
 import {
-  articleViewModelPipe,
-  articleViewModelProjectionSelection,
-  IArticleViewModelProjection,
-} from '~/modules/article/projectors/article-view-model.projector'
+  ArticleProjectionPipe,
+  ArticleProjectionSelection,
+  IArticleProjection,
+} from '~/modules/article/projectors/article.projector'
 import { IArticleViewModel } from '~/modules/article/view-models/i-article.view-model'
 import { UserBrowseHistory } from '../user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from '../view-models/i-user-browse-history.view-model'
 
-interface IUserBrowseHistoryViewModelProjection
-  extends IArticleViewModelProjection {
+interface IUserBrowseHistoryViewModelProjection extends IArticleProjection {
   historyId: number
   historyCreatedAt: Date
 }
 
-export class UserBrowseHistoryViewModelProjector extends BaseProjector<
+export class UserBrowseHistoryProjector extends BaseProjector<
   UserBrowseHistory,
   IUserBrowseHistoryViewModel,
   IUserBrowseHistoryViewModelProjection
@@ -35,14 +34,14 @@ export class UserBrowseHistoryViewModelProjector extends BaseProjector<
         .select([
           `${alias}.id AS historyId`,
           `${alias}.createdAt AS historyCreatedAt`,
-          ...articleViewModelProjectionSelection,
+          ...ArticleProjectionSelection,
         ])
         .groupBy('article.id'),
       alias,
     )
     super.setPipes((_, projection) => ({
       id: projection.historyId,
-      article: articleViewModelPipe({ stripBody: true })(
+      article: ArticleProjectionPipe({ stripBody: true })(
         {},
         projection,
       ) as IArticleViewModel,
