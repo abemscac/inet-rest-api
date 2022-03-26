@@ -4,19 +4,13 @@
   "description": "INET RESTful API with NestJS, TypeORM, and MySQL",
   "private": true,
   "scripts": {
-    "build": "rimraf dist && nest build",
-    "format": "prettier --write \"{**/*,*}.{ts,js,json}\"",
-    "format:check": "prettier --check \"{**/*,*}.{ts,js,json}\"",
-    "start": "nest start",
     "dev": "NODE_ENV=development nest start --watch",
-    "debug": "NODE_ENV=debug nest start --debug --watch",
     "prod": "NODE_ENV=production node dist/main",
-    "lint": "eslint \"**/*.{ts,js}\"",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "build": "rimraf dist && nest build",
+    "ci:prettier": "prettier --check \"{**/*,*}.{ts,js,json}\"",
+    "ci:eslint": "eslint \"**/*.{ts,js}\"",
+    "ci:jest": "jest",
+    "ci:jest:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/axios": "^0.0.7",

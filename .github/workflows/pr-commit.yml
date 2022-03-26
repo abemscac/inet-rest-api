@@ -1,0 +1,71 @@
+name: PR Commit
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  prettier:
+    name: Prettier Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        users: actions/setup-node@v2
+      - name: Check code format
+        run: yarn ci:prettier
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        users: actions/setup-node@v2
+      - name: Lint source code
+        run: yarn ci:eslint
+      - name: Lint commits
+        run: npx commitlint --verbose --from=origin/main
+
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        users: actions/setup-node@v2
+      - name: Run unit tests
+        run: yarn ci:jest
+
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        users: actions/setup-node@v2
+      - name: Run e2e tests
+        run: yarn ci:jest:e2e
+
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout out repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -- name: Setup Node
+        users: actions/setup-node@v2
+      - name: Build application
+        run: yarn build
