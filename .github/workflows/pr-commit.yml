@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Node
-        users: actions/setup-node@v2
+        uses: actions/setup-node@v2
       - name: Check code format
         run: yarn ci:prettier
 
@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Node
-        users: actions/setup-node@v2
+        uses: actions/setup-node@v2
       - name: Lint source code
         run: yarn ci:eslint
       - name: Lint commits
@@ -40,7 +40,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Node
-        users: actions/setup-node@v2
+        uses: actions/setup-node@v2
       - name: Run unit tests
         run: yarn ci:jest
 
@@ -53,7 +53,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Node
-        users: actions/setup-node@v2
+        uses: actions/setup-node@v2
       - name: Run e2e tests
         run: yarn ci:jest:e2e
 
@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -- name: Setup Node
-        users: actions/setup-node@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
       - name: Build application
         run: yarn build
