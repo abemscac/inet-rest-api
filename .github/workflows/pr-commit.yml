@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
       - name: Install Node packages
-        uses: yarn install
+        run: yarn install
       - name: Check code format
         run: yarn ci:prettier
 
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
       - name: Install Node packages
-        uses: yarn install
+        run: yarn install
       - name: Lint source code
         run: yarn ci:eslint
       - name: Lint commits
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
       - name: Install Node packages
-        uses: yarn install
+        run: yarn install
       - name: Run unit tests
         run: yarn ci:jest
 
@@ -61,7 +61,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
       - name: Install Node packages
-        uses: yarn install
+        run: yarn install
       - name: Run e2e tests
         run: yarn ci:jest:e2e
 
@@ -76,6 +76,6 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
       - name: Install Node packages
-        uses: yarn install
+        run: yarn install
       - name: Build application
         run: yarn build
