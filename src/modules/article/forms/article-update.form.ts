@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer'
 import { IsInt, IsNotEmpty } from 'class-validator'
+import { ApiPropertyImage } from '~/swagger-decorators/api-property-image'
 
 export class ArticleUpdateForm {
   @IsInt()
@@ -10,6 +11,7 @@ export class ArticleUpdateForm {
   /**
    * This field will be assigned in FastifyFileInterceptor
    */
+  @ApiPropertyImage()
   coverImage?: Express.Multer.File
 
   @IsNotEmpty()
