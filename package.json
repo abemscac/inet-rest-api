@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development nest start --watch",
-    "prod": "NODE_ENV=production node dist/main",
+    "prod": "NODE_ENV=production node dist/src/main",
     "build": "rimraf dist && nest build",
     "ci:prettier": "prettier --check \"{**/*,*}.{ts,js,json}\"",
     "ci:eslint": "eslint \"**/*.{ts,js}\"",
