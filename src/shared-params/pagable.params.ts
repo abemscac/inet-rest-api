@@ -1,3 +1,4 @@
+import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsBoolean, IsEnum, IsInt, IsOptional, Min } from 'class-validator'
 import { BooleanTransform } from '~/transforms/boolean.transform'
@@ -8,10 +9,12 @@ export enum Pagination {
 }
 
 export class PagableParams {
+  @ApiPropertyOptional({ enum: Pagination })
   @IsEnum(Pagination)
   @IsOptional()
   pagination?: Pagination
 
+  @ApiPropertyOptional()
   @IsInt()
   @Type(() => Number)
   @Min(0)
@@ -21,12 +24,14 @@ export class PagableParams {
   /**
    * 0-indexed page number
    */
+  @ApiPropertyOptional()
   @IsInt()
   @Type(() => Number)
   @Min(0)
   @IsOptional()
   page?: number
 
+  @ApiPropertyOptional()
   @IsInt()
   @Type(() => Number)
   @Min(1)
@@ -36,6 +41,7 @@ export class PagableParams {
   /**
    * Used to indicate that API should return all records at once.
    */
+  @ApiPropertyOptional()
   @IsBoolean()
   @BooleanTransform()
   @IsOptional()

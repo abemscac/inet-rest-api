@@ -8,6 +8,6 @@ export interface IAppService {
 export class AppService implements IAppService {
   getVersion(): string {
     const { npm_package_name, npm_package_version } = process.env
-    return `${npm_package_name} ${npm_package_version}`
+    return `${npm_package_name?.toUpperCase()} ${npm_package_version}`
   }
 }
