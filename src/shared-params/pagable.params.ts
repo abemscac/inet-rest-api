@@ -4,7 +4,7 @@ import { IsBoolean, IsEnum, IsInt, IsOptional, Min } from 'class-validator'
 import { BooleanTransform } from '~/transforms/boolean.transform'
 
 export enum Pagination {
-  default = 'default',
+  basic = 'basic',
   cursor = 'cursor',
 }
 

@@ -12,25 +12,29 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiNoContentResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
-import { ApiAuthGuard } from '~/swagger-decorators/api-auth-guard'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiMultipart } from '~/swagger-decorators/api-multipart'
+import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
-import { ApiPermittable } from '~/swagger-decorators/api-permittable'
+import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
+import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
+import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
+import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
+import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
-import { ArticleService } from './article.service'
-import { ArticleCreateForm } from './forms/article-create.form'
-import { ArticleUpdateForm } from './forms/article-update.form'
 import {
   MockArticleViewModels,
   MockArticleViewModelsStripped,
-} from './mocks/article-view-models.mocks'
+} from './article.mocks'
+import { ArticleService } from './article.service'
+import { ArticleCreateForm } from './forms/article-create.form'
+import { ArticleUpdateForm } from './forms/article-update.form'
 import { ArticleFindTopByQueryParams } from './params/article-find-top-by-query.params'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
@@ -41,6 +45,7 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @ApiOperation({ summary: 'Find top articles by query (pagable)' })
+  @ApiWithQueryParamsFormat()
   @ApiOkPagableExample(MockArticleViewModelsStripped)
   @IsPublic()
   @Get('top')
@@ -52,6 +57,7 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Find an article by id' })
+  @ApiWithTargetEntity()
   @ApiOkExample(MockArticleViewModels[0])
   @IsPublic()
   @Get(':id')
@@ -62,8 +68,9 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Create an article' })
-  @ApiAuthGuard()
-  @ApiMultipart(ArticleCreateForm)
+  @ApiMultipart()
+  @ApiWithAuth()
+  @ApiWithBodyFormat()
   @ApiCreatedExample(MockArticleViewModels[0])
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
@@ -72,9 +79,12 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Update an article by id' })
-  @ApiPermittable()
-  @ApiMultipart(ArticleUpdateForm)
-  @ApiNoContentResponse({ description: 'Success' })
+  @ApiMultipart()
+  @ApiWithAuth()
+  @ApiWithPermit()
+  @ApiWithBodyFormat()
+  @ApiWithTargetEntity()
+  @ApiNoContentSuccess()
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @FastifyImageFileInterceptor('coverImage', { required: false })
@@ -86,8 +96,10 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Delete an article by id' })
-  @ApiPermittable()
-  @ApiNoContentResponse({ description: 'Success' })
+  @ApiWithAuth()
+  @ApiWithPermit()
+  @ApiWithTargetEntity()
+  @ApiNoContentSuccess()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeById(@Param('id', ParseIntPipe) id: number) {

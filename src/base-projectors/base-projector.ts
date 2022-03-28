@@ -100,8 +100,8 @@ export class BaseProjector<
     if (!pagination) {
       this.setOffsetAndLimit(params)
       return await this.projectMany()
-    } else if (pagination === Pagination.default) {
-      return await this.projectDefaultPagination(params)
+    } else if (pagination === Pagination.basic) {
+      return await this.projectBasicPagination(params)
     } else if (pagination === Pagination.cursor) {
       return await this.projectCursorPagination(params)
     } else {
@@ -109,7 +109,7 @@ export class BaseProjector<
     }
   }
 
-  private async projectDefaultPagination(
+  private async projectBasicPagination(
     params: PagableParams,
   ): Promise<IPaginationViewModel<TResult>> {
     const { page, limit, FLAG_UNLIMITED } = params

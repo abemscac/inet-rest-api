@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common'
 import { ApiHeader, ApiUnauthorizedResponse } from '@nestjs/swagger'
 
-export const ApiAuthGuard = () =>
+export const ApiWithAuth = () =>
   applyDecorators(
     ApiHeader({
       name: 'Authorization',
@@ -9,6 +9,6 @@ export const ApiAuthGuard = () =>
       required: true,
     }),
     ApiUnauthorizedResponse({
-      description: 'Invalid token',
+      description: 'Invalid access token',
     }),
   )

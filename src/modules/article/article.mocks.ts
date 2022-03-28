@@ -1,4 +1,5 @@
-import { IArticleViewModel } from '../view-models/i-article.view-model'
+import { MockUserViewModel } from '../user/user.mocks'
+import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export const MockArticleViewModels: Array<IArticleViewModel> = [
   {
@@ -8,20 +9,30 @@ export const MockArticleViewModels: Array<IArticleViewModel> = [
       code: 'animal',
       imageUrl: 'https://i.imgur.com/JR2xyV6s.jpg',
     },
-    author: {
-      id: 1,
-      username: 'user0',
-      name: '人類一號',
-      avatarUrl: 'https://i.imgur.com/MT0npFns.jpg',
-      createdAt: new Date('2022-03-27T01:24:31.000Z'),
-    },
+    author: MockUserViewModel,
     coverImageUrl: 'https://i.imgur.com/bqgW6JXh.jpeg',
-    title: 'Hello, world',
+    title: 'Hello world',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut a',
     views: 123,
     likes: 45,
-    createdAt: new Date('2022-03-28T01:40:29.000Z'),
+    createdAt: new Date(),
     lastModifiedAt: null,
+  },
+  {
+    id: 2,
+    category: {
+      id: 5,
+      code: 'sports',
+      imageUrl: 'https://i.imgur.com/s4PDhtLs.jpg',
+    },
+    author: MockUserViewModel,
+    coverImageUrl: 'https://i.imgur.com/bqgW6JXh.jpeg',
+    title: 'Hello world 2',
+    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut a',
+    views: 12,
+    likes: 3,
+    createdAt: new Date(),
+    lastModifiedAt: new Date(),
   },
 ]
 
