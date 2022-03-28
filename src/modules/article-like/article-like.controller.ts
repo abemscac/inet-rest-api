@@ -10,8 +10,15 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
+import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
+import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
+import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
+import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
+import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleLike } from './article-like.entity'
+import { MockArticleLike } from './article-like.mocks'
 import { ArticleLikeService } from './article-like.service'
 import { ArticleLikeCreateForm } from './forms/article-like-create.form'
 import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'
@@ -23,6 +30,10 @@ export class ArticleLikeController {
   constructor(private readonly articleLikeService: ArticleLikeService) {}
 
   @ApiOperation({ summary: 'Find article like record by query' })
+  @ApiWithQueryParamsFormat()
+  @ApiWithAuth()
+  @ApiWithTargetEntity()
+  @ApiOkExample(MockArticleLike)
   @Get()
   async findOneByQuery(
     @Query() params: ArticleLikeFindOneByQueryParams,
@@ -31,12 +42,20 @@ export class ArticleLikeController {
   }
 
   @ApiOperation({ summary: 'Like an article' })
+  @ApiWithBodyFormat()
+  @ApiWithAuth()
+  @ApiWithTargetEntity()
+  @ApiOkExample(MockArticleLike)
   @Post()
   async create(@Body() form: ArticleLikeCreateForm): Promise<ArticleLike> {
     return await this.articleLikeService.create(form)
   }
 
   @ApiOperation({ summary: 'Take back like from an article' })
+  @ApiWithQueryParamsFormat()
+  @ApiWithAuth()
+  @ApiWithTargetEntity()
+  @ApiNoContentSuccess()
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteOneByQuery(

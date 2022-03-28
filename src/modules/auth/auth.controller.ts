@@ -6,7 +6,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import {
+  ApiHeader,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger'
+import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
+import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
+import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
+import { MockAuthViewModel, MockLoginViewModel } from './auth.mocks'
 import { AuthService } from './auth.service'
 import { AuthLoginForm } from './forms/auth.login.form'
 import { AccessTokenAuthGuard } from './guards/access-token.guard'
@@ -20,6 +29,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'Login' })
+  @ApiWithBodyFormat()
+  @ApiOkExample(MockLoginViewModel)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() form: AuthLoginForm): Promise<IAuthLoginViewModel> {
@@ -27,6 +38,15 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Get a new access token by refresh token' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer RefreshToken',
+    required: true,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid refresh token',
+  })
+  @ApiOkExample(MockAuthViewModel)
   @UseGuards(RefreshTokenAuthGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
@@ -35,6 +55,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Logout' })
+  @ApiWithAuth()
   @UseGuards(AccessTokenAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)

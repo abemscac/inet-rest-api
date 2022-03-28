@@ -13,7 +13,14 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { PagableParams } from '~/shared-params/pagable.params'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
+import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
+import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
+import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
+import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
+import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
+import { MockUserBrowseHistoryViewModels } from './user-browse-history.mocks'
 import { UserBrowseHistoryService } from './user-browse-history.service'
 import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
 
@@ -26,6 +33,9 @@ export class UserBrowseHistoryController {
   ) {}
 
   @ApiOperation({ summary: 'Find your browse histories by query (pagable)' })
+  @ApiWithQueryParamsFormat()
+  @ApiWithAuth()
+  @ApiOkExample(MockUserBrowseHistoryViewModels)
   @Get()
   async findByQuery(
     @Query(PagableParamsValidationPipe) params: PagableParams,
@@ -34,6 +44,10 @@ export class UserBrowseHistoryController {
   }
 
   @ApiOperation({ summary: 'Delete an browse history by id' })
+  @ApiWithAuth()
+  @ApiWithPermit()
+  @ApiWithTargetEntity()
+  @ApiNoContentSuccess()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteById(@Param('id', ParseIntPipe) id: number): Promise<void> {
@@ -41,6 +55,8 @@ export class UserBrowseHistoryController {
   }
 
   @ApiOperation({ summary: 'Clear all of your browse histories' })
+  @ApiWithAuth()
+  @ApiNoContentSuccess()
   @Delete('clear')
   @HttpCode(HttpStatus.NO_CONTENT)
   async clear(): Promise<void> {
