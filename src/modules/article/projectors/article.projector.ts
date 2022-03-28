@@ -80,7 +80,7 @@ export const ArticleProjectionPipe = (
     result.author = !projection.authorId
       ? null
       : {
-          id: projection.authorId as number,
+          id: Number(projection.authorId),
           username: projection.authorUsername as string,
           name: projection.authorName,
           avatarUrl: ImgurUtil.toLink({

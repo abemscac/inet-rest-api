@@ -12,17 +12,25 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiNoContentResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { ApiAuthGuard } from '~/swagger-decorators/api-auth-guard'
+import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
+import { ApiMultipart } from '~/swagger-decorators/api-multipart'
+import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
+import { ApiPermittable } from '~/swagger-decorators/api-permittable'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleService } from './article.service'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
-import { ArticleViewModelsMocks } from './mocks/article-view-models.mocks'
+import {
+  MockArticleViewModels,
+  MockArticleViewModelsStripped,
+} from './mocks/article-view-models.mocks'
 import { ArticleFindTopByQueryParams } from './params/article-find-top-by-query.params'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
@@ -33,7 +41,7 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @ApiOperation({ summary: 'Find top articles by query (pagable)' })
-  @ApiOkPagableExample(ArticleViewModelsMocks)
+  @ApiOkPagableExample(MockArticleViewModelsStripped)
   @IsPublic()
   @Get('top')
   async findTopByQuery(
@@ -44,6 +52,7 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Find an article by id' })
+  @ApiOkExample(MockArticleViewModels[0])
   @IsPublic()
   @Get(':id')
   async findById(
@@ -53,8 +62,9 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Create an article' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: ArticleCreateForm })
+  @ApiAuthGuard()
+  @ApiMultipart(ArticleCreateForm)
+  @ApiCreatedExample(MockArticleViewModels[0])
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
   async create(@Body() form: ArticleCreateForm): Promise<IArticleViewModel> {
@@ -62,9 +72,11 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Update an article by id' })
+  @ApiPermittable()
+  @ApiMultipart(ArticleUpdateForm)
+  @ApiNoContentResponse({ description: 'Success' })
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Post()
   @FastifyImageFileInterceptor('coverImage', { required: false })
   async updateById(
     @Param('id', ParseIntPipe) id: number,
@@ -74,6 +86,8 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Delete an article by id' })
+  @ApiPermittable()
+  @ApiNoContentResponse({ description: 'Success' })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeById(@Param('id', ParseIntPipe) id: number) {

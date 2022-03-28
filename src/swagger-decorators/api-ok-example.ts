@@ -1,9 +1,9 @@
-import { ApiOkResponse as SwaggerApiOkResponse } from '@nestjs/swagger'
+import { ApiOkResponse } from '@nestjs/swagger'
 
 export const MEDIA_TYPE_JSON = 'application/json'
 
 export const ApiOkExample = <T>(example: T) =>
-  SwaggerApiOkResponse({
+  ApiOkResponse({
     content: {
       [MEDIA_TYPE_JSON]: {
         example,
