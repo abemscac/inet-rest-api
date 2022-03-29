@@ -12,14 +12,14 @@ export const UserErrors: Record<
 > = {
   DuplicateUsername: {
     code: UserErrorCode.DuplicateUsername,
-    message: 'Duplicate username',
+    message: 'Duplicate username.',
   },
   OldPasswordUnmatched: {
     code: UserErrorCode.OldPasswordUnmatched,
-    message: 'Old password unmatched',
+    message: 'Old password unmatched.',
   },
   PendingRemoval: {
     code: UserErrorCode.PendingRemoval,
-    message: 'User removal is pending',
+    message: 'User removal is pending.',
   },
 }

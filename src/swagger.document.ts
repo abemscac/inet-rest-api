@@ -8,6 +8,10 @@ export const createSwaggerDocumnt = (
   const config = new DocumentBuilder()
     .setTitle(npm_package_name?.toUpperCase() ?? '')
     .setVersion(npm_package_version ?? '0.0.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'JWT',
+    )
     .build()
   return SwaggerModule.createDocument(app, config)
 }

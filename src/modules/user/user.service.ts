@@ -89,8 +89,17 @@ export class UserService implements IUserService {
 
   async updateProfile(form: UserUpdateProfileForm): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
-    await TypeORMUtil.existOrFail(this.userRepository, { id, isRemoved: false })
-    const user: Partial<User> = {
+    const user = await this.userRepository.findOneOrFail(
+      { id },
+      {
+        select: ['isRemoved'],
+      },
+    )
+    if (user.isRemoved) {
+      throw new BusinessLogicException(UserErrors.PendingRemoval)
+    }
+
+    const partialUser: Partial<User> = {
       name: form.name,
     }
 
@@ -101,10 +110,10 @@ export class UserService implements IUserService {
           album: ImgurAlbum.UserAvatar,
         })
         newImageHash = newImage.id
-        user.avatarImageHash = newImage.id
-        user.avatarImageExt = ImgurUtil.getExtFromLink(newImage.link)
+        partialUser.avatarImageHash = newImage.id
+        partialUser.avatarImageExt = ImgurUtil.getExtFromLink(newImage.link)
       }
-      await this.userRepository.update({ id }, user)
+      await this.userRepository.update({ id }, partialUser)
     } catch (error) {
       if (newImageHash) {
         await this.imgurService.deleteImage(newImageHash)
@@ -120,9 +129,13 @@ export class UserService implements IUserService {
         isRemoved: false,
       },
       {
-        select: ['hashedPassword'],
+        select: ['hashedPassword', 'isRemoved'],
       },
     )
+    if (user.isRemoved) {
+      throw new BusinessLogicException(UserErrors.PendingRemoval)
+    }
+
     const { oldPassword, newPassword } = form
     const passwordMatched = await bcrypt.compare(
       oldPassword,
@@ -131,6 +144,7 @@ export class UserService implements IUserService {
     if (!passwordMatched) {
       throw new BusinessLogicException(UserErrors.OldPasswordUnmatched)
     }
+
     const hashedNewPassword = await bcrypt.hash(newPassword, 10)
     await this.userRepository.update(
       { id },

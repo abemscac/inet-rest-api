@@ -18,16 +18,17 @@ import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.p
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiMultipart } from '~/swagger-decorators/api-multipart'
+import { ApiMultipleBadRequestResponses } from '~/swagger-decorators/api-multiple-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
-import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
+import { ArticleErrors } from './article.errors'
 import {
   MockArticleViewModels,
   MockArticleViewModelsStripped,
@@ -36,6 +37,7 @@ import { ArticleService } from './article.service'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import { ArticleFindTopByQueryParams } from './params/article-find-top-by-query.params'
+import { ARTICLE_BODY_PREVIEW_LENGTH } from './projectors/article.projector'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 @ApiTags('Articles')
@@ -45,8 +47,14 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @ApiOperation({ summary: 'Find top articles by query (pagable)' })
-  @ApiWithQueryParamsFormat()
-  @ApiOkPagableExample(MockArticleViewModelsStripped)
+  @ApiMultipleBadRequestResponses({
+    withQueryFormat: true,
+    businessLogicErrors: [ArticleErrors.CategoryDoesNotExist],
+  })
+  @ApiOkPagableExample(
+    MockArticleViewModelsStripped,
+    `The <code>body</code> will only contain the first ${ARTICLE_BODY_PREVIEW_LENGTH} characters.`,
+  )
   @IsPublic()
   @Get('top')
   async findTopByQuery(
@@ -57,7 +65,7 @@ export class ArticleController {
   }
 
   @ApiOperation({ summary: 'Find an article by id' })
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('article')
   @ApiOkExample(MockArticleViewModels[0])
   @IsPublic()
   @Get(':id')
@@ -83,7 +91,7 @@ export class ArticleController {
   @ApiWithAuth()
   @ApiWithPermit()
   @ApiWithBodyFormat()
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('article')
   @ApiNoContentSuccess()
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -98,7 +106,7 @@ export class ArticleController {
   @ApiOperation({ summary: 'Delete an article by id' })
   @ApiWithAuth()
   @ApiWithPermit()
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('article')
   @ApiNoContentSuccess()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -10,6 +10,6 @@ export const ArticleErrors: Record<
 > = {
   CategoryDoesNotExist: {
     code: ArticleErrorCode.CategoryDoesNotExist,
-    message: 'Provided category does not exist',
+    message: 'Provided category does not exist.',
   },
 }

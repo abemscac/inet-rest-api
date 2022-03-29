@@ -38,7 +38,7 @@ export class ArticleCommentController {
 
   @ApiOperation({ summary: 'Find article comments by query (pagable)' })
   @ApiWithQueryParamsFormat()
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('article')
   @ApiOkPagableExample(MockArticleCommentViewModels)
   @IsPublic()
   @Get()
@@ -51,7 +51,7 @@ export class ArticleCommentController {
   @ApiOperation({ summary: 'Create an article comment' })
   @ApiWithAuth()
   @ApiWithBodyFormat()
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('article')
   @ApiCreatedExample(MockArticleCommentViewModels[0])
   @Post()
   async create(

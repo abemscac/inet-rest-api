@@ -9,12 +9,12 @@ export enum Pagination {
 }
 
 export class PagableParams {
-  @ApiPropertyOptional({ enum: Pagination })
+  @ApiPropertyOptional({ enum: Pagination, description: 'Paganation type.' })
   @IsEnum(Pagination)
   @IsOptional()
   pagination?: Pagination
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'The id of the cursor element.' })
   @IsInt()
   @Type(() => Number)
   @Min(0)
@@ -24,14 +24,14 @@ export class PagableParams {
   /**
    * 0-indexed page number
    */
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: '0-indexed page number.' })
   @IsInt()
   @Type(() => Number)
   @Min(0)
   @IsOptional()
   page?: number
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Record count per page.' })
   @IsInt()
   @Type(() => Number)
   @Min(1)
@@ -39,9 +39,12 @@ export class PagableParams {
   limit?: number
 
   /**
-   * Used to indicate that API should return all records at once.
+   * Used to indicate that the client wants all records be returned at once.
    */
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description:
+      'Used to indicate that the client wants all records be returned at once.',
+  })
   @IsBoolean()
   @BooleanTransform()
   @IsOptional()
