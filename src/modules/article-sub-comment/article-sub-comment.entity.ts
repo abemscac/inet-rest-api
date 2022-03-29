@@ -3,24 +3,22 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Removable } from '~/base-entities/removable.entity'
-import { ArticleSubComment } from '../article-sub-comment/article-sub-comment.entity'
-import { Article } from '../article/article.entity'
+import { ArticleComment } from '../article-comment/article-comment.entity'
 import { User } from '../user/user.entity'
 
-@Entity({ name: 'article_comment' })
-export class ArticleComment extends Removable {
+@Entity({ name: 'article_sub_comment' })
+export class ArticleSubComment extends Removable {
   @PrimaryGeneratedColumn()
   id: number
 
   @Column({
-    name: 'article_id',
+    name: 'parent_comment_id',
     type: 'int',
   })
-  articleId: number
+  parentCommentId: number
 
   @Column({
     name: 'author_id',
@@ -35,18 +33,15 @@ export class ArticleComment extends Removable {
   body: string
 
   // relations
-  @ManyToOne(() => Article, (article) => article.comments, {
+  @ManyToOne(() => ArticleComment, (comment) => comment.subComments, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'article_id' })
-  article: Article
+  @JoinColumn({ name: 'parent_comment_id' })
+  parentComment: ArticleComment
 
   @ManyToOne(() => User, (user) => user.articleComments, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'author_id' })
   author: User
-
-  @OneToMany(() => ArticleSubComment, (subComment) => subComment.parentComment)
-  subComments: Array<ArticleSubComment>
 }

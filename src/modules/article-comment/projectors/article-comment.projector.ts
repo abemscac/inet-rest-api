@@ -1,10 +1,13 @@
 import { Repository } from 'typeorm'
-import { BaseProjector } from '~/base-projectors/base-projector'
+import {
+  BaseProjector,
+  IProjectionPipe,
+} from '~/base-projectors/base-projector'
 import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { ArticleComment } from '../article-comment.entity'
 import { IArticleCommentViewModel } from '../view-models/i-article-comment.view-model'
 
-interface IArticleCommentViewModelProjection {
+export interface IArticleCommentViewModelProjection {
   commentId: number
   commentBody: string | null
   commentCreatedAt: Date
@@ -15,6 +18,30 @@ interface IArticleCommentViewModelProjection {
   authorAvatarImageHash: string | null
   authorAvatarImageExt: string | null
   authorCreatedAt: Date | null
+}
+
+export const ArticleCommentViewModelPipe: IProjectionPipe<
+  IArticleCommentViewModel,
+  IArticleCommentViewModelProjection
+> = (result, projection) => {
+  result.id = projection.commentId
+  result.author = !projection.authorId
+    ? null
+    : {
+        id: projection.authorId,
+        username: projection.authorUsername as string,
+        name: projection.authorName,
+        avatarUrl: ImgurUtil.toLink({
+          hash: projection.authorAvatarImageHash,
+          ext: projection.authorAvatarImageExt,
+          size: ImageSize.SmallSquare,
+        }),
+        createdAt: projection.authorCreatedAt as Date,
+      }
+  result.body = projection.commentBody
+  result.createdAt = projection.commentCreatedAt
+  result.isRemoved = projection.commentIsRemoved
+  return result
 }
 
 export class ArticleCommentProjector extends BaseProjector<
@@ -41,24 +68,6 @@ export class ArticleCommentProjector extends BaseProjector<
         ]),
       alias,
     )
-    super.setPipes((_, projection) => ({
-      id: projection.commentId,
-      author: !projection.authorId
-        ? null
-        : {
-            id: projection.authorId,
-            username: projection.authorUsername as string,
-            name: projection.authorName,
-            avatarUrl: ImgurUtil.toLink({
-              hash: projection.authorAvatarImageHash,
-              ext: projection.authorAvatarImageExt,
-              size: ImageSize.SmallSquare,
-            }),
-            createdAt: projection.authorCreatedAt as Date,
-          },
-      body: projection.commentBody,
-      createdAt: projection.commentCreatedAt,
-      isRemoved: projection.commentIsRemoved,
-    }))
+    super.setPipes(ArticleCommentViewModelPipe)
   }
 }
