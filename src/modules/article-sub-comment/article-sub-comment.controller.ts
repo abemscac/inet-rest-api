@@ -22,40 +22,43 @@ import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
 import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
+import { MockArticleCommentViewModels } from '../article-comment/article-comment.mocks'
+import { IArticleCommentViewModel } from '../article-comment/view-models/i-article-comment.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
-import { MockArticleCommentViewModels } from './article-comment.mocks'
-import { ArticleCommentService } from './article-comment.service'
-import { ArticleCommentCreateForm } from './forms/article-comment-create.form'
-import { ArticleCommentFindByQueryParams } from './params/article-comment-find-by-query.params'
-import { IArticleCommentViewModel } from './view-models/i-article-comment.view-model'
+import { ArticleSubCommentService } from './article-sub-comment.service'
+import { ArticleSubCommentCreateForm } from './forms/article-sub-comment-create.form'
+import { ArticleSubCommentFindByQueryParams } from './params/article-sub-comment-find-by-query.params'
 
-@ApiTags('Article Comments')
-@Controller('article-comments')
-export class ArticleCommentController {
-  constructor(private readonly articleCommentService: ArticleCommentService) {}
+@ApiTags('Article Sub Comments')
+@Controller('article-sub-comments')
+export class ArticleSubCommentController {
+  constructor(
+    private readonly articleSubCommentService: ArticleSubCommentService,
+  ) {}
 
-  @ApiOperation({ summary: 'Find article comments by query (pagable)' })
+  @ApiOperation({ summary: 'Find article sub-comments by query (pagable)' })
   @ApiWithQueryParamsFormat()
-  @ApiWithTargetEntity('article')
+  @ApiWithTargetEntity('parent-comment')
   @ApiOkPagableExample(MockArticleCommentViewModels)
   @Get()
   async findByQuery(
-    @Query(PagableParamsValidationPipe) params: ArticleCommentFindByQueryParams,
+    @Query(PagableParamsValidationPipe)
+    params: ArticleSubCommentFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
-    return await this.articleCommentService.findByQuery(params)
+    return await this.articleSubCommentService.findByQuery(params)
   }
 
-  @ApiOperation({ summary: 'Create an article comment' })
+  @ApiOperation({ summary: 'Create an article sub-comment' })
   @ApiWithAuth()
   @ApiWithBodyFormat()
-  @ApiWithTargetEntity('article')
+  @ApiWithTargetEntity('parent-comment')
   @ApiCreatedExample(MockArticleCommentViewModels[0])
   @UseGuards(AccessTokenAuthGuard)
   @Post()
   async create(
-    @Body() form: ArticleCommentCreateForm,
+    @Body() form: ArticleSubCommentCreateForm,
   ): Promise<IArticleCommentViewModel> {
-    return await this.articleCommentService.create(form)
+    return await this.articleSubCommentService.create(form)
   }
 
   @ApiOperation({ summary: 'Delete an article comment by id' })
@@ -67,6 +70,6 @@ export class ArticleCommentController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeById(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return await this.articleCommentService.removeById(id)
+    await this.articleSubCommentService.removeById(id)
   }
 }

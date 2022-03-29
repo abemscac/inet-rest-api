@@ -66,13 +66,28 @@ CREATE TABLE `article_comment`
     `id` INT AUTO_INCREMENT NOT NULL,
     `article_id` INT NOT NULL,
     `author_id` INT NOT NULL,
-    `body` NVARCHAR(500) NOT NULL,
+    `body` TEXT NOT NULL,
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
     `removed_at` TIMESTAMP,
     `is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
 
     PRIMARY KEY(`id`),
     FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE `article_sub_comment`
+(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `parent_comment_id` INT NOT NULL,
+    `author_id` INT NOT NULL,
+    `body` TEXT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+    `removed_at` TIMESTAMP,
+    `is_removed` TINYINT(1) DEFAULT 0 NOT NULL,
+
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`parent_comment_id`) REFERENCES `article_comment`(`id`) ON DELETE CASCADE,
     FOREIGN KEY(`author_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
 

@@ -71,7 +71,7 @@ export class ArticleCommentService implements IArticleCommentService {
       },
     )
     this.passportPermitService.permitOrFail(comment.authorId)
-    this.articleCommentRepository.update(
+    await this.articleCommentRepository.update(
       { id },
       {
         removedAt: new Date(),
