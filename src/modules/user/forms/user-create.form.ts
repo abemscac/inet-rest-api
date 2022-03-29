@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer'
 import { IsNotEmpty, Length } from 'class-validator'
+import { ApiPropertyImage } from '~/swagger-decorators/api-property-image'
 
 export class UserCreateForm {
   @IsNotEmpty()
@@ -19,5 +20,6 @@ export class UserCreateForm {
   /**
    * This field will be assigned in FastifyFileInterceptor
    */
+  @ApiPropertyImage()
   avatar?: Express.Multer.File | null
 }

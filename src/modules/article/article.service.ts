@@ -16,8 +16,8 @@ import { ArticleErrors } from './article.errors'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import {
+  ArticleCreatedRange,
   ArticleFindTopByQueryParams,
-  ArticleFindTopByQueryTimeInterval,
 } from './params/article-find-top-by-query.params'
 import { ArticleViewModelProjector } from './projectors/article.projector'
 import { IArticleViewModel } from './view-models/i-article.view-model'
@@ -47,13 +47,14 @@ export class ArticleService implements IArticleService {
   async findTopByQuery(
     params: ArticleFindTopByQueryParams,
   ): Promise<IPagableViewModel<IArticleViewModel>> {
-    const { interval, categoryId } = params
+    const { created, categoryId } = params
     const projector = new ArticleViewModelProjector(
       this.articleRepository,
       'article',
     ).orderBy('article.views', 'DESC')
 
     if (categoryId !== undefined) {
+      await this.validateCategory(categoryId)
       projector
         .where('articleCategory.id = :categoryId', { categoryId })
         .andWhere('article.isRemoved = :isRemoved', { isRemoved: false })
@@ -61,16 +62,16 @@ export class ArticleService implements IArticleService {
       projector.where('article.isRemoved = :isRemoved', { isRemoved: false })
     }
 
-    if (interval) {
+    if (created) {
       const now = new Date()
       let minCreatedAt: Date
-      if (interval === ArticleFindTopByQueryTimeInterval.today) {
+      if (created === ArticleCreatedRange.today) {
         minCreatedAt = new Date(new Date(now).setUTCHours(0, 0, 0, 0))
       } else {
         minCreatedAt = DateUtil.timeLapse(now, {
-          week: interval === ArticleFindTopByQueryTimeInterval.week ? -1 : 0,
-          month: interval === ArticleFindTopByQueryTimeInterval.month ? -1 : 0,
-          year: interval === ArticleFindTopByQueryTimeInterval.year ? -1 : 0,
+          week: created === ArticleCreatedRange.week ? -1 : 0,
+          month: created === ArticleCreatedRange.month ? -1 : 0,
+          year: created === ArticleCreatedRange.year ? -1 : 0,
         })
       }
       projector.andWhere('article.createdAt >= :minCreatedAt', {

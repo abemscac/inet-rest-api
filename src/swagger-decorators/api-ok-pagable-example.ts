@@ -1,11 +1,10 @@
-import { applyDecorators } from '@nestjs/common'
 import { ICursorPaginationViewModel } from '~/shared-view-models/i-cursor-pagination.view-model'
 import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { ApiOkExamples } from './api-ok-examples'
 
-export const ApiOkPagableExample = <T>(data: Array<T>) =>
-  applyDecorators(
-    ApiOkExamples({
+export const ApiOkPagableExample = <T>(data: Array<T>, description?: string) =>
+  ApiOkExamples(
+    {
       'No pagination': {
         value: data,
       },
@@ -25,5 +24,6 @@ export const ApiOkPagableExample = <T>(data: Array<T>) =>
           data,
         } as ICursorPaginationViewModel<T>,
       },
-    }),
+    },
+    description,
   )

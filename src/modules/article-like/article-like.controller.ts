@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
@@ -44,8 +45,8 @@ export class ArticleLikeController {
   @ApiOperation({ summary: 'Like an article' })
   @ApiWithBodyFormat()
   @ApiWithAuth()
-  @ApiWithTargetEntity()
-  @ApiOkExample(MockArticleLike)
+  @ApiWithTargetEntity('article')
+  @ApiCreatedExample(MockArticleLike)
   @Post()
   async create(@Body() form: ArticleLikeCreateForm): Promise<ArticleLike> {
     return await this.articleLikeService.create(form)

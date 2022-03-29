@@ -15,12 +15,11 @@ import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.i
 import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiMultipart } from '~/swagger-decorators/api-multipart'
+import { ApiMultipleBadRequestResponses } from '~/swagger-decorators/api-multiple-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { ApiWithBusinessLogicError } from '~/swagger-decorators/api-with-business-logic-error'
-import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { UserCreateForm } from './forms/user-create.form'
@@ -36,7 +35,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiOperation({ summary: 'Find an user by username' })
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('user')
   @ApiOkExample(MockUserViewModel)
   @Get(':username')
   async findByUsername(
@@ -47,8 +46,10 @@ export class UserController {
 
   @ApiOperation({ summary: 'Create an account' })
   @ApiMultipart()
-  @ApiWithBodyFormat()
-  @ApiWithBusinessLogicError(UserErrors.DuplicateUsername)
+  @ApiMultipleBadRequestResponses({
+    withBodyFormat: true,
+    businessLogicErrors: [UserErrors.DuplicateUsername],
+  })
   @ApiCreatedExample(MockUserViewModel)
   @Post()
   @FastifyImageFileInterceptor('avatar', { required: false })
@@ -58,9 +59,12 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update your profile' })
   @ApiMultipart()
-  @ApiWithBodyFormat()
   @ApiWithAuth()
-  @ApiWithPermit()
+  @ApiMultipleBadRequestResponses({
+    withBodyFormat: true,
+    businessLogicErrors: [UserErrors.PendingRemoval],
+  })
+  @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
   @Put('profile')
@@ -71,10 +75,15 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Update your password' })
-  @ApiWithBodyFormat()
   @ApiWithAuth()
-  @ApiWithPermit()
-  @ApiWithBusinessLogicError(UserErrors.OldPasswordUnmatched)
+  @ApiMultipleBadRequestResponses({
+    withBodyFormat: true,
+    businessLogicErrors: [
+      UserErrors.PendingRemoval,
+      UserErrors.OldPasswordUnmatched,
+    ],
+  })
+  @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
   @Put('password')
@@ -85,8 +94,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Remove your account' })
   @ApiWithAuth()
-  @ApiWithTargetEntity()
   @ApiWithBusinessLogicError(UserErrors.PendingRemoval)
+  @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
   @Delete()

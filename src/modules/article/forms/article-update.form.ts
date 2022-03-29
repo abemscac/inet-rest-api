@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer'
+import { Transform, Type } from 'class-transformer'
 import { IsInt, IsNotEmpty, Max } from 'class-validator'
 import { ApiPropertyImage } from '~/swagger-decorators/api-property-image'
 
@@ -16,8 +16,10 @@ export class ArticleUpdateForm {
 
   @IsNotEmpty()
   @Max(100)
+  @Transform((params) => params.value?.trim())
   title: string
 
   @IsNotEmpty()
+  @Transform((params) => params.value?.trim())
   body: string
 }

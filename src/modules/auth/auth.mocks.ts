@@ -3,7 +3,7 @@ import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
 import { IAuthViewModel } from './view-models/i-auth.view-model'
 
 export const MockAuthViewModel: IAuthViewModel = {
-  accessToken: 'xxxxx.yyyyy.zzzzz',
+  accessToken: 'aaaaa.bbbbb.ccccc',
   refreshToken: 'xxxxx.yyyyy.zzzzz',
 }
 

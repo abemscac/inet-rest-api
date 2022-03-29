@@ -1,6 +1,9 @@
 import { ApiNotFoundResponse } from '@nestjs/swagger'
 
-export const ApiWithTargetEntity = () =>
+/**
+ * @param entity default: 'entity'
+ */
+export const ApiWithTargetEntity = (entity?: string) =>
   ApiNotFoundResponse({
-    description: 'Target entity does not exist',
+    description: `Target ${entity || 'entity'} does not exist.`,
   })
