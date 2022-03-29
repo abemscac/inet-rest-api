@@ -7,26 +7,31 @@ import { REQUEST_QUERY_INCORRECT_FORMAT_MSG } from './api-with-query-params-form
 interface ApiMultipleBadRequestResponsesOptions {
   withQueryFormat?: boolean
   withBodyFormat?: boolean
-  businessLogicErrors: Array<IBusinessLogicError>
+  businessLogicErrors?: Array<IBusinessLogicError>
+  reasons?: Array<string>
 }
 
 export const ApiMultipleBadRequestResponses = (
   options: ApiMultipleBadRequestResponsesOptions,
 ) => {
-  const { withQueryFormat, withBodyFormat, businessLogicErrors } = options
-  const reasons: Array<string> = []
+  const { withQueryFormat, withBodyFormat, businessLogicErrors, reasons } =
+    options
+  const allReasons: Array<string> = []
 
   if (withQueryFormat) {
-    reasons.push(REQUEST_QUERY_INCORRECT_FORMAT_MSG)
+    allReasons.push(REQUEST_QUERY_INCORRECT_FORMAT_MSG)
   }
   if (withBodyFormat) {
-    reasons.push(REQUEST_BODY_INCORRECT_FORMAT_MSG)
+    allReasons.push(REQUEST_BODY_INCORRECT_FORMAT_MSG)
   }
-  businessLogicErrors.forEach((error) => {
-    reasons.push(getApiBusinessLogicErrorDescription(error))
+  businessLogicErrors?.forEach((error) => {
+    allReasons.push(getApiBusinessLogicErrorDescription(error))
+  })
+  reasons?.forEach((reason) => {
+    allReasons.push(reason)
   })
 
-  const liString = reasons.reduce(
+  const liString = allReasons.reduce(
     (result, reason) => result + `<li>${reason}</li>`,
     '',
   )
