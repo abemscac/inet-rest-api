@@ -100,7 +100,7 @@ export class UserService implements IUserService {
     }
 
     const partialUser: Partial<User> = {
-      name: form.name,
+      name: form.name || null,
     }
 
     let newImageHash = ''

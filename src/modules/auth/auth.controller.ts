@@ -12,9 +12,9 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
-import { ApiMultipleBadRequestResponses } from '~/swagger-decorators/api-multiple-bad-request-responses'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
+import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { MockAuthViewModel, MockLoginViewModel } from './auth.mocks'
 import { AuthService } from './auth.service'
 import { AuthLoginForm } from './forms/auth.login.form'
@@ -29,9 +29,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'Login' })
-  @ApiMultipleBadRequestResponses({
-    withBodyFormat: true,
-    reasons: ['Incorrect credential'],
+  @ApiWithBodyFormat()
+  @ApiUnauthorizedResponse({
+    description: 'Incorrect username or password.',
   })
   @ApiOkExample(MockLoginViewModel)
   @Post('login')
