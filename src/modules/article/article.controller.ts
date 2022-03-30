@@ -36,7 +36,7 @@ import {
 import { ArticleService } from './article.service'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
-import { ArticleFindTopByQueryParams } from './params/article-find-top-by-query.params'
+import { ArticleFindByQueryParams } from './params/article-find-by-query.params'
 import { ARTICLE_BODY_PREVIEW_LENGTH } from './projectors/article.projector'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
@@ -56,12 +56,12 @@ export class ArticleController {
     `The <code>body</code> will only contain the first ${ARTICLE_BODY_PREVIEW_LENGTH} characters.`,
   )
   @IsPublic()
-  @Get('top')
-  async findTopByQuery(
+  @Get()
+  async findByQuery(
     @Query(PagableParamsValidationPipe)
-    params: ArticleFindTopByQueryParams,
+    params: ArticleFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleViewModel>> {
-    return await this.articleService.findTopByQuery(params)
+    return await this.articleService.findByQuery(params)
   }
 
   @ApiOperation({ summary: 'Find an article by id' })

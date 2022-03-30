@@ -109,7 +109,7 @@ export const ArticleProjectionPipe = (
   }
 }
 
-export class ArticleViewModelProjector extends BaseProjector<
+export class ArticleProjector extends BaseProjector<
   Article,
   IArticleViewModel,
   IArticleProjection

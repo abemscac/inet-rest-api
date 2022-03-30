@@ -16,15 +16,15 @@ import { ArticleErrors } from './article.errors'
 import { ArticleCreateForm } from './forms/article-create.form'
 import { ArticleUpdateForm } from './forms/article-update.form'
 import {
-  ArticleCreatedRange,
-  ArticleFindTopByQueryParams,
-} from './params/article-find-top-by-query.params'
-import { ArticleViewModelProjector } from './projectors/article.projector'
+  ArticleCreatedWithin,
+  ArticleFindByQueryParams,
+} from './params/article-find-by-query.params'
+import { ArticleProjector } from './projectors/article.projector'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export interface IArticleService {
-  findTopByQuery(
-    params: ArticleFindTopByQueryParams,
+  findByQuery(
+    params: ArticleFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleViewModel>>
   findById(id: number): Promise<IArticleViewModel>
   create(form: ArticleCreateForm): Promise<IArticleViewModel>
@@ -44,34 +44,42 @@ export class ArticleService implements IArticleService {
     private readonly imgurService: ImgurService,
   ) {}
 
-  async findTopByQuery(
-    params: ArticleFindTopByQueryParams,
+  async findByQuery(
+    params: ArticleFindByQueryParams,
   ): Promise<IPagableViewModel<IArticleViewModel>> {
-    const { created, categoryId } = params
-    const projector = new ArticleViewModelProjector(
+    const { createdWithin, categoryId } = params
+    const projector = new ArticleProjector(
       this.articleRepository,
       'article',
     ).orderBy('article.views', 'DESC')
 
     if (categoryId !== undefined) {
       await this.validateCategory(categoryId)
-      projector
-        .where('articleCategory.id = :categoryId', { categoryId })
-        .andWhere('article.isRemoved = :isRemoved', { isRemoved: false })
-    } else {
-      projector.where('article.isRemoved = :isRemoved', { isRemoved: false })
+      projector.where('articleCategory.id = :categoryId', { categoryId })
     }
 
-    if (created) {
+    if (params.keyword) {
+      projector.andWhere(
+        `(
+          LOWER(article.title) LIKE :keyword OR
+          LOWER(author.name) LIKE :keyword OR
+          LOWER(author.username) LIKE :keyword
+        )`,
+        { keyword: `%${params.keyword.toLowerCase()}%` },
+      )
+    }
+    projector.andWhere('article.isRemoved = :isRemoved', { isRemoved: false })
+
+    if (createdWithin) {
       const now = new Date()
       let minCreatedAt: Date
-      if (created === ArticleCreatedRange.today) {
+      if (createdWithin === ArticleCreatedWithin.today) {
         minCreatedAt = new Date(new Date(now).setUTCHours(0, 0, 0, 0))
       } else {
         minCreatedAt = DateUtil.timeLapse(now, {
-          week: created === ArticleCreatedRange.week ? -1 : 0,
-          month: created === ArticleCreatedRange.month ? -1 : 0,
-          year: created === ArticleCreatedRange.year ? -1 : 0,
+          week: createdWithin === ArticleCreatedWithin.week ? -1 : 0,
+          month: createdWithin === ArticleCreatedWithin.month ? -1 : 0,
+          year: createdWithin === ArticleCreatedWithin.year ? -1 : 0,
         })
       }
       projector.andWhere('article.createdAt >= :minCreatedAt', {
@@ -82,7 +90,7 @@ export class ArticleService implements IArticleService {
   }
 
   async findById(id: number): Promise<IArticleViewModel> {
-    const article = await new ArticleViewModelProjector(
+    const article = await new ArticleProjector(
       this.articleRepository,
       'article',
     )
