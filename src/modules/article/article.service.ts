@@ -57,17 +57,21 @@ export class ArticleService implements IArticleService {
       await this.validateCategory(categoryId)
       projector.where('articleCategory.id = :categoryId', { categoryId })
     }
-
     if (params.keyword) {
       projector.andWhere(
         `(
           LOWER(article.title) LIKE :keyword OR
-          LOWER(author.name) LIKE :keyword OR
-          LOWER(author.username) LIKE :keyword
+          LOWER(author.name) LIKE :keyword
         )`,
         { keyword: `%${params.keyword.toLowerCase()}%` },
       )
     }
+    if (params.authorUsername) {
+      projector.andWhere('author.username = :authorUsername', {
+        authorUsername: params.authorUsername,
+      })
+    }
+
     projector.andWhere('article.isRemoved = :isRemoved', { isRemoved: false })
 
     if (createdWithin) {

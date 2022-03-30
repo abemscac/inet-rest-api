@@ -1,10 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, Length, Matches } from 'class-validator'
+import { ApiPropertyWithRegexp } from '~/swagger-decorators/api-property-with-regexp'
 import { PasswordRegexp, UsernameRegexp } from '../auth.constants'
 
 export class AuthLoginForm {
-  @ApiProperty({
-    description: `Regexp: ${UsernameRegexp.source}`,
+  @ApiPropertyWithRegexp(UsernameRegexp, {
     example: 'username123',
   })
   @IsNotEmpty()
@@ -12,8 +11,7 @@ export class AuthLoginForm {
   @Length(4, 50)
   username: string
 
-  @ApiProperty({
-    description: `Regexp: ${PasswordRegexp.source}`,
+  @ApiPropertyWithRegexp(PasswordRegexp, {
     example: 'password123',
   })
   @IsNotEmpty()
