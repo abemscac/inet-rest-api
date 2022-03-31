@@ -16,14 +16,13 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiMultipart } from '~/swagger-decorators/api-multipart'
-import { ApiMultipleBadRequestResponses } from '~/swagger-decorators/api-multiple-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { IsPublic } from '../auth/decorators/is-public.decorator'
@@ -47,8 +46,8 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @ApiOperation({ summary: 'Find top articles by query (pagable)' })
-  @ApiMultipleBadRequestResponses({
-    withQueryFormat: true,
+  @ApiBadRequestResponses({
+    queryFormat: true,
     businessLogicErrors: [ArticleErrors.CategoryDoesNotExist],
   })
   @ApiOkPagableExample(
@@ -78,7 +77,7 @@ export class ArticleController {
   @ApiOperation({ summary: 'Create an article' })
   @ApiMultipart()
   @ApiWithAuth()
-  @ApiWithBodyFormat()
+  @ApiBadRequestResponses({ bodyFormat: true })
   @ApiCreatedExample(MockArticleViewModels[0])
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
@@ -90,7 +89,7 @@ export class ArticleController {
   @ApiMultipart()
   @ApiWithAuth()
   @ApiWithPermit()
-  @ApiWithBodyFormat()
+  @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithTargetEntity('article')
   @ApiNoContentSuccess()
   @Put(':id')

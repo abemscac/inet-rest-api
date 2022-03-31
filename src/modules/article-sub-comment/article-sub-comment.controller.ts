@@ -14,13 +14,12 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
-import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { MockArticleCommentViewModels } from '../article-comment/article-comment.mocks'
 import { IArticleCommentViewModel } from '../article-comment/view-models/i-article-comment.view-model'
@@ -37,7 +36,7 @@ export class ArticleSubCommentController {
   ) {}
 
   @ApiOperation({ summary: 'Find article sub-comments by query (pagable)' })
-  @ApiWithQueryParamsFormat()
+  @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithTargetEntity('parent-comment')
   @ApiOkPagableExample(MockArticleCommentViewModels)
   @Get()
@@ -50,7 +49,7 @@ export class ArticleSubCommentController {
 
   @ApiOperation({ summary: 'Create an article sub-comment' })
   @ApiWithAuth()
-  @ApiWithBodyFormat()
+  @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithTargetEntity('parent-comment')
   @ApiCreatedExample(MockArticleCommentViewModels[0])
   @UseGuards(AccessTokenAuthGuard)
@@ -61,10 +60,10 @@ export class ArticleSubCommentController {
     return await this.articleSubCommentService.create(form)
   }
 
-  @ApiOperation({ summary: 'Delete an article comment by id' })
+  @ApiOperation({ summary: 'Delete an article sub-comment by id' })
   @ApiWithAuth()
   @ApiWithPermit()
-  @ApiWithTargetEntity()
+  @ApiWithTargetEntity('sub-comment')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
   @Delete(':id')

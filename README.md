@@ -41,3 +41,8 @@
   - [x] See your browse histories
   - [x] Delete one record
   - [x] Clear all
+
+## Resource URLs
+
+- DEV API: http://54.91.115.107:33823/api
+- Figma: https://www.figma.com/team_invite/redeem/qZnX7QPCVt1rLVwY5fbpSK

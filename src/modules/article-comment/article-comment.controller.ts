@@ -14,13 +14,12 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
-import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { MockArticleCommentViewModels } from './article-comment.mocks'
@@ -35,7 +34,7 @@ export class ArticleCommentController {
   constructor(private readonly articleCommentService: ArticleCommentService) {}
 
   @ApiOperation({ summary: 'Find article comments by query (pagable)' })
-  @ApiWithQueryParamsFormat()
+  @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithTargetEntity('article')
   @ApiOkPagableExample(MockArticleCommentViewModels)
   @Get()
@@ -47,7 +46,7 @@ export class ArticleCommentController {
 
   @ApiOperation({ summary: 'Create an article comment' })
   @ApiWithAuth()
-  @ApiWithBodyFormat()
+  @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithTargetEntity('article')
   @ApiCreatedExample(MockArticleCommentViewModels[0])
   @UseGuards(AccessTokenAuthGuard)

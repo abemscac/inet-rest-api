@@ -13,11 +13,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
 import { PagableParams } from '~/shared-params/pagable.params'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
-import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { MockUserBrowseHistoryViewModels } from './user-browse-history.mocks'
@@ -33,7 +33,7 @@ export class UserBrowseHistoryController {
   ) {}
 
   @ApiOperation({ summary: 'Find your browse histories by query (pagable)' })
-  @ApiWithQueryParamsFormat()
+  @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithAuth()
   @ApiOkExample(MockUserBrowseHistoryViewModels)
   @Get()

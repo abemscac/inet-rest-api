@@ -13,13 +13,12 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
 import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
+import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiMultipart } from '~/swagger-decorators/api-multipart'
-import { ApiMultipleBadRequestResponses } from '~/swagger-decorators/api-multiple-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { ApiWithBusinessLogicError } from '~/swagger-decorators/api-with-business-logic-error'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { UserCreateForm } from './forms/user-create.form'
@@ -46,8 +45,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Create an account' })
   @ApiMultipart()
-  @ApiMultipleBadRequestResponses({
-    withBodyFormat: true,
+  @ApiBadRequestResponses({
+    bodyFormat: true,
     businessLogicErrors: [UserErrors.DuplicateUsername],
   })
   @ApiCreatedExample(MockUserViewModel)
@@ -59,11 +58,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update your profile' })
   @ApiMultipart()
+  @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithAuth()
-  @ApiMultipleBadRequestResponses({
-    withBodyFormat: true,
-    businessLogicErrors: [UserErrors.PendingRemoval],
-  })
   @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
@@ -75,14 +71,11 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Update your password' })
-  @ApiWithAuth()
-  @ApiMultipleBadRequestResponses({
-    withBodyFormat: true,
-    businessLogicErrors: [
-      UserErrors.PendingRemoval,
-      UserErrors.OldPasswordUnmatched,
-    ],
+  @ApiBadRequestResponses({
+    bodyFormat: true,
+    businessLogicErrors: [UserErrors.OldPasswordUnmatched],
   })
+  @ApiWithAuth()
   @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
@@ -94,7 +87,6 @@ export class UserController {
 
   @ApiOperation({ summary: 'Remove your account' })
   @ApiWithAuth()
-  @ApiWithBusinessLogicError(UserErrors.PendingRemoval)
   @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
