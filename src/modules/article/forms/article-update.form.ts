@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer'
-import { IsInt, IsNotEmpty, Max } from 'class-validator'
+import { IsInt, IsNotEmpty, Length, MinLength } from 'class-validator'
 import { ApiPropertyImage } from '~/swagger-decorators/api-property-image'
 
 export class ArticleUpdateForm {
@@ -15,11 +15,12 @@ export class ArticleUpdateForm {
   coverImage?: Express.Multer.File
 
   @IsNotEmpty()
-  @Max(100)
+  @Length(1, 100)
   @Transform((params) => params.value?.trim())
   title: string
 
   @IsNotEmpty()
+  @MinLength(1)
   @Transform((params) => params.value?.trim())
   body: string
 }

@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import { Repository } from 'typeorm'
 import { getAppConfig } from '~/app.config'
+import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { User } from '../user/user.entity'
 import { AuthLoginForm } from './forms/auth.login.form'
@@ -98,7 +99,11 @@ export class AuthService implements IAuthService {
       id: user.id,
       username: form.username,
       name: user.name,
-      avatarUrl: user.avatarImageHash,
+      avatarUrl: ImgurUtil.toLink({
+        hash: user.avatarImageHash,
+        ext: user.avatarImageExt,
+        size: ImageSize.SmallSquare,
+      }),
       createdAt: user.createdAt,
       pendingRemoval: user.isRemoved,
       ...tokens,
