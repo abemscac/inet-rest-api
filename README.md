@@ -44,5 +44,9 @@
 
 ## Resource URLs
 
-- DEV API: http://54.91.115.107:33823/api
-- Figma: https://www.figma.com/team_invite/redeem/qZnX7QPCVt1rLVwY5fbpSK
+| Name              | URL                                                                               |
+| ----------------- | --------------------------------------------------------------------------------- |
+| DEV API           | http://54.91.115.107:33823/api                                                    |
+| DEV API docs      | http://54.91.115.107:33823/docs                                                   |
+| Figma team        | https://www.figma.com/team_invite/redeem/qZnX7QPCVt1rLVwY5fbpS                    |
+| Postman workspace | https://app.getpostman.com/join-team?invite_code=1f118ed5f0eebc2d4e5eb24310a34e58 |
