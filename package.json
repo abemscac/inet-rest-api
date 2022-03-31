@@ -1,7 +1,7 @@
 {
   "name": "inet-rest-api",
   "version": "1.0.0",
-  "description": "INET RESTful API with NestJS, TypeORM, and MySQL",
+  "description": "INET RESTful API with NestJS (TypeScript), MySQL, TypeORM, WebSocket, BullMQ, and Elasticsearch",
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development nest start --watch",
