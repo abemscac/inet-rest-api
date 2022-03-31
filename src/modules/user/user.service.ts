@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
 import { Repository } from 'typeorm'
@@ -89,15 +89,10 @@ export class UserService implements IUserService {
 
   async updateProfile(form: UserUpdateProfileForm): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
-    const user = await this.userRepository.findOneOrFail(
-      { id },
-      {
-        select: ['isRemoved'],
-      },
-    )
-    if (user.isRemoved) {
-      throw new BusinessLogicException(UserErrors.PendingRemoval)
-    }
+    await this.userRepository.findOneOrFail({
+      id,
+      isRemoved: false,
+    })
 
     const partialUser: Partial<User> = {
       name: form.name || null,
@@ -129,12 +124,9 @@ export class UserService implements IUserService {
         isRemoved: false,
       },
       {
-        select: ['hashedPassword', 'isRemoved'],
+        select: ['hashedPassword'],
       },
     )
-    if (user.isRemoved) {
-      throw new BusinessLogicException(UserErrors.PendingRemoval)
-    }
 
     const { oldPassword, newPassword } = form
     const passwordMatched = await bcrypt.compare(
@@ -157,27 +149,14 @@ export class UserService implements IUserService {
 
   async remove(): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
-    const user = await this.userRepository.findOne(
+    await TypeORMUtil.existOrFail(this.userRepository, { id, isRemoved: false })
+    await this.userRepository.update(
+      { id },
       {
-        id,
-      },
-      {
-        select: ['isRemoved'],
+        hashedRefreshToken: null,
+        removedAt: new Date(),
+        isRemoved: true,
       },
     )
-    if (!user) {
-      throw new NotFoundException()
-    } else if (user.isRemoved) {
-      throw new BusinessLogicException(UserErrors.PendingRemoval)
-    } else {
-      await this.userRepository.update(
-        { id },
-        {
-          hashedRefreshToken: null,
-          removedAt: new Date(),
-          isRemoved: true,
-        },
-      )
-    }
   }
 }

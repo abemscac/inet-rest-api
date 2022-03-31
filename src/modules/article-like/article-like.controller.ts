@@ -10,12 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { ApiWithBodyFormat } from '~/swagger-decorators/api-with-body-format'
-import { ApiWithQueryParamsFormat } from '~/swagger-decorators/api-with-query-params-format'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleLike } from './article-like.entity'
@@ -31,7 +30,7 @@ export class ArticleLikeController {
   constructor(private readonly articleLikeService: ArticleLikeService) {}
 
   @ApiOperation({ summary: 'Find article like record by query' })
-  @ApiWithQueryParamsFormat()
+  @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithAuth()
   @ApiWithTargetEntity()
   @ApiOkExample(MockArticleLike)
@@ -43,7 +42,7 @@ export class ArticleLikeController {
   }
 
   @ApiOperation({ summary: 'Like an article' })
-  @ApiWithBodyFormat()
+  @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithAuth()
   @ApiWithTargetEntity('article')
   @ApiCreatedExample(MockArticleLike)
@@ -53,7 +52,7 @@ export class ArticleLikeController {
   }
 
   @ApiOperation({ summary: 'Take back like from an article' })
-  @ApiWithQueryParamsFormat()
+  @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithAuth()
   @ApiWithTargetEntity()
   @ApiNoContentSuccess()
