@@ -38,8 +38,8 @@
   - [x] Like an article
   - [x] Take back your like on an article
 - User Browse History
-  - [x] See your browse histories
-  - [x] Delete one record
+  - [x] Find your browse histories
+  - [x] Delete browse history
   - [x] Clear all
 
 ## Resource URLs
@@ -48,5 +48,5 @@
 | ----------------- | --------------------------------------------------------------------------------- |
 | DEV API           | http://54.91.115.107:33823/api                                                    |
 | DEV API docs      | http://54.91.115.107:33823/docs                                                   |
-| Figma team        | https://www.figma.com/team_invite/redeem/qZnX7QPCVt1rLVwY5fbpS                    |
+| Figma team        | https://www.figma.com/team_invite/redeem/XdCaIPzJvMBTfi2KqkMER6                   |
 | Postman workspace | https://app.getpostman.com/join-team?invite_code=1f118ed5f0eebc2d4e5eb24310a34e58 |
