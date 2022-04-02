@@ -8,7 +8,7 @@ export enum Pagination {
   cursor = 'cursor',
 }
 
-export class PagableParams {
+export class PagableQuery {
   @ApiPropertyOptional({ enum: Pagination, description: 'Paganation type.' })
   @IsEnum(Pagination)
   @IsOptional()

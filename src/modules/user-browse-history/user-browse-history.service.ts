@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { PagableParams } from '~/shared-params/pagable.params'
+import { PagableQuery } from '~/shared-queries/pagable.query'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
-import { UserBrowseHistoryCreateForm } from './forms/user-browse-history-create.form'
+import { CreateUserBrowseHistoryForm } from './forms/create-user-browse-history.form'
 import { UserBrowseHistoryProjector } from './projector/user-browse-history.projector'
 import { UserBrowseHistory } from './user-browse-history.entity'
 import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
 
 export interface IUserBrowseHistoryService {
   findByQuery(
-    params: PagableParams,
+    query: PagableQuery,
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>>
   create(
-    form: UserBrowseHistoryCreateForm,
+    form: CreateUserBrowseHistoryForm,
   ): Promise<IUserBrowseHistoryViewModel>
   deleteById(id: number): Promise<void>
   clear(): Promise<void>
@@ -29,7 +29,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
   ) {}
 
   async findByQuery(
-    params: PagableParams,
+    query: PagableQuery,
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>> {
     return new UserBrowseHistoryProjector(
       this.userBrowseHistoryRepository,
@@ -39,12 +39,12 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
         userId: this.passportPermitService.user?.id ?? 0,
       })
       .orderBy('history.createdAt', 'DESC')
-      .projectPagination(params)
+      .projectPagination(query)
   }
 
   // This feature should NOT be exposed as an endpoint in controller.
   async create(
-    form: UserBrowseHistoryCreateForm,
+    form: CreateUserBrowseHistoryForm,
   ): Promise<IUserBrowseHistoryViewModel> {
     const { id: userId = 0 } = this.passportPermitService.user ?? {}
     const { articleId } = form

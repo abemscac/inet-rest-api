@@ -13,22 +13,19 @@ import { PassportPermitService } from '../passport-permit/passport-permit.servic
 import { UserBrowseHistoryService } from '../user-browse-history/user-browse-history.service'
 import { Article } from './article.entity'
 import { ArticleErrors } from './article.errors'
-import { ArticleCreateForm } from './forms/article-create.form'
-import { ArticleUpdateForm } from './forms/article-update.form'
-import {
-  ArticleCreatedWithin,
-  ArticleFindByQueryParams,
-} from './params/article-find-by-query.params'
+import { CreateArticleForm } from './forms/create-article.form'
+import { UpdateArticleForm } from './forms/update-article.form'
 import { ArticleProjector } from './projectors/article.projector'
+import { ArticleCreatedWithin, ArticleQuery } from './queries/article.query'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export interface IArticleService {
   findByQuery(
-    params: ArticleFindByQueryParams,
+    query: ArticleQuery,
   ): Promise<IPagableViewModel<IArticleViewModel>>
   findById(id: number): Promise<IArticleViewModel>
-  create(form: ArticleCreateForm): Promise<IArticleViewModel>
-  updateById(id: number, form: ArticleUpdateForm): Promise<void>
+  create(form: CreateArticleForm): Promise<IArticleViewModel>
+  updateById(id: number, form: UpdateArticleForm): Promise<void>
   removeById(id: number): Promise<void>
 }
 
@@ -45,9 +42,9 @@ export class ArticleService implements IArticleService {
   ) {}
 
   async findByQuery(
-    params: ArticleFindByQueryParams,
+    query: ArticleQuery,
   ): Promise<IPagableViewModel<IArticleViewModel>> {
-    const { createdWithin, categoryId } = params
+    const { createdWithin, categoryId } = query
     const projector = new ArticleProjector(
       this.articleRepository,
       'article',
@@ -57,18 +54,18 @@ export class ArticleService implements IArticleService {
       await this.validateCategory(categoryId)
       projector.where('articleCategory.id = :categoryId', { categoryId })
     }
-    if (params.keyword) {
+    if (query.keyword) {
       projector.andWhere(
         `(
           LOWER(article.title) LIKE :keyword OR
           LOWER(author.name) LIKE :keyword
         )`,
-        { keyword: `%${params.keyword.toLowerCase()}%` },
+        { keyword: `%${query.keyword.toLowerCase()}%` },
       )
     }
-    if (params.authorUsername) {
+    if (query.authorUsername) {
       projector.andWhere('author.username = :authorUsername', {
-        authorUsername: params.authorUsername,
+        authorUsername: query.authorUsername,
       })
     }
 
@@ -90,7 +87,7 @@ export class ArticleService implements IArticleService {
         minCreatedAt,
       })
     }
-    return await projector.projectPagination(params)
+    return await projector.projectPagination(query)
   }
 
   async findById(id: number): Promise<IArticleViewModel> {
@@ -123,7 +120,7 @@ export class ArticleService implements IArticleService {
     return article
   }
 
-  async create(form: ArticleCreateForm): Promise<IArticleViewModel> {
+  async create(form: CreateArticleForm): Promise<IArticleViewModel> {
     await this.validateCategory(form.categoryId)
 
     let imageHash = '',
@@ -153,7 +150,7 @@ export class ArticleService implements IArticleService {
     return await this.findById(articleId)
   }
 
-  async updateById(id: number, form: ArticleUpdateForm): Promise<void> {
+  async updateById(id: number, form: UpdateArticleForm): Promise<void> {
     const article = await this.articleRepository.findOneOrFail(
       { id },
       { select: ['categoryId', 'coverImageHash', 'authorId'] },

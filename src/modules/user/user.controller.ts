@@ -21,9 +21,9 @@ import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
-import { UserCreateForm } from './forms/user-create.form'
-import { UserUpdatePasswordForm } from './forms/user-update-password.form'
-import { UserUpdateProfileForm } from './forms/user-update-profile.form'
+import { CreateUserForm } from './forms/create-user.form'
+import { UpdatePasswordForm } from './forms/update-password.form'
+import { UpdateProfileForm } from './forms/update-profile.form'
 import { UserErrors } from './user.errors'
 import { MockUserViewModel } from './user.mocks'
 import { UserService } from './user.service'
@@ -52,7 +52,7 @@ export class UserController {
   @ApiCreatedExample(MockUserViewModel)
   @Post()
   @FastifyImageFileInterceptor('avatar', { required: false })
-  async create(@Body() form: UserCreateForm): Promise<IUserViewModel> {
+  async create(@Body() form: CreateUserForm): Promise<IUserViewModel> {
     return await this.userService.create(form)
   }
 
@@ -66,7 +66,7 @@ export class UserController {
   @Put('profile')
   @HttpCode(HttpStatus.NO_CONTENT)
   @FastifyImageFileInterceptor('avatar', { required: false })
-  async updateProfile(@Body() form: UserUpdateProfileForm): Promise<void> {
+  async updateProfile(@Body() form: UpdateProfileForm): Promise<void> {
     return await this.userService.updateProfile(form)
   }
 
@@ -81,7 +81,7 @@ export class UserController {
   @UseGuards(AccessTokenAuthGuard)
   @Put('password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePassword(@Body() form: UserUpdatePasswordForm): Promise<void> {
+  async updatePassword(@Body() form: UpdatePasswordForm): Promise<void> {
     return await this.userService.updatePassword(form)
   }
 

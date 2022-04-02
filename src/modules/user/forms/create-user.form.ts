@@ -4,7 +4,7 @@ import { PasswordRegexp, UsernameRegexp } from '~/modules/auth/auth.constants'
 import { ApiPropertyImage } from '~/swagger-decorators/api-property-image'
 import { ApiPropertyWithRegexp } from '~/swagger-decorators/api-property-with-regexp'
 
-export class UserCreateForm {
+export class CreateUserForm {
   @ApiPropertyWithRegexp(UsernameRegexp)
   @IsNotEmpty()
   @Length(4, 50)

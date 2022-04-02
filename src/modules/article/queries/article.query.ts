@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import { IsEnum, IsInt, IsOptional, Length } from 'class-validator'
 import { UsernameRegexp } from '~/modules/auth/auth.constants'
-import { PagableParams } from '~/shared-params/pagable.params'
+import { PagableQuery } from '~/shared-queries/pagable.query'
 import { ApiPropertyWithRegexp } from '~/swagger-decorators/api-property-with-regexp'
 
 export enum ArticleCreatedWithin {
@@ -12,7 +12,7 @@ export enum ArticleCreatedWithin {
   year = 'year',
 }
 
-export class ArticleFindByQueryParams extends PagableParams {
+export class ArticleQuery extends PagableQuery {
   @ApiPropertyOptional({
     enum: ArticleCreatedWithin,
     description: 'The time range articles were created.',

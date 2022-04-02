@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
-import { PagableParams } from '~/shared-params/pagable.params'
+import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
+import { PagableQuery } from '~/shared-queries/pagable.query'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
@@ -38,9 +38,9 @@ export class UserBrowseHistoryController {
   @ApiOkExample(MockUserBrowseHistoryViewModels)
   @Get()
   async findByQuery(
-    @Query(PagableParamsValidationPipe) params: PagableParams,
+    @Query(PagableQueryValidationPipe) query: PagableQuery,
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>> {
-    return await this.userBrowseHistoryService.findByQuery(params)
+    return await this.userBrowseHistoryService.findByQuery(query)
   }
 
   @ApiOperation({ summary: 'Delete an browse history by id' })

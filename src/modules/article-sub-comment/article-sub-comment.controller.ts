@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
+import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
@@ -25,8 +25,8 @@ import { MockArticleCommentViewModels } from '../article-comment/article-comment
 import { IArticleCommentViewModel } from '../article-comment/view-models/i-article-comment.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleSubCommentService } from './article-sub-comment.service'
-import { ArticleSubCommentCreateForm } from './forms/article-sub-comment-create.form'
-import { ArticleSubCommentFindByQueryParams } from './params/article-sub-comment-find-by-query.params'
+import { CreateArticleSubCommentForm } from './forms/create-article-sub-comment.form'
+import { ArticleSubCommentQuery } from './queries/article-sub-comment.query'
 
 @ApiTags('Article Sub Comments')
 @Controller('article-sub-comments')
@@ -41,10 +41,10 @@ export class ArticleSubCommentController {
   @ApiOkPagableExample(MockArticleCommentViewModels)
   @Get()
   async findByQuery(
-    @Query(PagableParamsValidationPipe)
-    params: ArticleSubCommentFindByQueryParams,
+    @Query(PagableQueryValidationPipe)
+    query: ArticleSubCommentQuery,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
-    return await this.articleSubCommentService.findByQuery(params)
+    return await this.articleSubCommentService.findByQuery(query)
   }
 
   @ApiOperation({ summary: 'Create an article sub-comment' })
@@ -55,7 +55,7 @@ export class ArticleSubCommentController {
   @UseGuards(AccessTokenAuthGuard)
   @Post()
   async create(
-    @Body() form: ArticleSubCommentCreateForm,
+    @Body() form: CreateArticleSubCommentForm,
   ): Promise<IArticleCommentViewModel> {
     return await this.articleSubCommentService.create(form)
   }

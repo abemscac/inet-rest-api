@@ -9,18 +9,18 @@ import { TypeORMUtil } from '~/utils/typeorm.util'
 import { ImgurAlbum } from '../imgur/imgur.constants'
 import { ImgurService } from '../imgur/imgur.service'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
-import { UserCreateForm } from './forms/user-create.form'
-import { UserUpdatePasswordForm } from './forms/user-update-password.form'
-import { UserUpdateProfileForm } from './forms/user-update-profile.form'
+import { CreateUserForm } from './forms/create-user.form'
+import { UpdatePasswordForm } from './forms/update-password.form'
+import { UpdateProfileForm } from './forms/update-profile.form'
 import { UserProjector } from './projectors/user.projector'
 import { User } from './user.entity'
 import { UserErrors } from './user.errors'
 
 export interface IUserService {
   findByUsername(username: string): Promise<IUserViewModel>
-  create(form: UserCreateForm): Promise<IUserViewModel>
-  updateProfile(form: UserUpdateProfileForm): Promise<void>
-  updatePassword(form: UserUpdatePasswordForm): Promise<void>
+  create(form: CreateUserForm): Promise<IUserViewModel>
+  updateProfile(form: UpdateProfileForm): Promise<void>
+  updatePassword(form: UpdatePasswordForm): Promise<void>
   remove(): Promise<void>
 }
 
@@ -42,7 +42,7 @@ export class UserService implements IUserService {
       .projectOrFail()
   }
 
-  async create(form: UserCreateForm): Promise<IUserViewModel> {
+  async create(form: CreateUserForm): Promise<IUserViewModel> {
     const { username, password, name } = form
     const duplicateUsername = await TypeORMUtil.exist(this.userRepository, {
       username,
@@ -87,7 +87,7 @@ export class UserService implements IUserService {
     }
   }
 
-  async updateProfile(form: UserUpdateProfileForm): Promise<void> {
+  async updateProfile(form: UpdateProfileForm): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
     await this.userRepository.findOneOrFail({
       id,
@@ -116,7 +116,7 @@ export class UserService implements IUserService {
     }
   }
 
-  async updatePassword(form: UserUpdatePasswordForm): Promise<void> {
+  async updatePassword(form: UpdatePasswordForm): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
     const user = await this.userRepository.findOneOrFail(
       {

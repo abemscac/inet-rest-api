@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
-import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
+import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
@@ -33,10 +33,10 @@ import {
   MockArticleViewModelsStripped,
 } from './article.mocks'
 import { ArticleService } from './article.service'
-import { ArticleCreateForm } from './forms/article-create.form'
-import { ArticleUpdateForm } from './forms/article-update.form'
-import { ArticleFindByQueryParams } from './params/article-find-by-query.params'
+import { CreateArticleForm } from './forms/create-article.form'
+import { UpdateArticleForm } from './forms/update-article.form'
 import { ARTICLE_BODY_PREVIEW_LENGTH } from './projectors/article.projector'
+import { ArticleQuery } from './queries/article.query'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 @ApiTags('Articles')
@@ -57,10 +57,10 @@ export class ArticleController {
   @IsPublic()
   @Get()
   async findByQuery(
-    @Query(PagableParamsValidationPipe)
-    params: ArticleFindByQueryParams,
+    @Query(PagableQueryValidationPipe)
+    query: ArticleQuery,
   ): Promise<IPagableViewModel<IArticleViewModel>> {
-    return await this.articleService.findByQuery(params)
+    return await this.articleService.findByQuery(query)
   }
 
   @ApiOperation({ summary: 'Find an article by id' })
@@ -81,7 +81,7 @@ export class ArticleController {
   @ApiCreatedExample(MockArticleViewModels[0])
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
-  async create(@Body() form: ArticleCreateForm): Promise<IArticleViewModel> {
+  async create(@Body() form: CreateArticleForm): Promise<IArticleViewModel> {
     return await this.articleService.create(form)
   }
 
@@ -97,7 +97,7 @@ export class ArticleController {
   @FastifyImageFileInterceptor('coverImage', { required: false })
   async updateById(
     @Param('id', ParseIntPipe) id: number,
-    @Body() form: ArticleUpdateForm,
+    @Body() form: UpdateArticleForm,
   ): Promise<void> {
     await this.articleService.updateById(id, form)
   }

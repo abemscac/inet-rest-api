@@ -20,8 +20,8 @@ import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleLike } from './article-like.entity'
 import { MockArticleLike } from './article-like.mocks'
 import { ArticleLikeService } from './article-like.service'
-import { ArticleLikeCreateForm } from './forms/article-like-create.form'
-import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'
+import { CreateArticleLikeForm } from './forms/create-article-like.form'
+import { ArticleLikeQuery } from './queries/article-like.query'
 
 @ApiTags('Article Likes')
 @UseGuards(AccessTokenAuthGuard)
@@ -35,10 +35,8 @@ export class ArticleLikeController {
   @ApiWithTargetEntity()
   @ApiOkExample(MockArticleLike)
   @Get()
-  async findOneByQuery(
-    @Query() params: ArticleLikeFindOneByQueryParams,
-  ): Promise<ArticleLike> {
-    return await this.articleLikeService.findOneByQuery(params)
+  async findByQuery(@Query() query: ArticleLikeQuery): Promise<ArticleLike> {
+    return await this.articleLikeService.findOyQuery(query)
   }
 
   @ApiOperation({ summary: 'Like an article' })
@@ -47,7 +45,7 @@ export class ArticleLikeController {
   @ApiWithTargetEntity('article')
   @ApiCreatedExample(MockArticleLike)
   @Post()
-  async create(@Body() form: ArticleLikeCreateForm): Promise<ArticleLike> {
+  async create(@Body() form: CreateArticleLikeForm): Promise<ArticleLike> {
     return await this.articleLikeService.create(form)
   }
 
@@ -58,9 +56,7 @@ export class ArticleLikeController {
   @ApiNoContentSuccess()
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteOneByQuery(
-    @Query() params: ArticleLikeFindOneByQueryParams,
-  ): Promise<void> {
-    return await this.articleLikeService.deleteOneByQuery(params)
+  async deleteOneByQuery(@Query() query: ArticleLikeQuery): Promise<void> {
+    return await this.articleLikeService.deleteOneByQuery(query)
   }
 }

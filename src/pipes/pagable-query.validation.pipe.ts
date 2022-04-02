@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
-import { PagableParams } from '~/shared-params/pagable.params'
+import { PagableQuery } from '~/shared-queries/pagable.query'
 
 @Injectable()
-export class PagableParamsValidationPipe implements PipeTransform {
-  transform(value: PagableParams) {
+export class PagableQueryValidationPipe implements PipeTransform {
+  transform(value: PagableQuery) {
     const { page, limit, FLAG_UNLIMITED } = value
     if (limit === undefined && !FLAG_UNLIMITED) {
       throw new BadRequestException(
