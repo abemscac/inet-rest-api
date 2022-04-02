@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm'
-import { PagableParams, Pagination } from '~/shared-params/pagable.params'
+import { PagableQuery, Pagination } from '~/shared-queries/pagable.query'
 import { ICursorPaginationViewModel } from '~/shared-view-models/i-cursor-pagination.view-model'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
@@ -23,9 +23,9 @@ export interface IBaseProjector<TResult extends Record<string, unknown>> {
   projectOrFail(): Promise<TResult>
   projectMany(): Promise<Array<TResult>>
   /**
-   * You shou validate the params by {@link src/shared-params/pagable.params.ts} first.
+   * You shou validate the params by {@link src/shared-queries/pagable.query.ts} first.
    */
-  projectPagination(params: PagableParams): Promise<IPagableViewModel<TResult>>
+  projectPagination(query: PagableQuery): Promise<IPagableViewModel<TResult>>
 }
 
 export class BaseProjector<
@@ -94,32 +94,32 @@ export class BaseProjector<
   }
 
   async projectPagination(
-    params: PagableParams,
+    query: PagableQuery,
   ): Promise<IPagableViewModel<TResult>> {
-    const { pagination } = params
+    const { pagination } = query
     if (!pagination) {
-      this.setOffsetAndLimit(params)
+      this.setOffsetAndLimit(query)
       return await this.projectMany()
     } else if (pagination === Pagination.basic) {
-      return await this.projectBasicPagination(params)
+      return await this.projectBasicPagination(query)
     } else if (pagination === Pagination.cursor) {
-      return await this.projectCursorPagination(params)
+      return await this.projectCursorPagination(query)
     } else {
       throw new BadRequestException(`Unknown pagination '${pagination}'.`)
     }
   }
 
   private async projectBasicPagination(
-    params: PagableParams,
+    query: PagableQuery,
   ): Promise<IPaginationViewModel<TResult>> {
-    const { page, limit, FLAG_UNLIMITED } = params
+    const { page, limit, FLAG_UNLIMITED } = query
 
     const totalCount = await this.queryBuilder.getCount()
     const totalPages = FLAG_UNLIMITED
       ? Number(totalCount > 0)
       : Math.ceil(totalCount / (limit as number))
 
-    this.setOffsetAndLimit(params)
+    this.setOffsetAndLimit(query)
     const data = await this.projectMany()
 
     return {
@@ -132,17 +132,17 @@ export class BaseProjector<
   }
 
   private async projectCursorPagination(
-    params: PagableParams,
+    query: PagableQuery,
   ): Promise<ICursorPaginationViewModel<TResult>> {
     if (!this.alias) {
       throw new BadRequestException(
         `Param 'alias' must be provided when using cursor pagination in projector.`,
       )
     }
-    const { limit, cursor } = params
+    const { limit, cursor } = query
     this.queryBuilder.where(`${this.alias}.id > :cursor`, { cursor })
 
-    this.setOffsetAndLimit(params)
+    this.setOffsetAndLimit(query)
     const data = await this.projectMany()
 
     return {
@@ -152,8 +152,8 @@ export class BaseProjector<
     }
   }
 
-  private setOffsetAndLimit(params: PagableParams): void {
-    const { page, limit, FLAG_UNLIMITED } = params
+  private setOffsetAndLimit(query: PagableQuery): void {
+    const { page, limit, FLAG_UNLIMITED } = query
     const offset = FLAG_UNLIMITED ? 0 : (page as number) * (limit as number)
     this.queryBuilder.offset(offset).limit(FLAG_UNLIMITED ? undefined : limit)
   }

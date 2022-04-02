@@ -3,7 +3,7 @@ import { Transform, Type } from 'class-transformer'
 import { IsInt, IsNotEmpty } from 'class-validator'
 import { MockArticleCommentViewModels } from '../article-comment.mocks'
 
-export class ArticleCommentCreateForm {
+export class CreateArticleCommentForm {
   @ApiProperty({ example: 1 })
   @IsNotEmpty()
   @IsInt()

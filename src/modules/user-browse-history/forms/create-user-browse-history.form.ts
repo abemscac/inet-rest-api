@@ -1,8 +1,7 @@
 import { Type } from 'class-transformer'
 import { IsInt, IsNotEmpty } from 'class-validator'
-import { PagableParams } from '~/shared-params/pagable.params'
 
-export class ArticleCommentFindByQueryParams extends PagableParams {
+export class CreateUserBrowseHistoryForm {
   @IsNotEmpty()
   @IsInt()
   @Type(() => Number)

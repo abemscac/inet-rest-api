@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer'
 import { IsInt, IsNotEmpty } from 'class-validator'
-import { PagableParams } from '~/shared-params/pagable.params'
+import { PagableQuery } from '~/shared-queries/pagable.query'
 
-export class ArticleSubCommentFindByQueryParams extends PagableParams {
+export class ArticleSubCommentQuery extends PagableQuery {
   @IsNotEmpty()
   @IsInt()
   @Type(() => Number)

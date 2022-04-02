@@ -4,13 +4,13 @@ import { Repository } from 'typeorm'
 import { TypeORMUtil } from '~/utils/typeorm.util'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
-import { ArticleLikeCreateForm } from './forms/article-like-create.form'
-import { ArticleLikeFindOneByQueryParams } from './params/article-like-find-one-by-query.params'
+import { CreateArticleLikeForm } from './forms/create-article-like.form'
+import { ArticleLikeQuery } from './queries/article-like.query'
 
 export interface IArticleLikeService {
-  findOneByQuery(params: ArticleLikeFindOneByQueryParams): Promise<ArticleLike>
-  create(form: ArticleLikeCreateForm): Promise<ArticleLike>
-  deleteOneByQuery(params: ArticleLikeFindOneByQueryParams): Promise<void>
+  findOyQuery(query: ArticleLikeQuery): Promise<ArticleLike>
+  create(form: CreateArticleLikeForm): Promise<ArticleLike>
+  deleteOneByQuery(query: ArticleLikeQuery): Promise<void>
 }
 
 @Injectable()
@@ -21,9 +21,8 @@ export class ArticleLikeService implements IArticleLikeService {
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
-  async findOneByQuery({
-    articleId,
-  }: ArticleLikeFindOneByQueryParams): Promise<ArticleLike> {
+  async findOyQuery(query: ArticleLikeQuery): Promise<ArticleLike> {
+    const { articleId } = query
     return await this.articleLikeRepository.findOneOrFail({
       where: {
         articleId,
@@ -32,7 +31,8 @@ export class ArticleLikeService implements IArticleLikeService {
     })
   }
 
-  async create({ articleId }: ArticleLikeCreateForm): Promise<ArticleLike> {
+  async create(query: CreateArticleLikeForm): Promise<ArticleLike> {
+    const { articleId } = query
     const userId = this.passportPermitService.user?.id
     const prevEntity = await this.articleLikeRepository.findOne({
       articleId,
@@ -50,9 +50,8 @@ export class ArticleLikeService implements IArticleLikeService {
     return newEntity
   }
 
-  async deleteOneByQuery({
-    articleId,
-  }: ArticleLikeFindOneByQueryParams): Promise<void> {
+  async deleteOneByQuery(query: ArticleLikeQuery): Promise<void> {
+    const { articleId } = query
     const userId = this.passportPermitService.user?.id
     await TypeORMUtil.existOrFail(this.articleLikeRepository, {
       userId,

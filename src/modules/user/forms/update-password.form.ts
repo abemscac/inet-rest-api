@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 import { IsNotEmpty, Length } from 'class-validator'
 
-export class UserUpdatePasswordForm {
+export class UpdatePasswordForm {
   @ApiProperty({ example: '1234' })
   @IsNotEmpty()
   @Length(4, 60)

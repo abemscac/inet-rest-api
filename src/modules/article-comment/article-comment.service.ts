@@ -6,16 +6,16 @@ import { TypeORMUtil } from '~/utils/typeorm.util'
 import { Article } from '../article/article.entity'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleComment } from './article-comment.entity'
-import { ArticleCommentCreateForm } from './forms/article-comment-create.form'
-import { ArticleCommentFindByQueryParams } from './params/article-comment-find-by-query.params'
+import { CreateArticleCommentForm } from './forms/create-article-comment.form'
 import { ArticleCommentProjector } from './projectors/article-comment.projector'
+import { ArticleCommentQuery } from './queries/article-comment.query'
 import { IArticleCommentViewModel } from './view-models/i-article-comment.view-model'
 
 export interface IArticleCommentService {
   findByQuery(
-    params: ArticleCommentFindByQueryParams,
+    query: ArticleCommentQuery,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>>
-  create(form: ArticleCommentCreateForm): Promise<IArticleCommentViewModel>
+  create(form: CreateArticleCommentForm): Promise<IArticleCommentViewModel>
   removeById(id: number): Promise<void>
 }
 
@@ -30,20 +30,20 @@ export class ArticleCommentService implements IArticleCommentService {
   ) {}
 
   async findByQuery(
-    params: ArticleCommentFindByQueryParams,
+    query: ArticleCommentQuery,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
-    const { articleId } = params
+    const { articleId } = query
     return await new ArticleCommentProjector(
       this.articleCommentRepository,
       'comment',
     )
       .where('comment.articleId = :articleId', { articleId })
       .orderBy('comment.id', 'ASC')
-      .projectPagination(params)
+      .projectPagination(query)
   }
 
   async create(
-    form: ArticleCommentCreateForm,
+    form: CreateArticleCommentForm,
   ): Promise<IArticleCommentViewModel> {
     await TypeORMUtil.existOrFail(this.articleRepository, {
       id: form.articleId,

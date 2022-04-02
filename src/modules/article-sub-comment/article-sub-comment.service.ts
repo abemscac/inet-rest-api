@@ -7,15 +7,15 @@ import { ArticleComment } from '../article-comment/article-comment.entity'
 import { IArticleCommentViewModel } from '../article-comment/view-models/i-article-comment.view-model'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleSubComment } from './article-sub-comment.entity'
-import { ArticleSubCommentCreateForm } from './forms/article-sub-comment-create.form'
-import { ArticleSubCommentFindByQueryParams } from './params/article-sub-comment-find-by-query.params'
+import { CreateArticleSubCommentForm } from './forms/create-article-sub-comment.form'
 import { ArticleSubCommentProjector } from './projectors/article-sub-comment.projector'
+import { ArticleSubCommentQuery } from './queries/article-sub-comment.query'
 
 export interface IArticleSubCommentService {
   findByQuery(
-    params: ArticleSubCommentFindByQueryParams,
+    query: ArticleSubCommentQuery,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>>
-  create(form: ArticleSubCommentCreateForm): Promise<IArticleCommentViewModel>
+  create(form: CreateArticleSubCommentForm): Promise<IArticleCommentViewModel>
   removeById(id: number): Promise<void>
 }
 
@@ -30,21 +30,21 @@ export class ArticleSubCommentService implements IArticleSubCommentService {
   ) {}
 
   async findByQuery(
-    params: ArticleSubCommentFindByQueryParams,
+    query: ArticleSubCommentQuery,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
     return await new ArticleSubCommentProjector(
       this.articleSubCommentRepository,
       'comment',
     )
       .where('comment.parentCommentId = :parentCommentId', {
-        parentCommentId: params.parentCommentId,
+        parentCommentId: query.parentCommentId,
       })
       .orderBy('comment.id', 'ASC')
-      .projectPagination(params)
+      .projectPagination(query)
   }
 
   async create(
-    form: ArticleSubCommentCreateForm,
+    form: CreateArticleSubCommentForm,
   ): Promise<IArticleCommentViewModel> {
     await TypeORMUtil.existOrFail(this.articleCommentRepository, {
       id: form.parentCommentId,

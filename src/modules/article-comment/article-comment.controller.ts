@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { PagableParamsValidationPipe } from '~/pipes/pagable-params.validation.pipe'
+import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
@@ -24,8 +24,8 @@ import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { MockArticleCommentViewModels } from './article-comment.mocks'
 import { ArticleCommentService } from './article-comment.service'
-import { ArticleCommentCreateForm } from './forms/article-comment-create.form'
-import { ArticleCommentFindByQueryParams } from './params/article-comment-find-by-query.params'
+import { CreateArticleCommentForm } from './forms/create-article-comment.form'
+import { ArticleCommentQuery } from './queries/article-comment.query'
 import { IArticleCommentViewModel } from './view-models/i-article-comment.view-model'
 
 @ApiTags('Article Comments')
@@ -39,9 +39,9 @@ export class ArticleCommentController {
   @ApiOkPagableExample(MockArticleCommentViewModels)
   @Get()
   async findByQuery(
-    @Query(PagableParamsValidationPipe) params: ArticleCommentFindByQueryParams,
+    @Query(PagableQueryValidationPipe) query: ArticleCommentQuery,
   ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
-    return await this.articleCommentService.findByQuery(params)
+    return await this.articleCommentService.findByQuery(query)
   }
 
   @ApiOperation({ summary: 'Create an article comment' })
@@ -52,7 +52,7 @@ export class ArticleCommentController {
   @UseGuards(AccessTokenAuthGuard)
   @Post()
   async create(
-    @Body() form: ArticleCommentCreateForm,
+    @Body() form: CreateArticleCommentForm,
   ): Promise<IArticleCommentViewModel> {
     return await this.articleCommentService.create(form)
   }
