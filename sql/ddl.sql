@@ -3,7 +3,7 @@ USE `inet`;
 CREATE TABLE `user`
 (
     `id` INT AUTO_INCREMENT NOT NULL,
-    `username` VARCHAR(50) NOT NULL,
+    `username` VARCHAR(30) NOT NULL,
     `hashed_password` CHAR(60) NOT NULL,
     `name` NVARCHAR(50),
     `avatar_image_hash` VARCHAR(20),

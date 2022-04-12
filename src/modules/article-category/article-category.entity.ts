@@ -16,7 +16,7 @@ export class ArticleCategory extends Creatable {
 
   @Column({
     type: 'varchar',
-    length: 2000,
+    length: 20,
     name: 'image_hash',
   })
   imageHash: string

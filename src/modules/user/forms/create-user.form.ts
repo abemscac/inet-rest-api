@@ -7,13 +7,13 @@ import { ApiPropertyWithRegexp } from '~/swagger-decorators/api-property-with-re
 export class CreateUserForm {
   @ApiPropertyWithRegexp(UsernameRegexp)
   @IsNotEmpty()
-  @Length(4, 50)
+  @Length(4, 30)
   @Matches(UsernameRegexp)
   username: string
 
   @ApiPropertyWithRegexp(PasswordRegexp)
   @IsNotEmpty()
-  @Length(4, 60)
+  @Length(4, 30)
   @Matches(PasswordRegexp)
   password: string
 
