@@ -12,7 +12,7 @@ export class User extends Updatable {
 
   @Column({
     type: 'varchar',
-    length: 50,
+    length: 30,
     unique: true,
   })
   username: string
@@ -33,7 +33,7 @@ export class User extends Updatable {
 
   @Column({
     type: 'varchar',
-    length: 2000,
+    length: 20,
     name: 'avatar_image_hash',
     nullable: true,
   })
