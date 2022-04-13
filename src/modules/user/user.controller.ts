@@ -22,6 +22,7 @@ import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { CreateUserForm } from './forms/create-user.form'
+import { UpdateAvatarForm } from './forms/update-avatar-form'
 import { UpdatePasswordForm } from './forms/update-password.form'
 import { UpdateProfileForm } from './forms/update-profile.form'
 import { UserErrors } from './user.errors'
@@ -56,6 +57,19 @@ export class UserController {
     return await this.userService.create(form)
   }
 
+  @ApiOperation({ summary: 'Update your avatar' })
+  @ApiMultipart()
+  @ApiWithAuth()
+  @ApiWithTargetEntity('user')
+  @ApiNoContentSuccess()
+  @UseGuards(AccessTokenAuthGuard)
+  @Put('my-avatar')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @FastifyImageFileInterceptor('avatar', { required: true })
+  async updateAvatar(@Body() form: UpdateAvatarForm): Promise<void> {
+    return await this.userService.updateAvatar(form)
+  }
+
   @ApiOperation({ summary: 'Update your profile' })
   @ApiMultipart()
   @ApiBadRequestResponses({ bodyFormat: true })
@@ -63,7 +77,7 @@ export class UserController {
   @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
-  @Put('profile')
+  @Put('my-profile')
   @HttpCode(HttpStatus.NO_CONTENT)
   @FastifyImageFileInterceptor('avatar', { required: false })
   async updateProfile(@Body() form: UpdateProfileForm): Promise<void> {
@@ -79,7 +93,7 @@ export class UserController {
   @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
   @UseGuards(AccessTokenAuthGuard)
-  @Put('password')
+  @Put('my-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePassword(@Body() form: UpdatePasswordForm): Promise<void> {
     return await this.userService.updatePassword(form)

@@ -10,6 +10,7 @@ import { ImgurAlbum } from '../imgur/imgur.constants'
 import { ImgurService } from '../imgur/imgur.service'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { CreateUserForm } from './forms/create-user.form'
+import { UpdateAvatarForm } from './forms/update-avatar-form'
 import { UpdatePasswordForm } from './forms/update-password.form'
 import { UpdateProfileForm } from './forms/update-profile.form'
 import { UserProjector } from './projectors/user.projector'
@@ -19,6 +20,7 @@ import { UserErrors } from './user.errors'
 export interface IUserService {
   findByUsername(username: string): Promise<IUserViewModel>
   create(form: CreateUserForm): Promise<IUserViewModel>
+  updateAvatar(form: UpdateAvatarForm): Promise<void>
   updateProfile(form: UpdateProfileForm): Promise<void>
   updatePassword(form: UpdatePasswordForm): Promise<void>
   remove(): Promise<void>
@@ -87,33 +89,52 @@ export class UserService implements IUserService {
     }
   }
 
-  async updateProfile(form: UpdateProfileForm): Promise<void> {
+  async updateAvatar(form: UpdateAvatarForm): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
-    await this.userRepository.findOneOrFail({
-      id,
-      isRemoved: false,
-    })
-
-    const partialUser: Partial<User> = {
-      name: form.name || null,
-    }
+    const user = await this.userRepository.findOneOrFail(
+      { id, isRemoved: false },
+      {
+        select: ['avatarImageHash'],
+      },
+    )
 
     let newImageHash = ''
     try {
-      if (form.avatar) {
-        const newImage = await this.imgurService.uploadImage(form.avatar, {
-          album: ImgurAlbum.UserAvatar,
-        })
-        newImageHash = newImage.id
-        partialUser.avatarImageHash = newImage.id
-        partialUser.avatarImageExt = ImgurUtil.getExtFromLink(newImage.link)
-      }
-      await this.userRepository.update({ id }, partialUser)
+      const newImage = await this.imgurService.uploadImage(form.avatar, {
+        album: ImgurAlbum.UserAvatar,
+      })
+      newImageHash = newImage.id
+      await this.userRepository.update(
+        { id },
+        {
+          avatarImageHash: newImageHash,
+          avatarImageExt: ImgurUtil.getExtFromLink(newImage.link),
+        },
+      )
     } catch (error) {
       if (newImageHash) {
         await this.imgurService.deleteImage(newImageHash)
       }
     }
+
+    // remove previous avatar when needed
+    if (user.avatarImageHash) {
+      await this.imgurService.deleteImage(user.avatarImageHash)
+    }
+  }
+
+  async updateProfile(form: UpdateProfileForm): Promise<void> {
+    const { id = 0 } = this.passportPermitService.user ?? {}
+    await TypeORMUtil.existOrFail(this.userRepository, {
+      id,
+      isRemoved: false,
+    })
+    await this.userRepository.update(
+      { id },
+      {
+        name: form.name || null,
+      },
+    )
   }
 
   async updatePassword(form: UpdatePasswordForm): Promise<void> {
