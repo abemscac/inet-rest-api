@@ -79,7 +79,6 @@ export class UserController {
   @UseGuards(AccessTokenAuthGuard)
   @Put('my-profile')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @FastifyImageFileInterceptor('avatar', { required: false })
   async updateProfile(@Body() form: UpdateProfileForm): Promise<void> {
     return await this.userService.updateProfile(form)
   }
