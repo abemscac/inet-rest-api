@@ -71,7 +71,6 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Update your profile' })
-  @ApiMultipart()
   @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithAuth()
   @ApiWithTargetEntity('user')
