@@ -35,14 +35,6 @@ export const MockArticleViewModels: Array<IArticleViewModel> = [
   },
 ]
 
-// export const MockArticleViewModelsStripped: Array<IArticleViewModel> = (() => {
-//   const article = MockArticleViewModels[0]
-//   const strippedArticle: IArticleViewModel = {
-//     ...article,
-//     body: article.body.substring(0, ARTICLE_BODY_PREVIEW_LENGTH),
-//   }
-//   return [strippedArticle]
-// })()
 export const MockArticleViewModelsStripped: Array<IArticleViewModel> =
   MockArticleViewModels.map((article) => ({
     ...article,

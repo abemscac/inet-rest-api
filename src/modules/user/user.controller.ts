@@ -61,13 +61,23 @@ export class UserController {
   @ApiMultipart()
   @ApiWithAuth()
   @ApiWithTargetEntity('user')
-  @ApiNoContentSuccess()
+  @ApiOkExample(MockUserViewModel.avatarUrl, 'The url of new avatar.')
   @UseGuards(AccessTokenAuthGuard)
   @Put('my-avatar')
-  @HttpCode(HttpStatus.NO_CONTENT)
   @FastifyImageFileInterceptor('avatar', { required: true })
-  async updateAvatar(@Body() form: UpdateAvatarForm): Promise<void> {
-    return await this.userService.updateAvatar(form)
+  async updateMyAvatar(@Body() form: UpdateAvatarForm): Promise<string> {
+    return await this.userService.updateMyAvatar(form)
+  }
+
+  @ApiOperation({ summary: 'Remove your avatar' })
+  @ApiWithAuth()
+  @ApiWithTargetEntity('user')
+  @ApiNoContentSuccess()
+  @UseGuards(AccessTokenAuthGuard)
+  @Delete('my-avatar')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeMyAvatar(): Promise<void> {
+    return await this.userService.removeMyAvatar()
   }
 
   @ApiOperation({ summary: 'Update your profile' })
@@ -78,8 +88,8 @@ export class UserController {
   @UseGuards(AccessTokenAuthGuard)
   @Put('my-profile')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateProfile(@Body() form: UpdateProfileForm): Promise<void> {
-    return await this.userService.updateProfile(form)
+  async updateMyProfile(@Body() form: UpdateProfileForm): Promise<void> {
+    return await this.userService.updateMyProfile(form)
   }
 
   @ApiOperation({ summary: 'Update your password' })
@@ -93,8 +103,8 @@ export class UserController {
   @UseGuards(AccessTokenAuthGuard)
   @Put('my-password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePassword(@Body() form: UpdatePasswordForm): Promise<void> {
-    return await this.userService.updatePassword(form)
+  async updateMyPassword(@Body() form: UpdatePasswordForm): Promise<void> {
+    return await this.userService.updateMyPassword(form)
   }
 
   @ApiOperation({ summary: 'Remove your account' })
