@@ -13,7 +13,6 @@ export class ArticleCategoryProjector extends BaseProjector<
       repository
         .createQueryBuilder(alias)
         .select([
-          `${alias}.id AS id`,
           `${alias}.code AS code`,
           `${alias}.imageHash AS imageHash`,
           `${alias}.imageExt AS imageExt`,

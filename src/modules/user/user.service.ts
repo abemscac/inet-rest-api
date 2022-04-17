@@ -13,12 +13,13 @@ import { CreateUserForm } from './forms/create-user.form'
 import { UpdateAvatarForm } from './forms/update-avatar-form'
 import { UpdatePasswordForm } from './forms/update-password.form'
 import { UpdateProfileForm } from './forms/update-profile.form'
-import { UserProjector } from './projectors/user.projector'
+import { UserDetailProjector } from './projectors/user-detail.projector'
 import { User } from './user.entity'
 import { UserErrors } from './user.errors'
+import { IUserDetailViewModel } from './view-models/i-user-detail.view-model'
 
 export interface IUserService {
-  findByUsername(username: string): Promise<IUserViewModel>
+  findByUsername(username: string): Promise<IUserDetailViewModel>
   create(form: CreateUserForm): Promise<IUserViewModel>
   updateMyAvatar(form: UpdateAvatarForm): Promise<string>
   removeMyAvatar(): Promise<void>
@@ -36,9 +37,9 @@ export class UserService implements IUserService {
     private readonly imgurService: ImgurService,
   ) {}
 
-  async findByUsername(username: string): Promise<IUserViewModel> {
-    return await new UserProjector(this.userRepository, 'user')
-      .where('username = :username AND is_removed = :isRemoved', {
+  async findByUsername(username: string): Promise<IUserDetailViewModel> {
+    return await new UserDetailProjector(this.userRepository, 'user')
+      .where('user.username = :username AND user.is_removed = :isRemoved', {
         username,
         isRemoved: false,
       })

@@ -35,6 +35,11 @@ VALUES
 INSERT INTO `article_category`
     (`code`, `image_hash`, `image_ext`)
 VALUES
+    ('travel', 'YZmNS4W', 'jpg');
+
+INSERT INTO `article_category`
+    (`code`, `image_hash`, `image_ext`)
+VALUES
     ('programming', 'xMqW5bp', 'jpg');
 
 INSERT INTO `article_category`
