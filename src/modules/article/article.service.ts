@@ -58,6 +58,7 @@ export class ArticleService implements IArticleService {
       projector.andWhere(
         `(
           LOWER(article.title) LIKE :keyword OR
+          LOWER(article.body) LIKE :keyword OR
           LOWER(author.name) LIKE :keyword
         )`,
         { keyword: `%${query.keyword.toLowerCase()}%` },
