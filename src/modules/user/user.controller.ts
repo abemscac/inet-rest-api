@@ -28,7 +28,6 @@ import { UpdateProfileForm } from './forms/update-profile.form'
 import { UserErrors } from './user.errors'
 import { MockUserViewModel } from './user.mocks'
 import { UserService } from './user.service'
-import { IUserDetailViewModel } from './view-models/i-user-detail.view-model'
 
 @ApiTags('Users')
 @Controller('users')
@@ -41,7 +40,7 @@ export class UserController {
   @Get(':username')
   async findByUsername(
     @Param('username') username: string,
-  ): Promise<IUserDetailViewModel> {
+  ): Promise<IUserViewModel> {
     return await this.userService.findByUsername(username)
   }
 

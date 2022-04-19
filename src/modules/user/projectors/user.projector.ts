@@ -1,36 +1,30 @@
 import { Repository } from 'typeorm'
 import { BaseProjector } from '~/base-projectors/base-projector'
+import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { User } from '../user.entity'
-import { IUserDetailViewModel } from '../view-models/i-user-detail.view-model'
 
-export interface IUserDetailProjection {
-  id: number
-  username: string
-  name: string | null
-  avatarImageHash: string | null
-  avatarImageExt: string | null
-  createdArticleCount: number
-  createdAt: Date
-}
-
-export class UserDetailProjector extends BaseProjector<
+export type IUserProjection = Pick<
   User,
-  IUserDetailViewModel,
-  IUserDetailProjection
-> {
+  | 'id'
+  | 'username'
+  | 'name'
+  | 'avatarImageHash'
+  | 'avatarImageExt'
+  | 'createdAt'
+>
+
+export class UserProjector extends BaseProjector<User, IUserViewModel> {
   constructor(repository: Repository<User>, alias: string) {
     super(
       repository
         .createQueryBuilder(alias)
-        .leftJoin('article', 'article', `article.author_id = ${alias}.id`)
         .select([
           `${alias}.id AS id`,
           `${alias}.username AS username`,
           `${alias}.name AS name`,
           `${alias}.avatarImageHash AS avatarImageHash`,
           `${alias}.avatarImageExt AS avatarImageExt`,
-          'COUNT(article.id) AS createdArticleCount',
           `${alias}.createdAt AS createdAt`,
         ]),
       alias,
@@ -44,7 +38,6 @@ export class UserDetailProjector extends BaseProjector<
         ext: projection.avatarImageExt,
         size: ImageSize.SmallSquare,
       }),
-      createdArticleCount: Number(projection.createdArticleCount),
       createdAt: projection.createdAt,
     }))
   }
