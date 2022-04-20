@@ -19,7 +19,11 @@ export class CollectionProjector extends BaseProjector<
   ICollectionViewModel,
   ICollectionProjection
 > {
-  constructor(repository: Repository<Collection>, alias: string) {
+  constructor(
+    repository: Repository<Collection>,
+    alias: string,
+    userId: number,
+  ) {
     super(
       repository
         .createQueryBuilder(alias)
@@ -30,11 +34,20 @@ export class CollectionProjector extends BaseProjector<
           'articleLike',
           'article.id = articleLike.article_id',
         )
+        .leftJoin(
+          'article_like',
+          'likeRecord',
+          [
+            `article.id = likeRecord.article_id`,
+            'likeRecord.user_id = :userId',
+          ].join(' AND '),
+          { userId },
+        )
         .innerJoin('article.author', 'author')
         .select([
+          ...ArticleProjectionSelection,
           `${alias}.id AS collectionId`,
           `${alias}.createdAt AS collectionCreatedAt`,
-          ...ArticleProjectionSelection,
         ])
         .groupBy('article.id'),
       alias,

@@ -38,6 +38,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
     return new UserBrowseHistoryProjector(
       this.userBrowseHistoryRepository,
       'history',
+      this.passportPermitService.user?.id as number,
     )
       .where('history.userId = :userId AND article.isRemoved = :isRemoved', {
         userId: this.passportPermitService.user?.id ?? 0,
@@ -99,6 +100,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
     return new UserBrowseHistoryProjector(
       this.userBrowseHistoryRepository,
       'history',
+      this.passportPermitService.user?.id as number,
     )
       .where('history.id = :historyId', { historyId })
       .project()

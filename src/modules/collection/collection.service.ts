@@ -32,7 +32,11 @@ export class CollectionService implements ICollectionService {
   async findByQuery(
     query: PagableQuery,
   ): Promise<IPagableViewModel<ICollectionViewModel>> {
-    return new CollectionProjector(this.collectionRepository, 'collection')
+    return new CollectionProjector(
+      this.collectionRepository,
+      'collection',
+      this.passportPermitService.user?.id as number,
+    )
       .where('collection.userId = :userId AND article.isRemoved = :isRemoved', {
         userId: this.passportPermitService.user?.id ?? 0,
         isRemoved: false,
@@ -69,7 +73,11 @@ export class CollectionService implements ICollectionService {
       await this.collectionRepository.insert(collection)
       collectionId = collection.id
     }
-    return new CollectionProjector(this.collectionRepository, 'collection')
+    return new CollectionProjector(
+      this.collectionRepository,
+      'collection',
+      this.passportPermitService.user?.id as number,
+    )
       .where('collection.id = :collectionId', { collectionId })
       .project()
   }

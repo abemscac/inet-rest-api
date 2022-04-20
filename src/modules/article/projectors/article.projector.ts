@@ -21,6 +21,7 @@ export interface IArticleProjection {
   articleBody: string
   articleViews: number
   articleLikes: number
+  likeId: number | null
   articleCreatedAt: Date
   articleLastModifiedAt: Date | null
   authorId: number | null
@@ -42,6 +43,7 @@ export const ArticleProjectionSelection = [
   'article.body AS articleBody',
   'article.views AS articleViews',
   'COUNT(articleLike.user_id) AS articleLikes',
+  'likeRecord.id AS likeId',
   'article.createdAt AS articleCreatedAt',
   'article.lastModifiedAt AS articleLastModifiedAt',
   '(CASE WHEN author.isRemoved = 1 THEN NULL ELSE author.id END) AS authorId',
@@ -102,6 +104,7 @@ export const ArticleProjectionPipe = (
     result.body = body
     result.views = projection.articleViews
     result.likes = Number(projection.articleLikes)
+    result.likeId = projection.likeId
     result.createdAt = projection.articleCreatedAt
     result.lastModifiedAt = projection.articleLastModifiedAt ?? null
 
@@ -114,7 +117,11 @@ export class ArticleProjector extends BaseProjector<
   IArticleViewModel,
   IArticleProjection
 > {
-  constructor(repository: Repository<Article>, alias: string) {
+  constructor(
+    repository: Repository<Article>,
+    alias: string,
+    userId: number | undefined,
+  ) {
     super(
       repository
         .createQueryBuilder(alias)
@@ -123,6 +130,15 @@ export class ArticleProjector extends BaseProjector<
           'article_like',
           'articleLike',
           `${alias}.id = articleLike.article_id`,
+        )
+        .leftJoin(
+          'article_like',
+          'likeRecord',
+          [
+            `${alias}.id = likeRecord.article_id`,
+            'likeRecord.user_id = :userId',
+          ].join(' AND '),
+          { userId: userId ?? null },
         )
         .innerJoin('article.author', 'author')
         .select(ArticleProjectionSelection)
