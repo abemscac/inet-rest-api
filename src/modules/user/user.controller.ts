@@ -26,7 +26,7 @@ import { UpdateAvatarForm } from './forms/update-avatar-form'
 import { UpdatePasswordForm } from './forms/update-password.form'
 import { UpdateProfileForm } from './forms/update-profile.form'
 import { UserErrors } from './user.errors'
-import { MockUserViewModel } from './user.mocks'
+import { MockUser } from './user.mocks'
 import { UserService } from './user.service'
 
 @ApiTags('Users')
@@ -36,7 +36,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Find an user by username' })
   @ApiWithTargetEntity('user')
-  @ApiOkExample(MockUserViewModel)
+  @ApiOkExample(MockUser)
   @Get(':username')
   async findByUsername(
     @Param('username') username: string,
@@ -50,7 +50,7 @@ export class UserController {
     bodyFormat: true,
     businessLogicErrors: [UserErrors.DuplicateUsername],
   })
-  @ApiCreatedExample(MockUserViewModel)
+  @ApiCreatedExample(MockUser)
   @Post()
   @FastifyImageFileInterceptor('avatar', { required: false })
   async create(@Body() form: CreateUserForm): Promise<IUserViewModel> {
@@ -61,7 +61,7 @@ export class UserController {
   @ApiMultipart()
   @ApiWithAuth()
   @ApiWithTargetEntity('user')
-  @ApiOkExample(MockUserViewModel.avatarUrl, 'The url of new avatar.')
+  @ApiOkExample(MockUser.avatarUrl, 'The url of new avatar.')
   @UseGuards(AccessTokenAuthGuard)
   @Put('my-avatar')
   @FastifyImageFileInterceptor('avatar', { required: true })

@@ -7,7 +7,7 @@ import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { ArticleComment } from '../article-comment.entity'
 import { IArticleCommentViewModel } from '../view-models/i-article-comment.view-model'
 
-export interface IArticleCommentViewModelProjection {
+export interface IArticleCommentProjection {
   commentId: number
   commentBody: string | null
   commentCreatedAt: Date
@@ -22,7 +22,7 @@ export interface IArticleCommentViewModelProjection {
 
 export const ArticleCommentViewModelPipe: IProjectionPipe<
   IArticleCommentViewModel,
-  IArticleCommentViewModelProjection
+  IArticleCommentProjection
 > = (result, projection) => {
   result.id = projection.commentId
   result.author = !projection.authorId
@@ -47,7 +47,7 @@ export const ArticleCommentViewModelPipe: IProjectionPipe<
 export class ArticleCommentProjector extends BaseProjector<
   ArticleComment,
   IArticleCommentViewModel,
-  IArticleCommentViewModelProjection
+  IArticleCommentProjection
 > {
   constructor(repository: Repository<ArticleComment>, alias: string) {
     super(

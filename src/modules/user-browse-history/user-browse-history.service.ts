@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { PagableQuery } from '~/shared-queries/pagable.query'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { TypeORMUtil } from '~/utils/typeorm.util'
+import { Article } from '../article/article.entity'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { CreateUserBrowseHistoryForm } from './forms/create-user-browse-history.form'
 import { UserBrowseHistoryProjector } from './projector/user-browse-history.projector'
@@ -15,7 +17,7 @@ export interface IUserBrowseHistoryService {
   ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>>
   create(
     form: CreateUserBrowseHistoryForm,
-  ): Promise<IUserBrowseHistoryViewModel>
+  ): Promise<IUserBrowseHistoryViewModel | undefined>
   deleteById(id: number): Promise<void>
   clear(): Promise<void>
 }
@@ -25,6 +27,8 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
   constructor(
     @InjectRepository(UserBrowseHistory)
     private readonly userBrowseHistoryRepository: Repository<UserBrowseHistory>,
+    @InjectRepository(Article)
+    private readonly articleRepository: Repository<Article>,
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
@@ -38,25 +42,40 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       .where('history.userId = :userId', {
         userId: this.passportPermitService.user?.id ?? 0,
       })
-      .orderBy('history.createdAt', 'DESC')
+      .orderBy('history.id', 'DESC')
       .projectPagination(query)
   }
 
   // This feature should NOT be exposed as an endpoint in controller.
   async create(
     form: CreateUserBrowseHistoryForm,
-  ): Promise<IUserBrowseHistoryViewModel> {
+  ): Promise<IUserBrowseHistoryViewModel | undefined> {
     const { id: userId = 0 } = this.passportPermitService.user ?? {}
     const { articleId } = form
-    const prevHistory = await this.userBrowseHistoryRepository.findOne({
-      userId,
-      articleId,
+
+    const articleExists = await TypeORMUtil.exist(this.articleRepository, {
+      id: articleId,
     })
+    if (!articleExists) {
+      // Return undefined instead of throwing NotFoundException because this feature
+      // is only used internally.
+      // We handle this situation manually.
+      return undefined
+    }
+
+    const prevHistory = await this.userBrowseHistoryRepository.findOne(
+      {
+        userId,
+        articleId,
+      },
+      {
+        select: ['id'],
+      },
+    )
     let historyId = 0
     if (prevHistory) {
       // update
       const now = new Date()
-      prevHistory.createdAt = now
       await this.userBrowseHistoryRepository.update(
         {
           id: prevHistory.id,

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
 import { IsInt, IsNotEmpty } from 'class-validator'
-import { MockArticleCommentViewModels } from '~/modules/article-comment/article-comment.mocks'
+import { MockArticleComments } from '~/modules/article-comment/article-comment.mocks'
 
 export class CreateArticleSubCommentForm {
   @ApiProperty({ example: 1 })
@@ -10,7 +10,7 @@ export class CreateArticleSubCommentForm {
   @Type(() => Number)
   parentCommentId: number
 
-  @ApiProperty({ example: MockArticleCommentViewModels[0].body })
+  @ApiProperty({ example: MockArticleComments[0].body })
   @IsNotEmpty()
   @Transform((params) => params.value?.trim())
   body: string

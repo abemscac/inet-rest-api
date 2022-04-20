@@ -15,7 +15,7 @@ import {
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { MockAuthViewModel, MockLoginViewModel } from './auth.mocks'
+import { MockAuth, MockLogin } from './auth.mocks'
 import { AuthService } from './auth.service'
 import { AuthLoginForm } from './forms/auth.login.form'
 import { AccessTokenAuthGuard } from './guards/access-token.guard'
@@ -33,7 +33,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Incorrect username or password.',
   })
-  @ApiOkExample(MockLoginViewModel)
+  @ApiOkExample(MockLogin)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() form: AuthLoginForm): Promise<IAuthLoginViewModel> {
@@ -49,7 +49,7 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Invalid refresh token',
   })
-  @ApiOkExample(MockAuthViewModel)
+  @ApiOkExample(MockAuth)
   @UseGuards(RefreshTokenAuthGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)

@@ -2,7 +2,7 @@ import { Repository } from 'typeorm'
 import { BaseProjector } from '~/base-projectors/base-projector'
 import {
   ArticleCommentViewModelPipe,
-  IArticleCommentViewModelProjection,
+  IArticleCommentProjection,
 } from '~/modules/article-comment/projectors/article-comment.projector'
 import { IArticleCommentViewModel } from '~/modules/article-comment/view-models/i-article-comment.view-model'
 import { ArticleSubComment } from '../article-sub-comment.entity'
@@ -10,7 +10,7 @@ import { ArticleSubComment } from '../article-sub-comment.entity'
 export class ArticleSubCommentProjector extends BaseProjector<
   ArticleSubComment,
   IArticleCommentViewModel,
-  IArticleCommentViewModelProjection
+  IArticleCommentProjection
 > {
   constructor(repository: Repository<ArticleSubComment>, alias: string) {
     super(

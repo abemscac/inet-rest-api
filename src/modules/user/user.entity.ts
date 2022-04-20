@@ -3,6 +3,7 @@ import { Updatable } from '~/base-entities/updatable.entity'
 import { ArticleComment } from '../article-comment/article-comment.entity'
 import { ArticleLike } from '../article-like/article-like.entity'
 import { Article } from '../article/article.entity'
+import { Collection } from '../collection/collection.entity'
 import { UserBrowseHistory } from '../user-browse-history/user-browse-history.entity'
 
 @Entity({ name: 'user' })
@@ -67,4 +68,7 @@ export class User extends Updatable {
 
   @OneToMany(() => UserBrowseHistory, (browseHistory) => browseHistory.user)
   browseHistories: Array<UserBrowseHistory>
+
+  @OneToMany(() => Collection, (collection) => collection.user)
+  collections: Array<Collection>
 }

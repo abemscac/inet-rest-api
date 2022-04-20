@@ -103,3 +103,16 @@ CREATE TABLE `user_browse_history`
     FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
     FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE
 );
+
+CREATE TABLE `collection`
+(
+    `id` INT AUTO_INCREMENT NOT NULL,
+    `user_id` INT NOT NULL,
+    `article_id` INT NOT NULL,
+    `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
+
+    PRIMARY KEY(`id`),
+    UNIQUE(`user_id`, `article_id`),
+    FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE
+);

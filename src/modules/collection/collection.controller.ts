@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -6,6 +7,7 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common'
@@ -14,40 +16,54 @@ import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pip
 import { PagableQuery } from '~/shared-queries/pagable.query'
 import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
+import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
+import { MockArticlesStripped } from '../article/article.mocks'
 import { ARTICLE_BODY_PREVIEW_LENGTH } from '../article/projectors/article.projector'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
-import { MockUserBrowseHistories } from './user-browse-history.mocks'
-import { UserBrowseHistoryService } from './user-browse-history.service'
-import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
+import { MockCollections } from './collection.mocks'
+import { CollectionService } from './collection.service'
+import { CreateCollectionForm } from './forms/create-collection.form'
+import { ICollectionViewModel } from './view-models/i-collection.view-model'
 
-@ApiTags('User Browse Histories')
+@ApiTags('Collections')
 @UseGuards(AccessTokenAuthGuard)
-@Controller('user-browse-histories')
-export class UserBrowseHistoryController {
-  constructor(
-    private readonly userBrowseHistoryService: UserBrowseHistoryService,
-  ) {}
+@Controller('collections')
+export class CollectionController {
+  constructor(private readonly collectionService: CollectionService) {}
 
-  @ApiOperation({ summary: 'Find your browse histories by query (pagable)' })
+  @ApiOperation({ summary: 'Find your collections by query (pagable)' })
   @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithAuth()
   @ApiOkPagableExample(
-    MockUserBrowseHistories,
+    MockArticlesStripped,
     `The <code>body</code> of an article will only contain the first ${ARTICLE_BODY_PREVIEW_LENGTH} characters.`,
   )
   @Get()
   async findByQuery(
     @Query(PagableQueryValidationPipe) query: PagableQuery,
-  ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>> {
-    return await this.userBrowseHistoryService.findByQuery(query)
+  ): Promise<IPagableViewModel<ICollectionViewModel>> {
+    return await this.collectionService.findByQuery(query)
   }
 
-  @ApiOperation({ summary: 'Delete an browse history by id' })
+  @ApiOperation({ summary: 'Create a collection' })
+  @ApiWithAuth()
+  @ApiBadRequestResponses({ bodyFormat: true })
+  @ApiWithTargetEntity('article')
+  @ApiCreatedExample(MockCollections[0])
+  @UseGuards(AccessTokenAuthGuard)
+  @Post()
+  async create(
+    @Body() form: CreateCollectionForm,
+  ): Promise<ICollectionViewModel> {
+    return await this.collectionService.create(form)
+  }
+
+  @ApiOperation({ summary: 'Delete a collection by id' })
   @ApiWithAuth()
   @ApiWithPermit()
   @ApiWithTargetEntity()
@@ -55,15 +71,6 @@ export class UserBrowseHistoryController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteById(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return await this.userBrowseHistoryService.deleteById(id)
-  }
-
-  @ApiOperation({ summary: 'Clear all of your browse histories' })
-  @ApiWithAuth()
-  @ApiNoContentSuccess()
-  @Delete('clear')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async clear(): Promise<void> {
-    return await this.userBrowseHistoryService.clear()
+    return await this.collectionService.deleteById(id)
   }
 }
