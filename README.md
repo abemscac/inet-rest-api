@@ -19,7 +19,7 @@
   - [x] Update your password
   - [x] Remove your account
 - Article Category
-  - [x] Find all article-categories
+  - [x] Find article-categories
 - Article
   - [x] Find articles
   - [x] Create articles
@@ -34,9 +34,12 @@
   - [x] Create article sub-comments
   - [x] Remove your article sub-comments
 - Article Like
-  - [x] Check if you've liked an article
   - [x] Like an article
   - [x] Take back your like on an article
+- Collection
+  - [x] Find your collections
+  - [x] Add articles to collection
+  - [x] Remove articles from collection
 - User Browse History
   - [x] Find your browse histories
   - [x] Delete browse history
