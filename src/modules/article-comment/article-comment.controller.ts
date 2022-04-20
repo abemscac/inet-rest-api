@@ -22,7 +22,7 @@ import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
-import { MockArticleCommentViewModels } from './article-comment.mocks'
+import { MockArticleComments } from './article-comment.mocks'
 import { ArticleCommentService } from './article-comment.service'
 import { CreateArticleCommentForm } from './forms/create-article-comment.form'
 import { ArticleCommentQuery } from './queries/article-comment.query'
@@ -36,7 +36,7 @@ export class ArticleCommentController {
   @ApiOperation({ summary: 'Find article comments by query (pagable)' })
   @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithTargetEntity('article')
-  @ApiOkPagableExample(MockArticleCommentViewModels)
+  @ApiOkPagableExample(MockArticleComments)
   @Get()
   async findByQuery(
     @Query(PagableQueryValidationPipe) query: ArticleCommentQuery,
@@ -48,7 +48,7 @@ export class ArticleCommentController {
   @ApiWithAuth()
   @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithTargetEntity('article')
-  @ApiCreatedExample(MockArticleCommentViewModels[0])
+  @ApiCreatedExample(MockArticleComments[0])
   @UseGuards(AccessTokenAuthGuard)
   @Post()
   async create(

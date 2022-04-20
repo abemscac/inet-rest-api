@@ -28,10 +28,7 @@ import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleErrors } from './article.errors'
-import {
-  MockArticleViewModels,
-  MockArticleViewModelsStripped,
-} from './article.mocks'
+import { MockArticles, MockArticlesStripped } from './article.mocks'
 import { ArticleService } from './article.service'
 import { CreateArticleForm } from './forms/create-article.form'
 import { UpdateArticleForm } from './forms/update-article.form'
@@ -51,7 +48,7 @@ export class ArticleController {
     businessLogicErrors: [ArticleErrors.CategoryDoesNotExist],
   })
   @ApiOkPagableExample(
-    MockArticleViewModelsStripped,
+    MockArticlesStripped,
     `The <code>body</code> will only contain the first ${ARTICLE_BODY_PREVIEW_LENGTH} characters.`,
   )
   @IsPublic()
@@ -65,7 +62,7 @@ export class ArticleController {
 
   @ApiOperation({ summary: 'Find an article by id' })
   @ApiWithTargetEntity('article')
-  @ApiOkExample(MockArticleViewModels[0])
+  @ApiOkExample(MockArticles[0])
   @IsPublic()
   @Get(':id')
   async findById(
@@ -78,7 +75,7 @@ export class ArticleController {
   @ApiMultipart()
   @ApiWithAuth()
   @ApiBadRequestResponses({ bodyFormat: true })
-  @ApiCreatedExample(MockArticleViewModels[0])
+  @ApiCreatedExample(MockArticles[0])
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
   async create(@Body() form: CreateArticleForm): Promise<IArticleViewModel> {

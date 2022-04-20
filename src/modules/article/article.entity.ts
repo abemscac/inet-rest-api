@@ -10,6 +10,7 @@ import { Updatable } from '~/base-entities/updatable.entity'
 import { ArticleCategory } from '../article-category/article-category.entity'
 import { ArticleComment } from '../article-comment/article-comment.entity'
 import { ArticleLike } from '../article-like/article-like.entity'
+import { Collection } from '../collection/collection.entity'
 import { UserBrowseHistory } from '../user-browse-history/user-browse-history.entity'
 import { User } from '../user/user.entity'
 
@@ -82,4 +83,7 @@ export class Article extends Updatable {
 
   @OneToMany(() => UserBrowseHistory, (browseHistory) => browseHistory.article)
   browseHistories: Array<UserBrowseHistory>
+
+  @OneToMany(() => Collection, (collection) => collection.article)
+  collections: Array<Collection>
 }

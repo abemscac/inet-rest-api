@@ -1,7 +1,7 @@
 import { MockArticlesStripped } from '../article/article.mocks'
-import { IUserBrowseHistoryViewModel } from './view-models/i-user-browse-history.view-model'
+import { ICollectionViewModel } from './view-models/i-collection.view-model'
 
-export const MockUserBrowseHistories: Array<IUserBrowseHistoryViewModel> =
+export const MockCollections: Array<ICollectionViewModel> =
   MockArticlesStripped.slice()
     .sort((a, b) => b.id - a.id)
     .map((article, index) => ({

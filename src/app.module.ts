@@ -11,6 +11,7 @@ import { ArticleLikeModule } from './modules/article-like/article-like.module'
 import { ArticleSubCommentModule } from './modules/article-sub-comment/article-sub-comment.module'
 import { ArticleModule } from './modules/article/article.module'
 import { AuthModule } from './modules/auth/auth.module'
+import { CollectionModule } from './modules/collection/collection.module'
 import { UserBrowseHistoryModule } from './modules/user-browse-history/user-browse-history.module'
 import { UserModule } from './modules/user/user.module'
 
@@ -33,6 +34,7 @@ import { UserModule } from './modules/user/user.module'
     ArticleSubCommentModule,
     ArticleLikeModule,
     AuthModule,
+    CollectionModule,
     UserModule,
     UserBrowseHistoryModule,
   ],

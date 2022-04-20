@@ -21,7 +21,7 @@ import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
 import { ApiWithPermit } from '~/swagger-decorators/api-with-permit'
 import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity'
-import { MockArticleCommentViewModels } from '../article-comment/article-comment.mocks'
+import { MockArticleComments } from '../article-comment/article-comment.mocks'
 import { IArticleCommentViewModel } from '../article-comment/view-models/i-article-comment.view-model'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleSubCommentService } from './article-sub-comment.service'
@@ -38,7 +38,7 @@ export class ArticleSubCommentController {
   @ApiOperation({ summary: 'Find article sub-comments by query (pagable)' })
   @ApiBadRequestResponses({ queryFormat: true })
   @ApiWithTargetEntity('parent-comment')
-  @ApiOkPagableExample(MockArticleCommentViewModels)
+  @ApiOkPagableExample(MockArticleComments)
   @Get()
   async findByQuery(
     @Query(PagableQueryValidationPipe)
@@ -51,7 +51,7 @@ export class ArticleSubCommentController {
   @ApiWithAuth()
   @ApiBadRequestResponses({ bodyFormat: true })
   @ApiWithTargetEntity('parent-comment')
-  @ApiCreatedExample(MockArticleCommentViewModels[0])
+  @ApiCreatedExample(MockArticleComments[0])
   @UseGuards(AccessTokenAuthGuard)
   @Post()
   async create(

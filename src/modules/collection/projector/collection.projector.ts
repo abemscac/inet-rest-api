@@ -6,20 +6,20 @@ import {
   IArticleProjection,
 } from '~/modules/article/projectors/article.projector'
 import { IArticleViewModel } from '~/modules/article/view-models/i-article.view-model'
-import { UserBrowseHistory } from '../user-browse-history.entity'
-import { IUserBrowseHistoryViewModel } from '../view-models/i-user-browse-history.view-model'
+import { Collection } from '../collection.entity'
+import { ICollectionViewModel } from '../view-models/i-collection.view-model'
 
-interface IUserBrowseHistoryProjection extends IArticleProjection {
-  historyId: number
-  historyCreatedAt: Date
+interface ICollectionProjection extends IArticleProjection {
+  collectionId: number
+  collectionCreatedAt: Date
 }
 
-export class UserBrowseHistoryProjector extends BaseProjector<
-  UserBrowseHistory,
-  IUserBrowseHistoryViewModel,
-  IUserBrowseHistoryProjection
+export class CollectionProjector extends BaseProjector<
+  Collection,
+  ICollectionViewModel,
+  ICollectionProjection
 > {
-  constructor(repository: Repository<UserBrowseHistory>, alias: string) {
+  constructor(repository: Repository<Collection>, alias: string) {
     super(
       repository
         .createQueryBuilder(alias)
@@ -32,20 +32,20 @@ export class UserBrowseHistoryProjector extends BaseProjector<
         )
         .innerJoin('article.author', 'author')
         .select([
-          `${alias}.id AS historyId`,
-          `${alias}.createdAt AS historyCreatedAt`,
+          `${alias}.id AS collectionId`,
+          `${alias}.createdAt AS collectionCreatedAt`,
           ...ArticleProjectionSelection,
         ])
         .groupBy('article.id'),
       alias,
     )
     super.setPipes((_, projection) => ({
-      id: projection.historyId,
+      id: projection.collectionId,
       article: ArticleProjectionPipe({ stripBody: true })(
         {},
         projection,
       ) as IArticleViewModel,
-      createdAt: projection.historyCreatedAt,
+      createdAt: projection.collectionCreatedAt,
     }))
   }
 }
