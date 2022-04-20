@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as bcrypt from 'bcrypt'
-import { Repository } from 'typeorm'
+import { Not, Repository } from 'typeorm'
 import { BusinessLogicException } from '~/base-exceptions/business-logic.exception'
 import { IUserViewModel } from '~/shared-view-models/i-user.view-model'
 import { ImgurUtil } from '~/utils/imgur.util'
@@ -151,13 +151,28 @@ export class UserService implements IUserService {
 
   async updateMyProfile(form: UpdateProfileForm): Promise<void> {
     const { id = 0 } = this.passportPermitService.user ?? {}
-    await TypeORMUtil.existOrFail(this.userRepository, {
-      id,
-      isRemoved: false,
-    })
+    const user = await this.userRepository.findOneOrFail(
+      {
+        id,
+        isRemoved: false,
+      },
+      {
+        select: ['username'],
+      },
+    )
+    if (user.username !== form.username) {
+      const dupedUsername = await TypeORMUtil.exist(this.userRepository, {
+        username: form.username,
+        id: Not(id),
+      })
+      if (dupedUsername) {
+        throw new BusinessLogicException(UserErrors.DuplicateUsername)
+      }
+    }
     await this.userRepository.update(
       { id },
       {
+        username: form.username,
         name: form.name || null,
       },
     )
