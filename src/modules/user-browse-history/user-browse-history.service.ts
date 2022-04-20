@@ -39,8 +39,9 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
       this.userBrowseHistoryRepository,
       'history',
     )
-      .where('history.userId = :userId', {
+      .where('history.userId = :userId AND article.isRemoved = :isRemoved', {
         userId: this.passportPermitService.user?.id ?? 0,
+        isRemoved: false,
       })
       .orderBy('history.id', 'DESC')
       .projectPagination(query)
@@ -55,6 +56,7 @@ export class UserBrowseHistoryService implements IUserBrowseHistoryService {
 
     const articleExists = await TypeORMUtil.exist(this.articleRepository, {
       id: articleId,
+      isRemoved: false,
     })
     if (!articleExists) {
       // Return undefined instead of throwing NotFoundException because this feature

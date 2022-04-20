@@ -28,12 +28,13 @@ import { ApiWithTargetEntity } from '~/swagger-decorators/api-with-target-entity
 import { IsPublic } from '../auth/decorators/is-public.decorator'
 import { AccessTokenAuthGuard } from '../auth/guards/access-token.guard'
 import { ArticleErrors } from './article.errors'
-import { MockArticles, MockArticlesStripped } from './article.mocks'
+import { MockArticleDetail, MockArticlesStripped } from './article.mocks'
 import { ArticleService } from './article.service'
 import { CreateArticleForm } from './forms/create-article.form'
 import { UpdateArticleForm } from './forms/update-article.form'
 import { ARTICLE_BODY_PREVIEW_LENGTH } from './projectors/article.projector'
 import { ArticleQuery } from './queries/article.query'
+import { IArticleDetailViewModel } from './view-models/i-article-detail.view-model'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 @ApiTags('Articles')
@@ -62,12 +63,12 @@ export class ArticleController {
 
   @ApiOperation({ summary: 'Find an article by id' })
   @ApiWithTargetEntity('article')
-  @ApiOkExample(MockArticles[0])
+  @ApiOkExample(MockArticleDetail)
   @IsPublic()
   @Get(':id')
   async findById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<IArticleViewModel> {
+  ): Promise<IArticleDetailViewModel> {
     return await this.articleService.findById(id)
   }
 
@@ -75,10 +76,12 @@ export class ArticleController {
   @ApiMultipart()
   @ApiWithAuth()
   @ApiBadRequestResponses({ bodyFormat: true })
-  @ApiCreatedExample(MockArticles[0])
+  @ApiCreatedExample(MockArticleDetail)
   @Post()
   @FastifyImageFileInterceptor('coverImage', { required: true })
-  async create(@Body() form: CreateArticleForm): Promise<IArticleViewModel> {
+  async create(
+    @Body() form: CreateArticleForm,
+  ): Promise<IArticleDetailViewModel> {
     return await this.articleService.create(form)
   }
 

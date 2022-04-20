@@ -52,11 +52,13 @@ CREATE TABLE `article`
 
 CREATE TABLE `article_like`
 (
+    `id` INT AUTO_INCREMENT NOT NULL,
     `article_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `created_at` TIMESTAMP DEFAULT (UTC_TIMESTAMP) NOT NULL,
 
-    PRIMARY KEY(`article_id`, `user_id`),
+    PRIMARY KEY(`id`),
+    UNIQUE(`article_id`, `user_id`),
     FOREIGN KEY(`article_id`) REFERENCES `article`(`id`) ON DELETE CASCADE,
     FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
