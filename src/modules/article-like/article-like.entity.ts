@@ -1,19 +1,30 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm'
 import { Creatable } from '~/base-entities/creatable.entity'
 import { Article } from '../article/article.entity'
 import { User } from '../user/user.entity'
 
 @Entity({ name: 'article_like' })
+@Unique(['articleId', 'userId'])
 export class ArticleLike extends Creatable {
-  @PrimaryColumn({
-    name: 'article_id',
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @Column({
     type: 'int',
+    name: 'article_id',
   })
   articleId: number
 
-  @PrimaryColumn({
-    name: 'user_id',
+  @Column({
     type: 'int',
+    name: 'user_id',
   })
   userId: number
 

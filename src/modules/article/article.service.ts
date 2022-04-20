@@ -15,16 +15,18 @@ import { Article } from './article.entity'
 import { ArticleErrors } from './article.errors'
 import { CreateArticleForm } from './forms/create-article.form'
 import { UpdateArticleForm } from './forms/update-article.form'
+import { ArticleDetailProjector } from './projectors/article-detail.projector'
 import { ArticleProjector } from './projectors/article.projector'
 import { ArticleCreatedWithin, ArticleQuery } from './queries/article.query'
+import { IArticleDetailViewModel } from './view-models/i-article-detail.view-model'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export interface IArticleService {
   findByQuery(
     query: ArticleQuery,
   ): Promise<IPagableViewModel<IArticleViewModel>>
-  findById(id: number): Promise<IArticleViewModel>
-  create(form: CreateArticleForm): Promise<IArticleViewModel>
+  findById(id: number): Promise<IArticleDetailViewModel>
+  create(form: CreateArticleForm): Promise<IArticleDetailViewModel>
   updateById(id: number, form: UpdateArticleForm): Promise<void>
   removeById(id: number): Promise<void>
 }
@@ -91,12 +93,14 @@ export class ArticleService implements IArticleService {
     return await projector.projectPagination(query)
   }
 
-  async findById(id: number): Promise<IArticleViewModel> {
-    const article = await new ArticleProjector(
+  async findById(id: number): Promise<IArticleDetailViewModel> {
+    const userId = this.passportPermitService.user?.id
+    const article = await new ArticleDetailProjector(
       this.articleRepository,
       'article',
+      userId,
     )
-      .where('article.id = :id AND article.is_removed = :isRemoved', {
+      .where('article.id = :id AND article.isRemoved = :isRemoved', {
         id,
         isRemoved: false,
       })
@@ -121,7 +125,7 @@ export class ArticleService implements IArticleService {
     return article
   }
 
-  async create(form: CreateArticleForm): Promise<IArticleViewModel> {
+  async create(form: CreateArticleForm): Promise<IArticleDetailViewModel> {
     await this.validateCategory(form.categoryId)
 
     let imageHash = '',

@@ -25,10 +25,10 @@ export class PassportPermitService implements IPassportPermitService {
   }
 
   /**
-   * Compare current userId with provided userId. Throw ForbiddenException if unmatched.
+   * Compare provided userId with passport userId. Throw ForbiddenException when unmatched.
    */
-  permitOrFail(userId: number): void {
-    if (userId !== this.user?.id) {
+  permitOrFail(entityUserId: number): void {
+    if (entityUserId !== this.user?.id) {
       throw new ForbiddenException()
     }
   }

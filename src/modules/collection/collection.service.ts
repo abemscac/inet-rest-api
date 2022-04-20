@@ -33,8 +33,9 @@ export class CollectionService implements ICollectionService {
     query: PagableQuery,
   ): Promise<IPagableViewModel<ICollectionViewModel>> {
     return new CollectionProjector(this.collectionRepository, 'collection')
-      .where('collection.userId = :userId', {
+      .where('collection.userId = :userId AND article.isRemoved = :isRemoved', {
         userId: this.passportPermitService.user?.id ?? 0,
+        isRemoved: false,
       })
       .orderBy('collection.id', 'DESC')
       .projectPagination(query)
@@ -45,6 +46,7 @@ export class CollectionService implements ICollectionService {
     const { articleId } = form
     await TypeORMUtil.existOrFail(this.articleRepository, {
       id: articleId,
+      isRemoved: false,
     })
     const prevCollection = await this.collectionRepository.findOne(
       {

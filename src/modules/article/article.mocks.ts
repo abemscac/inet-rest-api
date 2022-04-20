@@ -1,5 +1,6 @@
 import { MockUser } from '../user/user.mocks'
 import { ARTICLE_BODY_PREVIEW_LENGTH } from './projectors/article.projector'
+import { IArticleDetailViewModel } from './view-models/i-article-detail.view-model'
 import { IArticleViewModel } from './view-models/i-article.view-model'
 
 export const MockArticles: Array<IArticleViewModel> = [
@@ -41,3 +42,9 @@ export const MockArticlesStripped: Array<IArticleViewModel> = MockArticles.map(
     body: article.body.substring(0, ARTICLE_BODY_PREVIEW_LENGTH),
   }),
 )
+
+export const MockArticleDetail: IArticleDetailViewModel = {
+  ...MockArticles[0],
+  likeId: null,
+  collectionId: null,
+}

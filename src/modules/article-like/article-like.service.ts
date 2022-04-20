@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { TypeORMUtil } from '~/utils/typeorm.util'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { ArticleLike } from './article-like.entity'
 import { CreateArticleLikeForm } from './forms/create-article-like.form'
-import { ArticleLikeQuery } from './queries/article-like.query'
 
 export interface IArticleLikeService {
-  findOyQuery(query: ArticleLikeQuery): Promise<ArticleLike>
   create(form: CreateArticleLikeForm): Promise<ArticleLike>
-  deleteOneByQuery(query: ArticleLikeQuery): Promise<void>
+  deleteById(id: number): Promise<void>
 }
 
 @Injectable()
@@ -20,16 +17,6 @@ export class ArticleLikeService implements IArticleLikeService {
     private readonly articleLikeRepository: Repository<ArticleLike>,
     private readonly passportPermitService: PassportPermitService,
   ) {}
-
-  async findOyQuery(query: ArticleLikeQuery): Promise<ArticleLike> {
-    const { articleId } = query
-    return await this.articleLikeRepository.findOneOrFail({
-      where: {
-        articleId,
-        userId: this.passportPermitService.user?.id,
-      },
-    })
-  }
 
   async create(query: CreateArticleLikeForm): Promise<ArticleLike> {
     const { articleId } = query
@@ -50,16 +37,11 @@ export class ArticleLikeService implements IArticleLikeService {
     return newEntity
   }
 
-  async deleteOneByQuery(query: ArticleLikeQuery): Promise<void> {
-    const { articleId } = query
-    const userId = this.passportPermitService.user?.id
-    await TypeORMUtil.existOrFail(this.articleLikeRepository, {
-      userId,
-      articleId,
+  async deleteById(id: number): Promise<void> {
+    const record = await this.articleLikeRepository.findOneOrFail(id, {
+      select: ['userId'],
     })
-    await this.articleLikeRepository.delete({
-      userId,
-      articleId,
-    })
+    this.passportPermitService.permitOrFail(record.userId)
+    await this.articleLikeRepository.delete({ id })
   }
 }
