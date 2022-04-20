@@ -43,6 +43,18 @@ export class ArticleService implements IArticleService {
     private readonly imgurService: ImgurService,
   ) {}
 
+  private async validateCategory(categoryId: number): Promise<void> {
+    const categoryExists = await TypeORMUtil.exist(
+      this.articleCategoryRepository,
+      {
+        id: categoryId,
+      },
+    )
+    if (!categoryExists) {
+      throw new BusinessLogicException(ArticleErrors.CategoryDoesNotExist)
+    }
+  }
+
   async findByQuery(
     query: ArticleQuery,
   ): Promise<IPagableViewModel<IArticleViewModel>> {
@@ -50,6 +62,7 @@ export class ArticleService implements IArticleService {
     const projector = new ArticleProjector(
       this.articleRepository,
       'article',
+      this.passportPermitService.user?.id,
     ).orderBy('article.views', 'DESC')
 
     if (categoryId !== undefined) {
@@ -211,17 +224,5 @@ export class ArticleService implements IArticleService {
         isRemoved: true,
       },
     )
-  }
-
-  private async validateCategory(categoryId: number): Promise<void> {
-    const categoryExists = await TypeORMUtil.exist(
-      this.articleCategoryRepository,
-      {
-        id: categoryId,
-      },
-    )
-    if (!categoryExists) {
-      throw new BusinessLogicException(ArticleErrors.CategoryDoesNotExist)
-    }
   }
 }

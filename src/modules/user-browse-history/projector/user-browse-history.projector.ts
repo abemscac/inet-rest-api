@@ -19,7 +19,11 @@ export class UserBrowseHistoryProjector extends BaseProjector<
   IUserBrowseHistoryViewModel,
   IUserBrowseHistoryProjection
 > {
-  constructor(repository: Repository<UserBrowseHistory>, alias: string) {
+  constructor(
+    repository: Repository<UserBrowseHistory>,
+    alias: string,
+    userId: number,
+  ) {
     super(
       repository
         .createQueryBuilder(alias)
@@ -30,11 +34,20 @@ export class UserBrowseHistoryProjector extends BaseProjector<
           'articleLike',
           'article.id = articleLike.article_id',
         )
+        .leftJoin(
+          'article_like',
+          'likeRecord',
+          [
+            `article.id = likeRecord.article_id`,
+            'likeRecord.user_id = :userId',
+          ].join(' AND '),
+          { userId },
+        )
         .innerJoin('article.author', 'author')
         .select([
+          ...ArticleProjectionSelection,
           `${alias}.id AS historyId`,
           `${alias}.createdAt AS historyCreatedAt`,
-          ...ArticleProjectionSelection,
         ])
         .groupBy('article.id'),
       alias,

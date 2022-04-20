@@ -10,6 +10,7 @@ export interface IArticleViewModel {
   body: string
   views: number
   likes: number
+  likeId: number | null
   createdAt: Date
   lastModifiedAt: Date | null
 }
