@@ -81,7 +81,10 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Update your profile' })
-  @ApiBadRequestResponses({ bodyFormat: true })
+  @ApiBadRequestResponses({
+    bodyFormat: true,
+    businessLogicErrors: [UserErrors.DuplicateUsername],
+  })
   @ApiWithAuth()
   @ApiWithTargetEntity('user')
   @ApiNoContentSuccess()
