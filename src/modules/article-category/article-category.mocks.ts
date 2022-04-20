@@ -1,3 +1,4 @@
+import { IArticleCategoryDetailViewModel } from './view-models/i-article-category-detail.view-model'
 import { IArticleCategoryViewModel } from './view-models/i-article-category.view-model'
 
 export const MockArticleCategories: Array<IArticleCategoryViewModel> = [
@@ -22,3 +23,8 @@ export const MockArticleCategories: Array<IArticleCategoryViewModel> = [
     imageUrl: 'https://i.imgur.com/s4PDhtLs.jpg',
   },
 ]
+
+export const MockArticleCategoryDetail: IArticleCategoryDetailViewModel = {
+  ...MockArticleCategories[0],
+  newArticleCountToday: 123,
+}
