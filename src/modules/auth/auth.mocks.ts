@@ -1,14 +1,15 @@
 import { MockUser } from '../user/user.mocks'
-import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
-import { IAuthViewModel } from './view-models/i-auth.view-model'
+import { ILoginViewModel } from './view-models/i-login.view-model'
+import { IRefreshViewModel } from './view-models/i-refresh.view-model'
 
-export const MockAuth: IAuthViewModel = {
-  accessToken: 'aaaaa.bbbbb.ccccc',
-  refreshToken: 'xxxxx.yyyyy.zzzzz',
+export const MockRefresh: IRefreshViewModel = {
+  accessToken:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6InVzZXIwIiwidXNlcm5hbWUiOiLkurrpoZ7kuIDomZ8iLCJjcmVhdGVkQXQiOjE2NTUyNTUxOTIzMDF9.NbdcTyUxuchtVzq3y_Ry_x9tCQKhl2XerNIM8hIz7SM',
 }
 
-export const MockLogin: IAuthLoginViewModel = {
-  ...MockUser,
-  pendingRemoval: false,
-  ...MockAuth,
+export const MockLogin: ILoginViewModel = {
+  accessToken: MockRefresh.accessToken,
+  refreshToken:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6InVzZXIwIiwidXNlcm5hbWUiOiLkurrpoZ7kuIDomZ8iLCJjcmVhdGVkQXQiOjE2NTUyNTUxOTIzMDF9.nShZwTGEIzh0P_ms8tO18vM6FB7rcB4FL7fcMVrxE6Q',
+  avatarUrl: MockUser.avatarUrl,
 }

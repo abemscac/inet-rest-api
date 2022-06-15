@@ -14,13 +14,16 @@ import { AuthModule } from './modules/auth/auth.module'
 import { CollectionModule } from './modules/collection/collection.module'
 import { UserBrowseHistoryModule } from './modules/user-browse-history/user-browse-history.module'
 import { UserModule } from './modules/user/user.module'
+import { getORMConfig } from './orm.config'
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(),
     ConfigModule.forRoot({
       cache: true,
       load: [getAppConfig],
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: () => getORMConfig(getAppConfig()),
     }),
     BullModule.forRoot({
       redis: {

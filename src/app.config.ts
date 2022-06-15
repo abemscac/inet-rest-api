@@ -1,7 +1,14 @@
 import { ImgurAlbum } from './modules/imgur/imgur.constants'
 
-interface IAppConfig {
+export interface IAppConfig {
   apiPort: string
+  db: {
+    host: string
+    port: number
+    username: string
+    password: string
+    name: string
+  }
   inetAuth: {
     accessTokenSecret: string
     refreshTokenSecret: string
@@ -24,6 +31,13 @@ interface IAppConfig {
 
 const getAppConfig = (): IAppConfig => ({
   apiPort: process.env.API_PORT ?? '',
+  db: {
+    host: process.env.DB_HOST ?? '',
+    port: Number(process.env.DB_PORT ?? ''),
+    username: process.env.DB_USERNAME ?? '',
+    password: process.env.DB_PASSWORD ?? '',
+    name: process.env.DB_NAME ?? '',
+  },
   inetAuth: {
     accessTokenSecret: process.env.INET_ACCESS_TOKEN_SECRET ?? '',
     refreshTokenSecret: process.env.INET_REFRESH_TOKEN_SECRET ?? '',
