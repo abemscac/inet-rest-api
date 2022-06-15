@@ -15,13 +15,13 @@ import {
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiOkExample } from '~/swagger-decorators/api-ok-example'
 import { ApiWithAuth } from '~/swagger-decorators/api-with-auth'
-import { MockAuth, MockLogin } from './auth.mocks'
+import { MockLogin, MockRefresh } from './auth.mocks'
 import { AuthService } from './auth.service'
 import { AuthLoginForm } from './forms/auth.login.form'
 import { AccessTokenAuthGuard } from './guards/access-token.guard'
 import { RefreshTokenAuthGuard } from './guards/refresh-token.guard'
-import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
-import { IAuthViewModel } from './view-models/i-auth.view-model'
+import { ILoginViewModel } from './view-models/i-login.view-model'
+import { IRefreshViewModel } from './view-models/i-refresh.view-model'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -36,7 +36,7 @@ export class AuthController {
   @ApiOkExample(MockLogin)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() form: AuthLoginForm): Promise<IAuthLoginViewModel> {
+  async login(@Body() form: AuthLoginForm): Promise<ILoginViewModel> {
     return await this.authService.login(form)
   }
 
@@ -49,11 +49,11 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Invalid refresh token',
   })
-  @ApiOkExample(MockAuth)
+  @ApiOkExample(MockRefresh)
   @UseGuards(RefreshTokenAuthGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(): Promise<IAuthViewModel> {
+  async refresh(): Promise<IRefreshViewModel> {
     return await this.authService.refresh()
   }
 

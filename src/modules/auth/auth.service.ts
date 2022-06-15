@@ -8,13 +8,17 @@ import { ImageSize, ImgurUtil } from '~/utils/imgur.util'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
 import { User } from '../user/user.entity'
 import { AuthLoginForm } from './forms/auth.login.form'
-import { IAuthLoginViewModel } from './view-models/i-auth-login.view-model'
-import { IAuthViewModel } from './view-models/i-auth.view-model'
+import { ILoginViewModel } from './view-models/i-login.view-model'
+import { IRefreshViewModel } from './view-models/i-refresh.view-model'
 
 export interface IAuthService {
-  login(form: AuthLoginForm): Promise<IAuthLoginViewModel>
-  refresh(): Promise<IAuthViewModel>
+  login(form: AuthLoginForm): Promise<ILoginViewModel>
+  refresh(): Promise<IRefreshViewModel>
   logout(): Promise<void>
+}
+
+interface IAuth extends IRefreshViewModel {
+  refreshToken: string
 }
 
 @Injectable()
@@ -26,11 +30,14 @@ export class AuthService implements IAuthService {
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
-  private async createTokens(userId: number): Promise<IAuthViewModel> {
+  private async createTokens(user: User): Promise<IAuth> {
     const { accessTokenSecret, refreshTokenSecret } = getAppConfig().inetAuth
     const accessToken = await this.jwtService.signAsync(
       {
-        sub: userId,
+        sub: user.id,
+        username: user.username,
+        name: user.name,
+        createdAt: user.createdAt.getTime(),
       },
       {
         expiresIn: '15m',
@@ -39,7 +46,7 @@ export class AuthService implements IAuthService {
     )
     const refreshToken = await this.jwtService.signAsync(
       {
-        sub: userId,
+        sub: user.id,
       },
       {
         expiresIn: '7d',
@@ -65,7 +72,7 @@ export class AuthService implements IAuthService {
     )
   }
 
-  async login(form: AuthLoginForm): Promise<IAuthLoginViewModel> {
+  async login(form: AuthLoginForm): Promise<ILoginViewModel> {
     const user = await this.userRepository.findOne(
       { username: form.username },
       {
@@ -75,6 +82,7 @@ export class AuthService implements IAuthService {
           'hashedPassword',
           'name',
           'avatarImageHash',
+          'avatarImageExt',
           'createdAt',
           'isRemoved',
         ],
@@ -92,25 +100,20 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException()
     }
 
-    const tokens = await this.createTokens(user.id)
+    const tokens = await this.createTokens(user)
     await this.updateHashedRefreshTokenById(user.id, tokens.refreshToken)
 
     return {
-      id: user.id,
-      username: form.username,
-      name: user.name,
       avatarUrl: ImgurUtil.toLink({
         hash: user.avatarImageHash,
         ext: user.avatarImageExt,
-        size: ImageSize.SmallSquare,
+        size: ImageSize.BigSquare,
       }),
-      createdAt: user.createdAt,
-      pendingRemoval: user.isRemoved,
       ...tokens,
     }
   }
 
-  async refresh(): Promise<IAuthViewModel> {
+  async refresh(): Promise<IRefreshViewModel> {
     const { id = 0, token } = this.passportPermitService.user || {}
     const user = await this.userRepository.findOneOrFail(
       {
@@ -118,7 +121,15 @@ export class AuthService implements IAuthService {
         isRemoved: false,
       },
       {
-        select: ['hashedRefreshToken'],
+        select: [
+          'id',
+          'username',
+          'name',
+          'hashedRefreshToken',
+          'avatarImageHash',
+          'avatarImageExt',
+          'createdAt',
+        ],
       },
     )
     const tokenMatched = await bcrypt.compare(
@@ -128,7 +139,7 @@ export class AuthService implements IAuthService {
     if (!tokenMatched) {
       throw new UnauthorizedException()
     }
-    const tokens = await this.createTokens(id)
+    const tokens = await this.createTokens(user)
     await this.updateHashedRefreshTokenById(id, tokens.refreshToken)
     return tokens
   }
