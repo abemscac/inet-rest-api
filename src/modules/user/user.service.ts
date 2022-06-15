@@ -38,7 +38,7 @@ export class UserService implements IUserService {
 
   async findByUsername(username: string): Promise<IUserViewModel> {
     return await new UserProjector(this.userRepository, 'user')
-      .where('username = :username AND isRemoved = :isRemoved', {
+      .where('user.username = :username AND user.isRemoved = :isRemoved', {
         username,
         isRemoved: false,
       })
