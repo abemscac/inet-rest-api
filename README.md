@@ -49,7 +49,7 @@
 
 | Name              | URL                                                                               |
 | ----------------- | --------------------------------------------------------------------------------- |
-| DEV API           | http://54.91.115.107:33823/api                                                    |
-| DEV API docs      | http://54.91.115.107:33823/docs                                                   |
+| DEV API           | http://3.112.59.180:33823/api                                                   |
+| DEV API docs      | http://3.112.59.180:33823/docs                                                  |
 | Figma team        | https://www.figma.com/team_invite/redeem/XdCaIPzJvMBTfi2KqkMER6                   |
 | Postman workspace | https://app.getpostman.com/join-team?invite_code=1f118ed5f0eebc2d4e5eb24310a34e58 |
