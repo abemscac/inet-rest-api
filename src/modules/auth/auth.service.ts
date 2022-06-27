@@ -17,10 +17,6 @@ export interface IAuthService {
   logout(): Promise<void>
 }
 
-interface IAuth extends IRefreshViewModel {
-  refreshToken: string
-}
-
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
@@ -30,13 +26,18 @@ export class AuthService implements IAuthService {
     private readonly passportPermitService: PassportPermitService,
   ) {}
 
-  private async createTokens(user: User): Promise<IAuth> {
-    const { accessTokenSecret, refreshTokenSecret } = getAppConfig().inetAuth
-    const accessToken = await this.jwtService.signAsync(
+  private async createAccessToken(user: User): Promise<string> {
+    const { accessTokenSecret } = getAppConfig().inetAuth
+    return await this.jwtService.signAsync(
       {
         sub: user.id,
         username: user.username,
         name: user.name,
+        avatarUrl: ImgurUtil.toLink({
+          hash: user.avatarImageHash,
+          ext: user.avatarImageExt,
+          size: ImageSize.BigSquare,
+        }),
         createdAt: user.createdAt.getTime(),
       },
       {
@@ -44,19 +45,19 @@ export class AuthService implements IAuthService {
         secret: accessTokenSecret,
       },
     )
-    const refreshToken = await this.jwtService.signAsync(
+  }
+
+  private async createRefreshToken(userId: number): Promise<string> {
+    const { refreshTokenSecret } = getAppConfig().inetAuth
+    return await this.jwtService.signAsync(
       {
-        sub: user.id,
+        sub: userId,
       },
       {
         expiresIn: '7d',
         secret: refreshTokenSecret,
       },
     )
-    return {
-      accessToken,
-      refreshToken,
-    }
   }
 
   private async updateHashedRefreshTokenById(
@@ -100,16 +101,16 @@ export class AuthService implements IAuthService {
       throw new UnauthorizedException()
     }
 
-    const tokens = await this.createTokens(user)
-    await this.updateHashedRefreshTokenById(user.id, tokens.refreshToken)
+    const [accessToken, refreshToken] = [
+      await this.createAccessToken(user),
+      await this.createRefreshToken(user.id),
+    ]
+
+    await this.updateHashedRefreshTokenById(user.id, refreshToken)
 
     return {
-      avatarUrl: ImgurUtil.toLink({
-        hash: user.avatarImageHash,
-        ext: user.avatarImageExt,
-        size: ImageSize.BigSquare,
-      }),
-      ...tokens,
+      accessToken,
+      refreshToken,
     }
   }
 
@@ -139,9 +140,9 @@ export class AuthService implements IAuthService {
     if (!tokenMatched) {
       throw new UnauthorizedException()
     }
-    const tokens = await this.createTokens(user)
-    await this.updateHashedRefreshTokenById(id, tokens.refreshToken)
-    return tokens
+
+    const accessToken = await this.createAccessToken(user)
+    return { accessToken }
   }
 
   async logout(): Promise<void> {
