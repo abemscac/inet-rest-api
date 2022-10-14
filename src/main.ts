@@ -15,6 +15,16 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
+    /**
+     * @see https://github.com/nestjs/nest/pull/9507
+     */
+    {
+      cors: {
+        origin: (origin, callback) => {
+          return callback(null, true)
+        },
+      },
+    },
   )
   app.register(contentParser)
   app
