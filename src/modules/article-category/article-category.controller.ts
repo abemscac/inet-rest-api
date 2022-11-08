@@ -31,4 +31,13 @@ export class ArticleCategoryController {
   ): Promise<IArticleCategoryDetailViewModel> {
     return await this.articleCategoryService.findById(id)
   }
+
+  @ApiOperation({ summary: 'Find an article category by code' })
+  @ApiOkExample(MockArticleCategoryDetail)
+  @Get(':code')
+  async findByCode(
+    @Param('code') code: string,
+  ): Promise<IArticleCategoryDetailViewModel> {
+    return await this.articleCategoryService.findByCode(code)
+  }
 }
