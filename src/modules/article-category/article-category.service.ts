@@ -9,7 +9,7 @@ import { IArticleCategoryViewModel } from './view-models/i-article-category.view
 
 export interface IArticleCategoryService {
   findAll(): Promise<Array<IArticleCategoryViewModel>>
-  findByCode(code: string): Promise<IArticleCategoryDetailViewModel>
+  findById(id: number): Promise<IArticleCategoryDetailViewModel>
 }
 
 @Injectable()
@@ -28,12 +28,12 @@ export class ArticleCategoryService implements IArticleCategoryService {
       .projectMany()
   }
 
-  async findByCode(code: string): Promise<IArticleCategoryDetailViewModel> {
+  async findById(id: number): Promise<IArticleCategoryDetailViewModel> {
     return await new ArticleCategoryDetailProjector(
       this.articleCategoryRepository,
       'articleCategory',
     )
-      .where('articleCategory.code = :code', { code })
+      .where('articleCategory.id = :id', { id })
       .projectOrFail()
   }
 }
