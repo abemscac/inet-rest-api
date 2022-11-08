@@ -7,6 +7,7 @@ export const MockArticles: Array<IArticleViewModel> = [
   {
     id: 1,
     category: {
+      id: 2,
       code: 'animal',
       imageUrl: 'https://i.imgur.com/JR2xyV6s.jpg',
     },
@@ -23,6 +24,7 @@ export const MockArticles: Array<IArticleViewModel> = [
   {
     id: 2,
     category: {
+      id: 6,
       code: 'sports',
       imageUrl: 'https://i.imgur.com/s4PDhtLs.jpg',
     },

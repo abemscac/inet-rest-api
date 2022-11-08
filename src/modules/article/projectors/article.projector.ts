@@ -11,6 +11,7 @@ import { IArticleViewModel } from '../view-models/i-article.view-model'
 export const ARTICLE_BODY_PREVIEW_LENGTH = 200
 
 export interface IArticleProjection {
+  articleCategoryId: number
   articleCategoryCode: string
   articleCategoryImageHash: string
   articleCategoryImageExt: string
@@ -33,6 +34,7 @@ export interface IArticleProjection {
 }
 
 export const ArticleProjectionSelection = [
+  'articleCategory.id AS articleCategoryId',
   'articleCategory.code AS articleCategoryCode',
   'articleCategory.imageHash AS articleCategoryImageHash',
   'articleCategory.imageExt AS articleCategoryImageExt',
@@ -73,6 +75,7 @@ export const ArticleProjectionPipe = (
 
     result.id = projection.articleId
     result.category = {
+      id: projection.articleCategoryId,
       code: projection.articleCategoryCode,
       imageUrl:
         ImgurUtil.toLink({
