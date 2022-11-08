@@ -13,6 +13,7 @@ export class ArticleCategoryProjector extends BaseProjector<
       repository
         .createQueryBuilder(alias)
         .select([
+          `${alias}.id AS id`,
           `${alias}.code AS code`,
           `${alias}.imageHash AS imageHash`,
           `${alias}.imageExt AS imageExt`,
@@ -20,6 +21,7 @@ export class ArticleCategoryProjector extends BaseProjector<
       alias,
     )
     super.setPipes((_, projection) => ({
+      id: projection.id,
       code: projection.code,
       imageUrl:
         ImgurUtil.toLink({
