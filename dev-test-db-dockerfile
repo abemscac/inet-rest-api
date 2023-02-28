@@ -1,0 +1,6 @@
+# syntax=docker/dockerfile:1
+
+FROM mysql:8.0.31
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=inet_dev
+EXPOSE 3306
