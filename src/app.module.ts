@@ -16,6 +16,9 @@ import { DevTestDbModule } from './modules/dev-test-db/dev-test-db.module'
 import { UserBrowseHistoryModule } from './modules/user-browse-history/user-browse-history.module'
 import { UserModule } from './modules/user/user.module'
 import { getORMConfig } from './orm.config'
+import { isDevelopment, isTest } from './utils/env.util'
+
+const devTestModules = [DevTestDbModule]
 
 @Module({
   imports: [
@@ -41,7 +44,7 @@ import { getORMConfig } from './orm.config'
     CollectionModule,
     UserModule,
     UserBrowseHistoryModule,
-    DevTestDbModule,
+    ...(isDevelopment() || isTest() ? devTestModules : []),
   ],
   controllers: [AppController],
   providers: [AppService],
