@@ -1,0 +1,55 @@
+import { User } from '../modules/user/user.entity'
+
+export const userFixtures: User[] = [
+  {
+    id: 1,
+    username: 'user0',
+    hashedPassword:
+      '$2a$10$ushVd/LnAQsV/7UrbAmzOOIScbMjWEYchllw8R9usFs0n6WLOeu4.',
+    hashedRefreshToken: null,
+    name: '人類一號',
+    avatarImageHash: 'MT0npFn',
+    avatarImageExt: 'jpg',
+    createdAt: new Date(),
+    isRemoved: false,
+    articles: [],
+    articleLikes: [],
+    articleComments: [],
+    browseHistories: [],
+    collections: [],
+  },
+  {
+    id: 2,
+    username: 'user1',
+    hashedPassword:
+      '$2a$10$LI0vyuzA/9FolRnRYLfV9eQ4b5VxDFHAzyH3CM5y.gzBMyeTLjTEC',
+    hashedRefreshToken: null,
+    name: '普通狗',
+    avatarImageHash: 'Q3NCNdy',
+    avatarImageExt: 'jpg',
+    createdAt: new Date(),
+    isRemoved: false,
+    articles: [],
+    articleLikes: [],
+    articleComments: [],
+    browseHistories: [],
+    collections: [],
+  },
+  {
+    id: 3,
+    username: 'user2',
+    hashedPassword:
+      '$2a$10$nBjgHeAa4HWAzgoqL8EWN.1ZatbQIcsvyZQIiz5cX/sVNiVakPhU2',
+    hashedRefreshToken: null,
+    name: null,
+    avatarImageHash: null,
+    avatarImageExt: null,
+    createdAt: new Date(),
+    isRemoved: false,
+    articles: [],
+    articleLikes: [],
+    articleComments: [],
+    browseHistories: [],
+    collections: [],
+  },
+]

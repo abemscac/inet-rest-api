@@ -8,6 +8,7 @@ import { Article } from './modules/article/article.entity'
 import { Collection } from './modules/collection/collection.entity'
 import { UserBrowseHistory } from './modules/user-browse-history/user-browse-history.entity'
 import { User } from './modules/user/user.entity'
+import { isDevelopment } from './utils/env.util'
 
 export const getORMConfig = (appConfig: IAppConfig): TypeOrmModuleOptions => ({
   type: 'mysql',
@@ -17,6 +18,7 @@ export const getORMConfig = (appConfig: IAppConfig): TypeOrmModuleOptions => ({
   password: appConfig.db.password,
   database: appConfig.db.name,
   timezone: 'Z',
+  synchronize: isDevelopment(),
   entities: [
     Article,
     ArticleCategory,

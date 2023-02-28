@@ -29,7 +29,8 @@ export interface IBaseProjector<TResult extends Record<string, unknown>> {
 }
 
 export class BaseProjector<
-  TEntity,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TEntity extends Record<string, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TResult extends Record<string, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

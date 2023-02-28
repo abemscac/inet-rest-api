@@ -12,6 +12,7 @@ import { ArticleSubCommentModule } from './modules/article-sub-comment/article-s
 import { ArticleModule } from './modules/article/article.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { CollectionModule } from './modules/collection/collection.module'
+import { DevTestDbModule } from './modules/dev-test-db/dev-test-db.module'
 import { UserBrowseHistoryModule } from './modules/user-browse-history/user-browse-history.module'
 import { UserModule } from './modules/user/user.module'
 import { getORMConfig } from './orm.config'
@@ -40,6 +41,7 @@ import { getORMConfig } from './orm.config'
     CollectionModule,
     UserModule,
     UserBrowseHistoryModule,
+    DevTestDbModule,
   ],
   controllers: [AppController],
   providers: [AppService],

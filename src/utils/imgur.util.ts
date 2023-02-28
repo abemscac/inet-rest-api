@@ -2,6 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common'
 import * as FormData from 'form-data'
 import fetch from 'node-fetch'
 import { getAppConfig } from '~/app.config'
+import { isDevelopment, isTest } from './env.util'
 
 export interface IImgurUtil {
   oauth: IImgurUtilOAuth
@@ -93,7 +94,7 @@ class ImgurUtilOAuth implements IImgurUtilOAuth {
       ACCESS_TOKEN_DEV,
     } = getAppConfig().imgur.oauth
 
-    if (process.env.NODE_ENV === 'development') {
+    if (isDevelopment() || isTest()) {
       this.generateAccessTokenPromise = new Promise((resolve) => {
         return resolve(ACCESS_TOKEN_DEV)
       })
