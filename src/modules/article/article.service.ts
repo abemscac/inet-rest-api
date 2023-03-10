@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { BusinessLogicException } from '~/base-exceptions/business-logic.exception'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { DateUtil } from '~/utils/date.util'
 import { ImgurUtil } from '~/utils/imgur.util'
 import { TypeORMUtil } from '~/utils/typeorm.util'
@@ -24,7 +24,7 @@ import { IArticleViewModel } from './view-models/i-article.view-model'
 export interface IArticleService {
   findByQuery(
     query: ArticleQuery,
-  ): Promise<IPagableViewModel<IArticleViewModel>>
+  ): Promise<IPaginationViewModel<IArticleViewModel>>
   findById(id: number): Promise<IArticleDetailViewModel>
   create(form: CreateArticleForm): Promise<IArticleDetailViewModel>
   updateById(id: number, form: UpdateArticleForm): Promise<void>
@@ -57,7 +57,7 @@ export class ArticleService implements IArticleService {
 
   async findByQuery(
     query: ArticleQuery,
-  ): Promise<IPagableViewModel<IArticleViewModel>> {
+  ): Promise<IPaginationViewModel<IArticleViewModel>> {
     const { createdWithin, categoryId } = query
     const projector = new ArticleProjector(
       this.articleRepository,

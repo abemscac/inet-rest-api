@@ -10,9 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
 import { PagableQuery } from '~/shared-queries/pagable.query'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
 import { ApiOkPagableExample } from '~/swagger-decorators/api-ok-pagable-example'
@@ -42,8 +41,8 @@ export class UserBrowseHistoryController {
   )
   @Get()
   async findByQuery(
-    @Query(PagableQueryValidationPipe) query: PagableQuery,
-  ): Promise<IPagableViewModel<IUserBrowseHistoryViewModel>> {
+    @Query() query: PagableQuery,
+  ): Promise<IPaginationViewModel<IUserBrowseHistoryViewModel>> {
     return await this.userBrowseHistoryService.findByQuery(query)
   }
 
