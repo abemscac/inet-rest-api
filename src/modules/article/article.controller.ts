@@ -14,8 +14,7 @@ import {
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyImageFileInterceptor } from '~/interceptors/fastify-image-file.interceptor'
-import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiMultipart } from '~/swagger-decorators/api-multipart'
@@ -55,9 +54,9 @@ export class ArticleController {
   @IsPublic()
   @Get()
   async findByQuery(
-    @Query(PagableQueryValidationPipe)
+    @Query()
     query: ArticleQuery,
-  ): Promise<IPagableViewModel<IArticleViewModel>> {
+  ): Promise<IPaginationViewModel<IArticleViewModel>> {
     return await this.articleService.findByQuery(query)
   }
 

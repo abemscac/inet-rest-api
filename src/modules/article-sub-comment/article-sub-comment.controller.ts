@@ -12,8 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
@@ -41,9 +40,9 @@ export class ArticleSubCommentController {
   @ApiOkPagableExample(MockArticleComments)
   @Get()
   async findByQuery(
-    @Query(PagableQueryValidationPipe)
+    @Query()
     query: ArticleSubCommentQuery,
-  ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
+  ): Promise<IPaginationViewModel<IArticleCommentViewModel>> {
     return await this.articleSubCommentService.findByQuery(query)
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { TypeORMUtil } from '~/utils/typeorm.util'
 import { Article } from '../article/article.entity'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
@@ -14,7 +14,7 @@ import { IArticleCommentViewModel } from './view-models/i-article-comment.view-m
 export interface IArticleCommentService {
   findByQuery(
     query: ArticleCommentQuery,
-  ): Promise<IPagableViewModel<IArticleCommentViewModel>>
+  ): Promise<IPaginationViewModel<IArticleCommentViewModel>>
   create(form: CreateArticleCommentForm): Promise<IArticleCommentViewModel>
   removeById(id: number): Promise<void>
 }
@@ -31,7 +31,7 @@ export class ArticleCommentService implements IArticleCommentService {
 
   async findByQuery(
     query: ArticleCommentQuery,
-  ): Promise<IPagableViewModel<IArticleCommentViewModel>> {
+  ): Promise<IPaginationViewModel<IArticleCommentViewModel>> {
     const { articleId } = query
     return await new ArticleCommentProjector(
       this.articleCommentRepository,

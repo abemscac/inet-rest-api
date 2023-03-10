@@ -12,9 +12,8 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { PagableQueryValidationPipe } from '~/pipes/pagable-query.validation.pipe'
 import { PagableQuery } from '~/shared-queries/pagable.query'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { ApiBadRequestResponses } from '~/swagger-decorators/api-bad-request-responses'
 import { ApiCreatedExample } from '~/swagger-decorators/api-created-example'
 import { ApiNoContentSuccess } from '~/swagger-decorators/api-no-content-success'
@@ -45,8 +44,8 @@ export class CollectionController {
   )
   @Get()
   async findByQuery(
-    @Query(PagableQueryValidationPipe) query: PagableQuery,
-  ): Promise<IPagableViewModel<ICollectionViewModel>> {
+    @Query() query: PagableQuery,
+  ): Promise<IPaginationViewModel<ICollectionViewModel>> {
     return await this.collectionService.findByQuery(query)
   }
 

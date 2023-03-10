@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { PagableQuery } from '~/shared-queries/pagable.query'
-import { IPagableViewModel } from '~/shared-view-models/i-pagable.view-model'
+import { IPaginationViewModel } from '~/shared-view-models/i-pagination.view-model'
 import { TypeORMUtil } from '~/utils/typeorm.util'
 import { Article } from '../article/article.entity'
 import { PassportPermitService } from '../passport-permit/passport-permit.service'
@@ -14,7 +14,7 @@ import { ICollectionViewModel } from './view-models/i-collection.view-model'
 export interface ICollectionService {
   findByQuery(
     query: PagableQuery,
-  ): Promise<IPagableViewModel<ICollectionViewModel>>
+  ): Promise<IPaginationViewModel<ICollectionViewModel>>
   create(form: CreateCollectionForm): Promise<ICollectionViewModel>
   deleteById(id: number): Promise<void>
 }
@@ -31,7 +31,7 @@ export class CollectionService implements ICollectionService {
 
   async findByQuery(
     query: PagableQuery,
-  ): Promise<IPagableViewModel<ICollectionViewModel>> {
+  ): Promise<IPaginationViewModel<ICollectionViewModel>> {
     return new CollectionProjector(
       this.collectionRepository,
       'collection',

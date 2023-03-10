@@ -22,7 +22,7 @@ export class ArticleQuery extends PagableQuery {
   createdWithin?: ArticleCreatedWithin
 
   @ApiPropertyOptional({
-    description: 'Id of the article-category the articles belong to.',
+    description: 'Id of the category the articles belong to.',
   })
   @IsInt()
   @Type(() => Number)
